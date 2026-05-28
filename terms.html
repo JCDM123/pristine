@@ -477,7 +477,30 @@ body{font-family:'Jost',sans-serif;background:url('data:image/jpeg;base64,/9j/4A
 .legal-highlight p{margin-bottom:0;font-size:15px;}
 .legal-contact{background:#fafaf8;border:0.5px solid var(--border);border-radius:12px;padding:2rem;margin-top:3rem;}
 .legal-contact h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;font-weight:400;color:#111;margin-bottom:1rem;}
-.legal-contact p{font-size:15px;color:#555;line-height:1.8;font-weight:300;margin-bottom:0.5rem;}</style>
+.legal-contact p{font-size:15px;color:#555;line-height:1.8;font-weight:300;margin-bottom:0.5rem;}
+/* ── NAV CONSISTENCY — matches The Source exactly ── */
+.nav{
+  padding:0.8rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:0.5px solid var(--border);
+  background:#fff;
+  position:sticky;top:0;z-index:200;
+  min-height:90px;
+  overflow:visible;
+  transition:min-height 0.4s ease,padding 0.4s ease;
+}
+.nav.scrolled{min-height:64px;padding:0.6rem 2.5rem;box-shadow:0 1px 0 var(--border);}
+.nav-links{display:flex;gap:2.5rem;align-items:center;}
+.nav-links a{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted) !important;font-weight:500 !important;transition:color 0.2s;text-decoration:none;}
+.nav-links a:hover{color:var(--sage) !important;}
+.nav-links a.active{color:var(--text) !important;border-bottom:1.5px solid var(--sage);padding-bottom:2px;font-weight:500 !important;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-right svg{width:20px;height:20px;stroke:#aaa;fill:none;stroke-width:1.5;cursor:pointer;transition:stroke 0.2s;}
+.nav-right svg:hover{stroke:var(--sage);}
+.logo-img{width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer;filter:drop-shadow(0 6px 20px rgba(0,0,0,0.2));position:relative;z-index:10;margin-bottom:-36px;transition:width 0.4s ease,height 0.4s ease,margin-bottom 0.4s ease,filter 0.4s ease;}
+.nav.scrolled .logo-img{width:52px !important;height:52px !important;margin-bottom:0 !important;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.1));}
+
+</style>
 </head>
 <body>
 <div class="site-wrap">
