@@ -460,6 +460,11 @@ p, li, .card-excerpt, .feat-excerpt,
 @media(max-width:1100px){.feeds-section{grid-template-columns:1fr;}.socials-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:700px){.social-hero{height:45vw;min-height:220px;}.stats-strip{grid-template-columns:1fr;}.stat-item{border-right:none;border-bottom:0.5px solid var(--border);}.stat-item:last-child{border-bottom:none;}.socials-grid{grid-template-columns:1fr 1fr;}.hero-handles{flex-direction:column;align-items:center;gap:8px;}}
 
+
+/* Modal hidden by default */
+.modal-overlay { display: none !important; }
+.modal-overlay.open { display: flex !important; opacity: 1 !important; pointer-events: all !important; }
+
 </style>
 </head>
 <body>
@@ -720,8 +725,8 @@ function doSearch(q) {
 }
 
 // ── CONTACT MODAL ──
-function openContactModal() { document.getElementById('contact-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeContactModal() { document.getElementById('contact-modal').classList.remove('open'); document.body.style.overflow = ''; }
+function openContactModal() { var m=document.getElementById('contact-modal');m.style.display='flex';setTimeout(function(){m.classList.add('open');},10);document.body.style.overflow='hidden'; }
+function closeContactModal() { var m=document.getElementById('contact-modal');m.classList.remove('open');setTimeout(function(){m.style.display='none';},300);document.body.style.overflow=''; }
 function handleModalClick(e) { if (e.target === document.getElementById('contact-modal')) closeContactModal(); }
 
 // ── COPY LINK ──

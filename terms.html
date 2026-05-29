@@ -889,6 +889,11 @@ p, li, .card-excerpt, .feat-excerpt,
   }
 }
 
+
+/* Modal hidden by default */
+.modal-overlay { display: none !important; }
+.modal-overlay.open { display: flex !important; opacity: 1 !important; pointer-events: all !important; }
+
 </style>
 </head>
 <body>
@@ -1140,8 +1145,8 @@ function doSearch(q) {
 }
 
 // ── CONTACT MODAL ──
-function openContactModal() { document.getElementById('contact-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeContactModal() { document.getElementById('contact-modal').classList.remove('open'); document.body.style.overflow = ''; }
+function openContactModal() { var m=document.getElementById('contact-modal');m.style.display='flex';setTimeout(function(){m.classList.add('open');},10);document.body.style.overflow='hidden'; }
+function closeContactModal() { var m=document.getElementById('contact-modal');m.classList.remove('open');setTimeout(function(){m.style.display='none';},300);document.body.style.overflow=''; }
 function handleModalClick(e) { if (e.target === document.getElementById('contact-modal')) closeContactModal(); }
 
 // ── COPY LINK ──
