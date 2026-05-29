@@ -483,6 +483,12 @@ p, li, .card-excerpt, .feat-excerpt,
 .modal-overlay { display: none !important; }
 .modal-overlay.open { display: flex !important; opacity: 1 !important; pointer-events: all !important; }
 
+
+/* ── INNER PADDING FIX ── */
+.inner { padding: 0 3.5rem !important; }
+@media(max-width:1100px) { .inner { padding: 0 2.5rem !important; } }
+@media(max-width:700px) { .inner { padding: 0 1.4rem !important; } }
+
 </style>
 </head>
 <body>
@@ -494,8 +500,8 @@ p, li, .card-excerpt, .feat-excerpt,
   <div class="nav-links">
     <a href="index.html" class="active">Home</a>
     <a href="the-source.html">The Source</a>
-    <a href="recipes.html">Recipes</a>
-    <a href="about.html">About</a>
+    <a href="ancestral-kitchen.html">Ancestral Kitchen</a>
+    <a href="experiment.html">The Experiment</a><a href="about.html">About</a>
     <a href="social-feed.html">Social Feed</a>
   </div>
   <div class="nav-right">
@@ -509,7 +515,8 @@ p, li, .card-excerpt, .feat-excerpt,
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">×</button>
   <a href="index.html" class="active">Home</a>
   <a href="the-source.html">The Source</a>
-  <a href="recipes.html">Recipes</a>
+  <a href="ancestral-kitchen.html">Ancestral Kitchen</a>
+  <a href="experiment.html">The Experiment</a><a href="experiment.html">The Experiment</a>
   <a href="about.html">About</a>
   <a href="social-feed.html">Social Feed</a>
   <a href="disclaimer.html">Disclaimer</a>
@@ -592,7 +599,7 @@ p, li, .card-excerpt, .feat-excerpt,
         <span class="explore-topic">Snacks</span>
         <span class="explore-topic">Vegan</span>
       </div>
-      <a class="explore-btn sage" href="recipes.html">Browse Recipes <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a class="explore-btn sage" href="ancestral-kitchen.html">Browse Recipes <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
 
   </div>
