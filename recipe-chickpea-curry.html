@@ -969,7 +969,167 @@ body, p, li, span, div {
   </div>
 </div>
 <div class="lightbox" id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt=""/><div class="lightbox-close" onclick="closeLightbox()"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></div></div>
+
+<div class="search-overlay" id="search-overlay">
+  <button class="search-close" onclick="closeSearch()">×</button>
+  <div class="search-input-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search-input" id="search-input" type="text" placeholder="Search articles, recipes..." oninput="doSearch(this.value)" autocomplete="off"/>
+  </div>
+  <div class="search-results" id="search-results"></div>
+</div>
+<button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 <script>
+/* ════════════════════════════════════════════════
+   PRISTINE WELLNESS — MASTER JS v2 CLEAN
+   Single source of truth. Applied once per page.
+   ════════════════════════════════════════════════ */
+
+// NAV SCROLL + BACK TO TOP
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('main-nav');
+  if (nav) {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }
+  var btt = document.getElementById('back-to-top');
+  if (btt) btt.classList.toggle('visible', window.scrollY > 400);
+});
+
+// MOBILE MENU
+function openMobileMenu() {
+  document.getElementById('mobile-drawer').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.getElementById('mobile-btn').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-drawer').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  var btn = document.getElementById('mobile-btn');
+  if (btn) btn.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// LEGAL SUBMENU
+function initLegalSubmenu() {
+  var toggle = document.getElementById('legal-toggle');
+  var sub = document.getElementById('legal-subnav');
+  if (!toggle || !sub) return;
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggle.classList.toggle('open');
+    sub.classList.toggle('open');
+  });
+}
+
+// FILTER PILLS
+function filterCards(cat) {
+  document.querySelectorAll('.filter-pill').forEach(function(p) {
+    p.classList.toggle('active', p.textContent.trim() === cat);
+  });
+  var cards = document.querySelectorAll('[data-cat], .article-card, .recipe-card');
+  cards.forEach(function(card) {
+    if (cat === 'All') {
+      card.style.display = '';
+    } else {
+      var cardCat = card.getAttribute('data-cat') || '';
+      card.style.display = (cardCat === cat || cardCat.indexOf(cat) > -1) ? '' : 'none';
+    }
+  });
+}
+
+// CONTACT MODAL
+function openContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+function handleModalClick(e) {
+  if (e.target === document.getElementById('contact-modal')) closeContactModal();
+}
+
+// SEARCH
+var searchDocs = [
+  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
+  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
+  {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
+  {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
+  {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
+  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
+  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
+  {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
+];
+
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('search-input').focus(); }, 100);
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-results').innerHTML = '';
+  document.body.style.overflow = '';
+}
+function doSearch(q) {
+  var results = document.getElementById('search-results');
+  if (!q || q.length < 2) { results.innerHTML = ''; return; }
+  var ql = q.toLowerCase();
+  var matches = searchDocs.filter(function(d) {
+    return d.title.toLowerCase().indexOf(ql) > -1 ||
+           d.excerpt.toLowerCase().indexOf(ql) > -1 ||
+           d.cat.toLowerCase().indexOf(ql) > -1;
+  });
+  if (!matches.length) {
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    return;
+  }
+  results.innerHTML = matches.map(function(d) {
+    return '<div class="search-result-item" onclick="window.location=\'' + d.url + '\'">' +
+      '<div><span class="search-result-cat">' + d.cat + '</span>' +
+      '<div class="search-result-title">' + d.title + '</div>' +
+      '<div class="search-result-excerpt">' + d.excerpt + '</div></div></div>';
+  }).join('');
+}
+
+// COPY LINK
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    var btn = document.getElementById('copy-btn');
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  });
+}
+
+// KEYBOARD
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeContactModal(); closeSearch(); closeMobileMenu(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+});
+
+// INIT
+document.addEventListener('DOMContentLoaded', function() {
+  initLegalSubmenu();
+  // Init filter pills
+  document.querySelectorAll('.filter-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterCards(pill.textContent.trim());
+    });
+  });
+});
+
+
 // ── RECIPE: changeServings ──
 var baseServings = 4;
 var currentServings = 4;
@@ -995,6 +1155,205 @@ function setUnit(unit, btn) {
   if (btn) btn.classList.add('active');
   if (typeof updateIngredients === 'function') updateIngredients();
 }
+
+
+/* ════════════════════════════════════════
+   COMPREHENSIVE FIX JS, ALL ISSUES
+   ════════════════════════════════════════ */
+
+// ISSUE 4: Mobile menu
+function openMobileMenu() {
+  var d = document.getElementById('mobile-drawer');
+  var o = document.getElementById('mobile-overlay');
+  var b = document.getElementById('mobile-btn');
+  if (d) d.classList.add('open');
+  if (o) o.classList.add('open');
+  if (b) b.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+  var d = document.getElementById('mobile-drawer');
+  var o = document.getElementById('mobile-overlay');
+  var b = document.getElementById('mobile-btn');
+  if (d) d.classList.remove('open');
+  if (o) o.classList.remove('open');
+  if (b) b.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ISSUE 7: Legal submenu
+function initLegalSubmenu() {
+  var toggle = document.getElementById('legal-toggle');
+  var sub = document.getElementById('legal-subnav');
+  if (!toggle || !sub) return;
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggle.classList.toggle('open');
+    sub.classList.toggle('open');
+  });
+}
+
+// ISSUE 5 & 9: Filter pills
+function initFilters() {
+  var pills = document.querySelectorAll('.filter-pill');
+  if (!pills.length) return;
+  pills.forEach(function(pill) {
+    pill.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      filterCards(pill.textContent.trim());
+    });
+  });
+}
+
+function filterCards(cat) {
+  var cards = document.querySelectorAll('[data-cat]');
+  if (!cards.length) {
+    cards = document.querySelectorAll('.article-card, .card');
+  }
+  cards.forEach(function(card) {
+    if (cat === 'All') {
+      card.style.display = '';
+    } else {
+      var cardCat = card.getAttribute('data-cat') || '';
+      card.style.display = (cardCat === cat || cardCat.indexOf(cat) > -1) ? '' : 'none';
+    }
+  });
+}
+
+// ISSUE 8 & 10: Timers
+var activeTimers = {};
+function toggleStepTimer(stepId, seconds) {
+  if (activeTimers[stepId]) {
+    clearInterval(activeTimers[stepId]);
+    delete activeTimers[stepId];
+    var display = document.getElementById('timer-' + stepId);
+    var btn = document.getElementById('tbtn-' + stepId);
+    if (display) { var m = Math.floor(seconds/60), s = seconds%60; display.textContent = m + ':' + (s<10?'0':'') + s; }
+    if (btn) btn.textContent = 'Start';
+    return;
+  }
+  var remaining = seconds;
+  var display = document.getElementById('timer-' + stepId);
+  var btn = document.getElementById('tbtn-' + stepId);
+  if (btn) btn.textContent = 'Stop';
+  activeTimers[stepId] = setInterval(function() {
+    remaining--;
+    var m = Math.floor(remaining/60), s = remaining%60;
+    if (display) display.textContent = m + ':' + (s<10?'0':'') + s;
+    if (remaining <= 0) {
+      clearInterval(activeTimers[stepId]);
+      delete activeTimers[stepId];
+      if (display) display.textContent = 'Done!';
+      if (btn) btn.textContent = 'Start';
+      if (navigator.vibrate) navigator.vibrate([200,100,200]);
+    }
+  }, 1000);
+}
+
+// ISSUE 10: Servings
+function initServings() {
+  var btns = document.querySelectorAll('.serving-btn');
+  var countEl = document.getElementById('serving-count');
+  var baseEl = document.getElementById('serving-base');
+  if (!btns.length || !countEl) return;
+  var base = parseInt(baseEl ? baseEl.value : countEl.textContent) || 4;
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var current = parseInt(countEl.textContent) || 4;
+      if (btn.getAttribute('data-action') === 'up') current++;
+      else if (current > 1) current--;
+      countEl.textContent = current;
+      var ratio = current / base;
+      document.querySelectorAll('[data-base-amount]').forEach(function(el) {
+        var val = parseFloat(el.getAttribute('data-base-amount')) * ratio;
+        el.textContent = val % 1 === 0 ? val.toString() : val.toFixed(1);
+      });
+    });
+  });
+}
+
+// ISSUE 10: Unit toggle
+function initUnitToggle() {
+  var btns = document.querySelectorAll('.unit-btn');
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var unit = btn.getAttribute('data-unit');
+      document.querySelectorAll('[data-metric]').forEach(function(el) {
+        el.textContent = unit === 'metric' ? el.getAttribute('data-metric') : (el.getAttribute('data-imperial') || el.getAttribute('data-metric'));
+      });
+    });
+  });
+}
+
+// MODAL
+function openContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'flex';
+  setTimeout(function() { m.classList.add('open'); }, 10);
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.classList.remove('open');
+  setTimeout(function() { m.style.display = 'none'; }, 300);
+  document.body.style.overflow = '';
+}
+function handleModalClick(e) {
+  if (e.target === document.getElementById('contact-modal')) closeContactModal();
+}
+
+// SEARCH
+function openSearch() {
+  var o = document.getElementById('search-overlay');
+  var i = document.getElementById('search-input');
+  if (!o) return;
+  o.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (i) setTimeout(function() { i.focus(); }, 100);
+  if (!window.searchIndex) buildSearchIndex();
+}
+function closeSearch() {
+  var o = document.getElementById('search-overlay');
+  var i = document.getElementById('search-input');
+  var r = document.getElementById('search-results');
+  if (!o) return;
+  o.classList.remove('open');
+  document.body.style.overflow = '';
+  if (i) i.value = '';
+  if (r) r.innerHTML = '';
+}
+
+// BACK TO TOP
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('main-nav');
+  if (nav) {
+    if (window.scrollY > 60) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  }
+  var btt = document.getElementById('back-to-top');
+  if (btt) btt.classList.toggle('visible', window.scrollY > 400);
+});
+
+// KEYBOARD
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeContactModal(); closeSearch(); closeMobileMenu(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+});
+
+// INIT ALL
+document.addEventListener('DOMContentLoaded', function() {
+  initFilters();
+  initLegalSubmenu();
+  initServings();
+  initUnitToggle();
+});
 
 
 /* ════════════════════════════════════════════════
@@ -1245,17 +1604,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
 </script>
-<div class="search-overlay" id="search-overlay">
-  <button class="search-close" onclick="closeSearch()">×</button>
-  <div class="search-input-wrap">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input class="search-input" id="search-input" type="text" placeholder="Search articles, recipes..." oninput="doSearch(this.value)" autocomplete="off"/>
-  </div>
-  <div class="search-results" id="search-results"></div>
-</div>
-<button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
-</button>
 </body>
 </html>

@@ -668,21 +668,173 @@ body{font-family:'Jost',sans-serif;background:url('data:image/jpeg;base64,/9j/4A
     <button class="ms" type="button" onclick="closeContactModal()">Send message</button>
   </div>
 </div>
+
+<div class="search-overlay" id="search-overlay">
+  <button class="search-close" onclick="closeSearch()">×</button>
+  <div class="search-input-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search-input" id="search-input" type="text" placeholder="Search articles, recipes..." oninput="doSearch(this.value)" autocomplete="off"/>
+  </div>
+  <div class="search-results" id="search-results"></div>
+</div>
+<button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 <script>
+/* ════════════════════════════════════════════════
+   PRISTINE WELLNESS — MASTER JS v2 CLEAN
+   Single source of truth. Applied once per page.
+   ════════════════════════════════════════════════ */
+
+// NAV SCROLL + BACK TO TOP
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('main-nav');
+  if (nav) {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }
+  var btt = document.getElementById('back-to-top');
+  if (btt) btt.classList.toggle('visible', window.scrollY > 400);
+});
+
+// MOBILE MENU
+function openMobileMenu() {
+  document.getElementById('mobile-drawer').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.getElementById('mobile-btn').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-drawer').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  var btn = document.getElementById('mobile-btn');
+  if (btn) btn.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// LEGAL SUBMENU
+function initLegalSubmenu() {
+  var toggle = document.getElementById('legal-toggle');
+  var sub = document.getElementById('legal-subnav');
+  if (!toggle || !sub) return;
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggle.classList.toggle('open');
+    sub.classList.toggle('open');
+  });
+}
+
+// FILTER PILLS
+function filterCards(cat) {
+  document.querySelectorAll('.filter-pill').forEach(function(p) {
+    p.classList.toggle('active', p.textContent.trim() === cat);
+  });
+  var cards = document.querySelectorAll('[data-cat], .article-card, .recipe-card');
+  cards.forEach(function(card) {
+    if (cat === 'All') {
+      card.style.display = '';
+    } else {
+      var cardCat = card.getAttribute('data-cat') || '';
+      card.style.display = (cardCat === cat || cardCat.indexOf(cat) > -1) ? '' : 'none';
+    }
+  });
+}
+
+// CONTACT MODAL
+function openContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+function handleModalClick(e) {
+  if (e.target === document.getElementById('contact-modal')) closeContactModal();
+}
+
+// SEARCH
+var searchDocs = [
+  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
+  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
+  {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
+  {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
+  {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
+  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
+  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
+  {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
+];
+
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('search-input').focus(); }, 100);
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-results').innerHTML = '';
+  document.body.style.overflow = '';
+}
+function doSearch(q) {
+  var results = document.getElementById('search-results');
+  if (!q || q.length < 2) { results.innerHTML = ''; return; }
+  var ql = q.toLowerCase();
+  var matches = searchDocs.filter(function(d) {
+    return d.title.toLowerCase().indexOf(ql) > -1 ||
+           d.excerpt.toLowerCase().indexOf(ql) > -1 ||
+           d.cat.toLowerCase().indexOf(ql) > -1;
+  });
+  if (!matches.length) {
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    return;
+  }
+  results.innerHTML = matches.map(function(d) {
+    return '<div class="search-result-item" onclick="window.location=\'' + d.url + '\'">' +
+      '<div><span class="search-result-cat">' + d.cat + '</span>' +
+      '<div class="search-result-title">' + d.title + '</div>' +
+      '<div class="search-result-excerpt">' + d.excerpt + '</div></div></div>';
+  }).join('');
+}
+
+// COPY LINK
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    var btn = document.getElementById('copy-btn');
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  });
+}
+
+// KEYBOARD
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeContactModal(); closeSearch(); closeMobileMenu(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+});
+
+// INIT
+document.addEventListener('DOMContentLoaded', function() {
+  initLegalSubmenu();
+  // Init filter pills
+  document.querySelectorAll('.filter-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterCards(pill.textContent.trim());
+    });
+  });
+});
+
+
 /* ════════════════════════════════════════════════
    PRISTINE WELLNESS, MASTER JS
    ════════════════════════════════════════════════ */
 
 // ── NAV SCROLL ──
-window.addEventListener('scroll', function() {
-  var nav = document.getElementById('main-nav');
-  if (!nav) return;
-  if (window.scrollY > 60) { nav.classList.add('scrolled'); }
-  else { nav.classList.remove('scrolled'); }
-  // Back to top
-  var btt = document.getElementById('back-to-top');
-  if (btt) { btt.classList.toggle('visible', window.scrollY > 400); }
-});
+
 
 // ── MOBILE MENU ──
 
@@ -691,83 +843,21 @@ window.addEventListener('scroll', function() {
 // ── SEARCH ──
 var searchIndex, searchDocs = [];
 
-function buildSearchIndex() {
-  searchDocs = [
-    { title: 'The Ancient Power of Forest Bathing', cat: 'Mental Wellness', excerpt: 'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.', url: 'article-forest-bathing.html' },
-    { title: 'What Robert Gourlay Taught Us About Water', cat: 'Hydration', excerpt: 'The structured water science that may explain everything about human health and longevity.', url: 'article-forest-bathing.html' },
-    { title: 'The Six Pillars of Pristine Living', cat: 'Foundations', excerpt: 'Pure water, nutrient dense food, grounding, nature immersion, restorative sleep and intentional living.', url: 'the-source.html' },
-    { title: 'Chickpea & Green Bean Curry', cat: 'Recipes · Mains', excerpt: 'A warming plant-based curry loaded with anti-inflammatory turmeric, cumin and coconut milk.', url: 'recipe-chickpea-curry.html' },
-    { title: 'Morning Olive Oil & Lemon Elixir', cat: 'Recipes · Drinks', excerpt: 'The ancient morning ritual that supports liver health and natural detoxification.', url: 'recipe-chickpea-curry.html' },
-    { title: 'Avocado Chocolate Mousse', cat: 'Recipes · Desserts', excerpt: 'Rich, creamy and packed with healthy fats, guilt-free indulgence at its finest.', url: 'recipe-chickpea-curry.html' },
-    { title: 'About Pristine Wellness', cat: 'About', excerpt: 'A family on a mission to share what we know, rooted in ancestral wisdom.', url: 'about.html' },
-    { title: 'Robert Gourlay, Water Quality Scientist', cat: 'About', excerpt: 'Founder of Phion, inventor of the MEA device, and our family\'s guiding mentor.', url: 'about.html' },
-    { title: 'The Industrial Revolution That Disconnected Us', cat: 'Wellness', excerpt: 'Rubber soles, concrete floors, processed food, how modernity quietly stripped our health away.', url: 'the-source.html' },
-    { title: 'Anti-Inflammatory Foods: Building Your Daily Plate', cat: 'Nutrition', excerpt: 'Simple evidence-backed choices that calm the body from the inside out.', url: 'the-source.html' },
-  ];
-  if (typeof lunr !== 'undefined') {
-    searchIndex = lunr(function() {
-      this.field('title', { boost: 10 });
-      this.field('cat', { boost: 5 });
-      this.field('excerpt');
-      this.ref('url');
-      searchDocs.forEach(function(doc, i) {
-        this.add({ url: doc.url + '_' + i, title: doc.title, cat: doc.cat, excerpt: doc.excerpt });
-      }, this);
-    });
-  }
-}
 
 
 
 
-function doSearch(q) {
-  var results = document.getElementById('search-results');
-  if (!q || q.length < 2) { results.innerHTML = ''; return; }
-  var matches = [];
-  if (searchIndex) {
-    try {
-      var r = searchIndex.search(q + '*');
-      r.forEach(function(item) {
-        var idx = parseInt(item.ref.split('_').pop());
-        if (searchDocs[idx]) matches.push(searchDocs[idx]);
-      });
-    } catch(e) {}
-  }
-  // Fallback: simple text match
-  if (matches.length === 0) {
-    var ql = q.toLowerCase();
-    searchDocs.forEach(function(doc) {
-      if (doc.title.toLowerCase().includes(ql) || doc.excerpt.toLowerCase().includes(ql) || doc.cat.toLowerCase().includes(ql)) {
-        matches.push(doc);
-      }
-    });
-  }
-  if (matches.length === 0) {
-    results.innerHTML = '<div class="search-empty"><p>No results for "' + q + '", try another search.</p></div>';
-    return;
-  }
-  results.innerHTML = matches.map(function(doc) {
-    return '<div class="search-result-item" onclick="window.location=\'' + doc.url + '\'">' +
-      '<div><span class="search-result-cat">' + doc.cat + '</span>' +
-      '<div class="search-result-title">' + doc.title + '</div>' +
-      '<div class="search-result-excerpt">' + doc.excerpt + '</div></div>' +
-      '</div>';
-  }).join('');
-}
+
+
 
 // ── CONTACT MODAL ──
 
 
 // ── KEYBOARD ──
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeContactModal(); closeSearch(); closeMobileMenu(); }
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-});
+
 
 // ── INIT ──
-document.addEventListener('DOMContentLoaded', function() {
-  buildSearchIndex();
-});
+
 
 
 
@@ -847,25 +937,10 @@ function toggleStepTimer(stepId, seconds) {
 
 
 // ── INIT ALL ──
-document.addEventListener('DOMContentLoaded', function() {
-  initFilters();
-  initLegalSubmenu();
-  initServings();
-  initUnitToggle();
-});
+
+
 
 
 </script>
-<div class="search-overlay" id="search-overlay">
-  <button class="search-close" onclick="closeSearch()">×</button>
-  <div class="search-input-wrap">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input class="search-input" id="search-input" type="text" placeholder="Search articles, recipes..." oninput="doSearch(this.value)" autocomplete="off"/>
-  </div>
-  <div class="search-results" id="search-results"></div>
-</div>
-<button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
-</button>
 </body>
 </html>

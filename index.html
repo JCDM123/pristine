@@ -29,6 +29,77 @@ body{font-family:'Jost',sans-serif;background:url('data:image/jpeg;base64,/9j/4A
 .home-body{max-width:1280px;margin:0 auto;background:#fff;box-shadow:0 0 80px rgba(0,0,0,0.1);}
 a{text-decoration:none;color:inherit;cursor:pointer;}
 @media(max-width:700px){body{background-attachment:scroll;}}
+
+/* HOME NAV — transparent over hero */
+.home-nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0.8rem 3.5rem;display:flex;align-items:center;justify-content:space-between;background:transparent;transition:background 0.4s,box-shadow 0.4s;min-height:90px;overflow:visible;}
+.home-nav.scrolled{background:#fff;box-shadow:0 1px 8px rgba(0,0,0,0.06);}
+.home-nav .logo-img{width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer;filter:drop-shadow(0 6px 20px rgba(0,0,0,0.2));position:relative;z-index:10;margin-bottom:-36px;transition:width 0.4s,height 0.4s,margin-bottom 0.4s;}
+.home-nav.scrolled .logo-img{width:52px;height:52px;margin-bottom:0;}
+.home-nav .nav-links a{color:rgba(255,255,255,0.92);text-shadow:0 1px 4px rgba(0,0,0,0.4);}
+.home-nav.scrolled .nav-links a{color:#666;text-shadow:none;}
+.home-nav .nav-links a.active{color:#fff;border-bottom-color:rgba(255,255,255,0.6);}
+.home-nav.scrolled .nav-links a.active{color:#111;border-bottom-color:#8A9B6E;}
+.home-nav .nav-right svg{stroke:rgba(255,255,255,0.9);}
+.home-nav.scrolled .nav-right svg{stroke:#aaa;}
+.home-nav .mobile-menu-btn span{background:rgba(255,255,255,0.9);}
+.home-nav.scrolled .mobile-menu-btn span{background:#888;}
+
+/* HERO SLIDESHOW */
+.hero-slideshow{width:100%;height:100vh;position:relative;overflow:hidden;}
+.slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.8s ease-in-out;}
+.slide.active{opacity:1;}
+.slide-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,5,0.2) 0%,rgba(5,15,5,0.05) 35%,rgba(5,15,5,0.5) 65%,rgba(5,15,5,0.88) 100%);}
+.hero-content{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:1280px;padding:0 3.5rem 8rem;z-index:2;}
+.hero-eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.55);font-weight:300;display:block;margin-bottom:2rem;}
+.hero-headline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(60px,10vw,148px);font-weight:400;color:#fff;line-height:0.88;letter-spacing:-4px;margin-bottom:2rem;}
+.hero-sub{font-size:18px;color:rgba(255,255,255,0.75);line-height:1.8;max-width:520px;font-weight:300;margin-bottom:3rem;}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;}
+.hero-btn-primary{padding:15px 34px;background:#8A9B6E;color:#fff;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-family:'Jost',sans-serif;font-weight:500;border-radius:3px;transition:background 0.2s;cursor:pointer;border:none;}
+.hero-btn-primary:hover{background:#4a5e38;}
+.hero-btn-secondary{padding:15px 34px;border:1px solid rgba(255,255,255,0.5);color:rgba(255,255,255,0.9);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-family:'Jost',sans-serif;font-weight:500;border-radius:3px;transition:all 0.2s;cursor:pointer;background:transparent;}
+.slide-dots{position:absolute;bottom:3rem;right:3.5rem;display:flex;gap:10px;z-index:10;}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.3s;border:none;padding:0;}
+.dot.active{background:#fff;width:28px;border-radius:3px;}
+.scroll-hint{position:absolute;bottom:2.5rem;left:3.5rem;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:10;}
+.scroll-hint span{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:300;}
+.scroll-line{width:1px;height:44px;background:rgba(255,255,255,0.25);animation:sp 2s ease-in-out infinite;}
+@keyframes sp{0%,100%{opacity:0.3;}50%{opacity:0.8;}}
+
+/* HOME BODY */
+.home-body{background:#fff;}
+.home-intro{padding:6rem 3.5rem;text-align:center;border-bottom:0.5px solid #e8e8e4;}
+.home-intro h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(32px,5vw,56px);font-weight:400;color:#111;line-height:1.05;margin-bottom:1.8rem;}
+.home-intro p{font-size:18px;color:#444;line-height:1.9;max-width:760px;margin:0 auto;}
+.explore-section{display:grid;grid-template-columns:1fr 1fr;border-top:0.5px solid #e8e8e4;border-bottom:0.5px solid #e8e8e4;}
+.explore-panel{padding:5rem 3.5rem;display:flex;flex-direction:column;border-right:0.5px solid #e8e8e4;transition:background 0.3s;}
+.explore-panel:last-child{border-right:none;}
+.explore-panel:hover{background:#fafaf8;}
+.explore-img{width:100%;height:300px;border-radius:12px;overflow:hidden;margin-bottom:2rem;}
+.explore-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s;}
+.explore-panel:hover .explore-img img{transform:scale(1.03);}
+.explore-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(32px,4vw,48px);font-weight:400;color:#111;line-height:1.05;margin-bottom:1.2rem;}
+.explore-text{font-size:16px;color:#444;line-height:1.85;margin-bottom:2rem;flex:1;}
+.explore-topics{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:2rem;}
+.explore-topic{font-size:11px;padding:6px 14px;border:0.5px solid #e8e8e4;border-radius:20px;color:#888;font-family:'Jost',sans-serif;font-weight:400;cursor:pointer;}
+.explore-btn{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;padding:14px 28px;background:#111;color:#fff;font-family:'Jost',sans-serif;font-weight:500;border-radius:3px;transition:background 0.2s;width:fit-content;border:none;cursor:pointer;}
+.explore-btn:hover{background:#8A9B6E;}
+.explore-btn.sage{background:#8A9B6E;}
+.explore-btn.sage:hover{background:#4a5e38;}
+.explore-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+
+@media(max-width:1100px){.explore-section{grid-template-columns:1fr;}.explore-panel{border-right:none;border-bottom:0.5px solid #e8e8e4;}.explore-panel:last-child{border-bottom:none;}}
+@media(max-width:700px){
+  .hero-headline{font-size:clamp(50px,13vw,80px);letter-spacing:-2px;}
+  .hero-content{padding:0 1.4rem 5rem;}
+  .scroll-hint{left:1.4rem;}.slide-dots{right:1.4rem;}
+  .home-intro{padding:3.5rem 1.4rem;}
+  .explore-panel{padding:3rem 1.4rem;}
+  .explore-img{height:200px;}
+  .home-nav{padding:0.8rem 1.4rem;min-height:72px;}
+  .home-nav .logo-img{width:68px;height:68px;margin-bottom:-18px;}
+  .home-nav.scrolled .logo-img{width:44px;height:44px;margin-bottom:0;}
+}
+
 </style>
 </head>
 <body>
@@ -198,22 +269,161 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"Pristine Wellness","url":"https://pristinewellness.com","description":"Evidence-based wellness and wholefood living rooted in ancestral wisdom.","publisher":{"@type":"Organization","name":"Pristine Wellness","url":"https://pristinewellness.com","sameAs":["https://x.com/getpristinewell","https://instagram.com/getpristinewell","https://pinterest.com/getpristinewell"]}}
 </script>
-
 <script>
+/* ════════════════════════════════════════════════
+   PRISTINE WELLNESS — MASTER JS v2 CLEAN
+   Single source of truth. Applied once per page.
+   ════════════════════════════════════════════════ */
+
+// NAV SCROLL + BACK TO TOP
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('main-nav');
+  if (nav) {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }
+  var btt = document.getElementById('back-to-top');
+  if (btt) btt.classList.toggle('visible', window.scrollY > 400);
+});
+
+// MOBILE MENU
+function openMobileMenu() {
+  document.getElementById('mobile-drawer').classList.add('open');
+  document.getElementById('mobile-overlay').classList.add('open');
+  document.getElementById('mobile-btn').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-drawer').classList.remove('open');
+  document.getElementById('mobile-overlay').classList.remove('open');
+  var btn = document.getElementById('mobile-btn');
+  if (btn) btn.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// LEGAL SUBMENU
+function initLegalSubmenu() {
+  var toggle = document.getElementById('legal-toggle');
+  var sub = document.getElementById('legal-subnav');
+  if (!toggle || !sub) return;
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggle.classList.toggle('open');
+    sub.classList.toggle('open');
+  });
+}
+
+// FILTER PILLS
+function filterCards(cat) {
+  document.querySelectorAll('.filter-pill').forEach(function(p) {
+    p.classList.toggle('active', p.textContent.trim() === cat);
+  });
+  var cards = document.querySelectorAll('[data-cat], .article-card, .recipe-card');
+  cards.forEach(function(card) {
+    if (cat === 'All') {
+      card.style.display = '';
+    } else {
+      var cardCat = card.getAttribute('data-cat') || '';
+      card.style.display = (cardCat === cat || cardCat.indexOf(cat) > -1) ? '' : 'none';
+    }
+  });
+}
+
+// CONTACT MODAL
+function openContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+function handleModalClick(e) {
+  if (e.target === document.getElementById('contact-modal')) closeContactModal();
+}
+
+// SEARCH
+var searchDocs = [
+  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
+  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
+  {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
+  {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
+  {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
+  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
+  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
+  {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
+];
+
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('search-input').focus(); }, 100);
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-results').innerHTML = '';
+  document.body.style.overflow = '';
+}
+function doSearch(q) {
+  var results = document.getElementById('search-results');
+  if (!q || q.length < 2) { results.innerHTML = ''; return; }
+  var ql = q.toLowerCase();
+  var matches = searchDocs.filter(function(d) {
+    return d.title.toLowerCase().indexOf(ql) > -1 ||
+           d.excerpt.toLowerCase().indexOf(ql) > -1 ||
+           d.cat.toLowerCase().indexOf(ql) > -1;
+  });
+  if (!matches.length) {
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    return;
+  }
+  results.innerHTML = matches.map(function(d) {
+    return '<div class="search-result-item" onclick="window.location=\'' + d.url + '\'">' +
+      '<div><span class="search-result-cat">' + d.cat + '</span>' +
+      '<div class="search-result-title">' + d.title + '</div>' +
+      '<div class="search-result-excerpt">' + d.excerpt + '</div></div></div>';
+  }).join('');
+}
+
+// COPY LINK
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    var btn = document.getElementById('copy-btn');
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  });
+}
+
+// KEYBOARD
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeContactModal(); closeSearch(); closeMobileMenu(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+});
+
+// INIT
+document.addEventListener('DOMContentLoaded', function() {
+  initLegalSubmenu();
+  // Init filter pills
+  document.querySelectorAll('.filter-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterCards(pill.textContent.trim());
+    });
+  });
+});
+
+
 /* ════════════════════════════════════════════════
    PRISTINE WELLNESS, MASTER JS
    ════════════════════════════════════════════════ */
 
 // ── NAV SCROLL ──
-window.addEventListener('scroll', function() {
-  var nav = document.getElementById('main-nav');
-  if (!nav) return;
-  if (window.scrollY > 60) { nav.classList.add('scrolled'); }
-  else { nav.classList.remove('scrolled'); }
-  // Back to top
-  var btt = document.getElementById('back-to-top');
-  if (btt) { btt.classList.toggle('visible', window.scrollY > 400); }
-});
+
 
 // ── MOBILE MENU ──
 
@@ -222,95 +432,25 @@ window.addEventListener('scroll', function() {
 // ── SEARCH ──
 var searchIndex, searchDocs = [];
 
-function buildSearchIndex() {
-  searchDocs = [
-    { title: 'The Ancient Power of Forest Bathing', cat: 'Mental Wellness', excerpt: 'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.', url: 'article-forest-bathing.html' },
-    { title: 'What Robert Gourlay Taught Us About Water', cat: 'Hydration', excerpt: 'The structured water science that may explain everything about human health and longevity.', url: 'article-forest-bathing.html' },
-    { title: 'The Six Pillars of Pristine Living', cat: 'Foundations', excerpt: 'Pure water, nutrient dense food, grounding, nature immersion, restorative sleep and intentional living.', url: 'the-source.html' },
-    { title: 'Chickpea & Green Bean Curry', cat: 'Recipes · Mains', excerpt: 'A warming plant-based curry loaded with anti-inflammatory turmeric, cumin and coconut milk.', url: 'recipe-chickpea-curry.html' },
-    { title: 'Morning Olive Oil & Lemon Elixir', cat: 'Recipes · Drinks', excerpt: 'The ancient morning ritual that supports liver health and natural detoxification.', url: 'recipe-chickpea-curry.html' },
-    { title: 'Avocado Chocolate Mousse', cat: 'Recipes · Desserts', excerpt: 'Rich, creamy and packed with healthy fats, guilt-free indulgence at its finest.', url: 'recipe-chickpea-curry.html' },
-    { title: 'About Pristine Wellness', cat: 'About', excerpt: 'A family on a mission to share what we know, rooted in ancestral wisdom.', url: 'about.html' },
-    { title: 'Robert Gourlay, Water Quality Scientist', cat: 'About', excerpt: 'Founder of Phion, inventor of the MEA device, and our family\'s guiding mentor.', url: 'about.html' },
-    { title: 'The Industrial Revolution That Disconnected Us', cat: 'Wellness', excerpt: 'Rubber soles, concrete floors, processed food, how modernity quietly stripped our health away.', url: 'the-source.html' },
-    { title: 'Anti-Inflammatory Foods: Building Your Daily Plate', cat: 'Nutrition', excerpt: 'Simple evidence-backed choices that calm the body from the inside out.', url: 'the-source.html' },
-  ];
-  if (typeof lunr !== 'undefined') {
-    searchIndex = lunr(function() {
-      this.field('title', { boost: 10 });
-      this.field('cat', { boost: 5 });
-      this.field('excerpt');
-      this.ref('url');
-      searchDocs.forEach(function(doc, i) {
-        this.add({ url: doc.url + '_' + i, title: doc.title, cat: doc.cat, excerpt: doc.excerpt });
-      }, this);
-    });
-  }
-}
 
 
 
 
-function doSearch(q) {
-  var results = document.getElementById('search-results');
-  if (!q || q.length < 2) { results.innerHTML = ''; return; }
-  var matches = [];
-  if (searchIndex) {
-    try {
-      var r = searchIndex.search(q + '*');
-      r.forEach(function(item) {
-        var idx = parseInt(item.ref.split('_').pop());
-        if (searchDocs[idx]) matches.push(searchDocs[idx]);
-      });
-    } catch(e) {}
-  }
-  // Fallback: simple text match
-  if (matches.length === 0) {
-    var ql = q.toLowerCase();
-    searchDocs.forEach(function(doc) {
-      if (doc.title.toLowerCase().includes(ql) || doc.excerpt.toLowerCase().includes(ql) || doc.cat.toLowerCase().includes(ql)) {
-        matches.push(doc);
-      }
-    });
-  }
-  if (matches.length === 0) {
-    results.innerHTML = '<div class="search-empty"><p>No results for "' + q + '", try another search.</p></div>';
-    return;
-  }
-  results.innerHTML = matches.map(function(doc) {
-    return '<div class="search-result-item" onclick="window.location=\'' + doc.url + '\'">' +
-      '<div><span class="search-result-cat">' + doc.cat + '</span>' +
-      '<div class="search-result-title">' + doc.title + '</div>' +
-      '<div class="search-result-excerpt">' + doc.excerpt + '</div></div>' +
-      '</div>';
-  }).join('');
-}
+
+
 
 // ── CONTACT MODAL ──
 
 
 // ── KEYBOARD ──
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeContactModal(); closeSearch(); closeMobileMenu(); }
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-});
+
 
 // ── INIT ──
-document.addEventListener('DOMContentLoaded', function() {
-  buildSearchIndex();
-});
+
 
 
 // NAV, turns white when hero fully passed
-window.addEventListener('scroll', function() {
-  var nav = document.getElementById('main-nav');
-  if (!nav) return;
-  var heroH = document.querySelector('.hero-slideshow') ? document.querySelector('.hero-slideshow').offsetHeight : window.innerHeight;
-  if (window.scrollY > heroH - 10) { nav.classList.add('scrolled'); }
-  else { nav.classList.remove('scrolled'); }
-  var btt = document.getElementById('back-to-top');
-  if (btt) btt.classList.toggle('visible', window.scrollY > 400);
-});
+
 
 // SLIDESHOW
 var currentSlide = 0;
@@ -399,12 +539,8 @@ function toggleStepTimer(stepId, seconds) {
 
 
 // ── INIT ALL ──
-document.addEventListener('DOMContentLoaded', function() {
-  initFilters();
-  initLegalSubmenu();
-  initServings();
-  initUnitToggle();
-});
+
+
 
 
 </script>
