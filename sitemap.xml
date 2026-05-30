@@ -9,4 +9,7 @@
   <url><loc>https://pristinewellness.com/article-robert-gourlay-water.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://pristinewellness.com/article-forest-bathing.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://pristinewellness.com/recipe-chickpea-curry.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pristinewellness.com/disclaimer.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://pristinewellness.com/terms.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://pristinewellness.com/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>
