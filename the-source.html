@@ -865,6 +865,190 @@ p, li, .card-excerpt, .feat-excerpt,
 @media(max-width:1100px) { .inner { padding: 0 2.5rem !important; } }
 @media(max-width:700px) { .inner { padding: 0 1.4rem !important; } }
 
+/* ════════════════════════════════════════
+   COMPREHENSIVE MOBILE & UI FIXES
+   ════════════════════════════════════════ */
+
+/* ── FIX 1: Hero text constrained width ── */
+.hero-content {
+  position: absolute; bottom: 0; left: 50%; right: auto;
+  transform: translateX(-50%);
+  width: 100%; max-width: 1280px;
+  padding: 0 3.5rem 8rem;
+  z-index: 2;
+}
+
+/* ── FIX 2: Nav icons white over hero ── */
+.home-nav .nav-right svg { stroke: rgba(255,255,255,0.85) !important; }
+.home-nav .mobile-menu-btn span { background: rgba(255,255,255,0.85) !important; }
+.home-nav.scrolled .nav-right svg { stroke: #aaa !important; }
+.home-nav.scrolled .mobile-menu-btn span { background: #aaa !important; }
+
+/* ── FIX 3: Source page title left aligned mobile ── */
+@media(max-width:700px) {
+  .page-header { padding: 1.5rem 0 1.2rem !important; }
+  .page-title { font-size: 36px !important; text-align: left !important; }
+  .page-header-left { flex-direction: column !important; align-items: flex-start !important; gap: 0.8rem !important; }
+  .page-tagline { text-align: left !important; }
+}
+
+/* ── FIX 4: Mobile menu button visible and working ── */
+.mobile-menu-btn { display: none; }
+@media(max-width:700px) {
+  .mobile-menu-btn { display: flex !important; }
+  .nav-links { display: none !important; }
+  .nav-right > svg:not(:last-child) { display: none !important; }
+}
+
+/* ── FIX 5: Filter pills working on mobile ── */
+.filter-pills {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  padding-bottom: 4px !important;
+}
+.filter-pills::-webkit-scrollbar { display: none !important; }
+.filter-pill {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+.filter-pill.active {
+  background: var(--sage) !important;
+  color: #fff !important;
+  border-color: var(--sage) !important;
+}
+
+/* ── FIX 6: Pinned story image full height ── */
+.featured { cursor: pointer !important; }
+.feat-img {
+  min-height: 420px !important;
+  overflow: hidden !important;
+}
+.feat-img-inner {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 420px !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+@media(max-width:700px) {
+  .feat-img { min-height: 260px !important; }
+  .feat-img-inner { min-height: 260px !important; }
+}
+
+/* ── FIX 7: Mobile drawer legal submenu ── */
+.mobile-drawer-legal {
+  border-bottom: 0.5px solid var(--border);
+}
+.mobile-drawer-legal-toggle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 1.2rem 0 !important;
+  border-bottom: none !important;
+  cursor: pointer !important;
+  font-size: 13px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: #111 !important;
+  font-weight: 500 !important;
+  font-family: 'Jost', sans-serif !important;
+  background: none !important;
+  border: none !important;
+  width: 100% !important;
+  text-align: left !important;
+}
+.mobile-drawer-legal-toggle svg {
+  width: 14px !important; height: 14px !important;
+  stroke: #aaa !important; fill: none !important;
+  stroke-width: 2 !important;
+  transition: transform 0.2s !important;
+  flex-shrink: 0 !important;
+}
+.mobile-drawer-legal-toggle.open svg { transform: rotate(180deg) !important; }
+.mobile-drawer-subnav {
+  display: none !important;
+  flex-direction: column !important;
+  padding-left: 1rem !important;
+  padding-bottom: 0.5rem !important;
+  gap: 0 !important;
+}
+.mobile-drawer-subnav.open { display: flex !important; }
+.mobile-drawer-subnav a {
+  padding: 0.8rem 0 !important;
+  font-size: 12px !important;
+  letter-spacing: 1.5px !important;
+  color: #888 !important;
+  border-bottom: none !important;
+}
+
+/* ── FIX 8: Recipe timers touch friendly ── */
+.timer-btn {
+  min-width: 44px !important; min-height: 44px !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  cursor: pointer !important;
+}
+.step-timer { touch-action: manipulation !important; }
+
+/* ── FIX 9: Recipe metric/imperial/servings ── */
+.unit-toggle, .serving-btn, .calc-btn {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  min-height: 44px !important;
+  cursor: pointer !important;
+}
+
+/* ── FIX 12: Six pillars single column mobile ── */
+@media(max-width:700px) {
+  .pillars-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  .pillar-card { display: grid !important; grid-template-columns: 100px 1fr !important; gap: 1rem !important; align-items: center !important; }
+  .pillar-img { height: 100px !important; width: 100px !important; border-radius: 8px !important; margin-bottom: 0 !important; }
+  .pillar-number { font-size: 28px !important; margin-bottom: 4px !important; }
+  .pillar-title { font-size: 18px !important; margin-bottom: 4px !important; }
+}
+@media(min-width:701px) and (max-width:1100px) {
+  .pillars-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── FIX 13: Inner padding breathing room ── */
+.inner { padding: 0 3.5rem !important; }
+@media(max-width:1100px) { .inner { padding: 0 2.5rem !important; } }
+@media(max-width:700px) { .inner { padding: 0 1.5rem !important; } }
+
+/* ── FIX 14: Social feed Pinterest not cut off ── */
+@media(max-width:700px) {
+  .hero-handles {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  .hero-handle { width: 200px !important; justify-content: center !important; }
+}
+
+/* ── EXTRA: About page edge padding ── */
+.principle-item, .contact-inner, .contact-section {
+  overflow: hidden !important;
+}
+@media(max-width:700px) {
+  .principle-num { font-size: 32px !important; }
+  .contact-form { padding: 1.5rem !important; }
+  .mentor-section { padding-left: 0 !important; padding-right: 0 !important; margin: 0 !important; }
+}
+
+/* ── EXTRA: Modal always hidden by default ── */
+.modal-overlay { display: none !important; opacity: 0 !important; pointer-events: none !important; }
+.modal-overlay.open { display: flex !important; opacity: 1 !important; pointer-events: all !important; }
+
 </style>
 </head>
 <body>
@@ -884,6 +1068,33 @@ p, li, .card-excerpt, .feat-excerpt,
       <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </div>
   </nav>
+<div class="mobile-drawer-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <button class="mobile-drawer-close" onclick="closeMobileMenu()">×</button>
+  <a href="index.html">Home</a>
+  <a href="the-source.html" class="active">The Source</a>
+  <a href="ancestral-kitchen.html">Ancestral Kitchen</a>
+  <a href="experiment.html">The Experiment</a>
+  <a href="about.html">About</a>
+  <a href="social-feed.html">Social Feed</a>
+  
+  <div class="mobile-drawer-legal">
+    <button class="mobile-drawer-legal-toggle" id="legal-toggle">
+      Legal
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="mobile-drawer-subnav" id="legal-subnav">
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="disclaimer.html">Disclaimer</a>
+    </div>
+  </div>
+  <div class="mobile-drawer-socials">
+    <svg viewBox="0 0 24 24" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4"/></svg>
+    <svg viewBox="0 0 24 24" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+    <svg viewBox="0 0 24 24" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+  </div>
+</div>
 
   <div class="page-header">
     <div class="page-header-left">
@@ -891,12 +1102,12 @@ p, li, .card-excerpt, .feat-excerpt,
       <p class="page-tagline">Evidence-based wellness<br>and wholefood living,<br>rooted in ancestral wisdom.</p>
     </div>
     <div class="filter-pills">
-      <button class="filter-pill active">All</button>
-      <button class="filter-pill">Nutrition</button>
-      <button class="filter-pill">Gut Health</button>
-      <button class="filter-pill">Mental Wellness</button>
-      <button class="filter-pill">Detox</button>
-      <button class="filter-pill">Fitness</button>
+      <button class="filter-pill active" onclick="filterCards('All')">All</button>
+      <button class="filter-pill" onclick="filterCards('Nutrition')">Nutrition</button>
+      <button class="filter-pill" onclick="filterCards('Gut Health')">Gut Health</button>
+      <button class="filter-pill" onclick="filterCards('Mental Wellness')">Mental Wellness</button>
+      <button class="filter-pill" onclick="filterCards('Detox')">Detox</button>
+      <button class="filter-pill" onclick="filterCards('Fitness')">Fitness</button>
     </div>
   </div>
 
@@ -1348,6 +1559,150 @@ function copyLink(){
     setTimeout(function(){btn.innerHTML=orig;btn.style.borderColor='';btn.style.color='';},2000);
   });
 }
+
+/* ════════════════════════════════════════
+   COMPREHENSIVE JS FIXES
+   ════════════════════════════════════════ */
+
+// ── FIX 5 & 9: Category filter pills ──
+function initFilters() {
+  var pills = document.querySelectorAll('.filter-pill');
+  if (!pills.length) return;
+  pills.forEach(function(pill) {
+    pill.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      // Set active
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      var cat = pill.textContent.trim();
+      filterCards(cat);
+    });
+  });
+}
+
+function filterCards(cat) {
+  var cards = document.querySelectorAll('.card[data-cat], .card');
+  cards.forEach(function(card) {
+    if (cat === 'All') {
+      card.style.display = '';
+    } else {
+      var cardCat = card.getAttribute('data-cat') || '';
+      card.style.display = (cardCat === cat || cardCat.indexOf(cat) > -1) ? '' : 'none';
+    }
+  });
+}
+
+// ── FIX 7: Mobile drawer legal submenu ──
+function initLegalSubmenu() {
+  var toggle = document.getElementById('legal-toggle');
+  if (!toggle) return;
+  toggle.addEventListener('click', function() {
+    var sub = document.getElementById('legal-subnav');
+    var isOpen = sub.classList.contains('open');
+    sub.classList.toggle('open');
+    toggle.classList.toggle('open');
+  });
+}
+
+// ── FIX 8 & 10: Recipe timers ──
+var activeTimers = {};
+
+function startStepTimer(stepId, seconds) {
+  if (activeTimers[stepId]) return;
+  var display = document.getElementById('timer-' + stepId);
+  var btn = document.getElementById('timer-btn-' + stepId);
+  if (!display) return;
+  var remaining = seconds;
+  if (btn) btn.textContent = 'Stop';
+  activeTimers[stepId] = setInterval(function() {
+    remaining--;
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    if (remaining <= 0) {
+      clearInterval(activeTimers[stepId]);
+      delete activeTimers[stepId];
+      display.textContent = 'Done!';
+      if (btn) btn.textContent = 'Start';
+      // Vibrate on mobile
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    }
+  }, 1000);
+  var m = Math.floor(remaining / 60);
+  var s = remaining % 60;
+  display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+function stopStepTimer(stepId, originalSeconds) {
+  if (activeTimers[stepId]) {
+    clearInterval(activeTimers[stepId]);
+    delete activeTimers[stepId];
+  }
+  var display = document.getElementById('timer-' + stepId);
+  var btn = document.getElementById('timer-btn-' + stepId);
+  if (display) {
+    var m = Math.floor(originalSeconds / 60);
+    var s = originalSeconds % 60;
+    display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  if (btn) btn.textContent = 'Start';
+}
+
+function toggleStepTimer(stepId, seconds) {
+  if (activeTimers[stepId]) {
+    stopStepTimer(stepId, seconds);
+  } else {
+    startStepTimer(stepId, seconds);
+  }
+}
+
+// ── FIX 10: Servings calculator ──
+function initServings() {
+  var btns = document.querySelectorAll('.serving-btn');
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var action = btn.getAttribute('data-action');
+      var countEl = document.getElementById('serving-count');
+      if (!countEl) return;
+      var current = parseInt(countEl.textContent) || 4;
+      var base = parseInt(document.getElementById('serving-base') ? document.getElementById('serving-base').value : current) || current;
+      if (action === 'up') current++;
+      if (action === 'down' && current > 1) current--;
+      countEl.textContent = current;
+      // Scale ingredients
+      var ratio = current / base;
+      document.querySelectorAll('[data-base-amount]').forEach(function(el) {
+        var baseAmt = parseFloat(el.getAttribute('data-base-amount'));
+        var scaled = (baseAmt * ratio);
+        el.textContent = scaled % 1 === 0 ? scaled.toString() : scaled.toFixed(1);
+      });
+    });
+  });
+}
+
+// ── FIX 10: Metric/Imperial toggle ──
+function initUnitToggle() {
+  var btns = document.querySelectorAll('.unit-btn');
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var unit = btn.getAttribute('data-unit');
+      document.querySelectorAll('[data-metric]').forEach(function(el) {
+        el.textContent = unit === 'metric' ? el.getAttribute('data-metric') : el.getAttribute('data-imperial');
+      });
+    });
+  });
+}
+
+// ── INIT ALL ──
+document.addEventListener('DOMContentLoaded', function() {
+  initFilters();
+  initLegalSubmenu();
+  initServings();
+  initUnitToggle();
+});
 
 </script>
 <div class="search-overlay" id="search-overlay">
