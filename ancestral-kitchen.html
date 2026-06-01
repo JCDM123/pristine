@@ -530,10 +530,7 @@ p, li, .card-excerpt, .feat-excerpt,
 
 
 /* Mobile menu button */
-.mobile-menu-btn {
-  display: none; flex-direction: column; gap: 5px;
-  cursor: pointer; padding: 4px; background: none; border: none;
-}
+
 .mobile-menu-btn span {
   display: block; width: 22px; height: 1.5px;
   background: #aaa; transition: all 0.3s ease;
@@ -543,22 +540,10 @@ p, li, .card-excerpt, .feat-excerpt,
 .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
 /* Mobile drawer */
-.mobile-drawer {
-  position: fixed; top: 0; right: -100%; width: 80%; max-width: 320px;
-  height: 100vh; background: #fff; z-index: 1000;
-  padding: 5rem 2.5rem 3rem;
-  transition: right 0.35s ease;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.12);
-  display: flex; flex-direction: column; gap: 0;
-  overflow-y: auto;
-}
-.mobile-drawer.open { right: 0; }
-.mobile-drawer-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  z-index: 999; opacity: 0; pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-.mobile-drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+
+
+
 .mobile-drawer a {
   display: block; padding: 1.2rem 0;
   border-bottom: 0.5px solid var(--border);
@@ -735,7 +720,7 @@ p, li, .card-excerpt, .feat-excerpt,
   .nav.scrolled { min-height: 56px !important; }
   
   .nav-right > svg:first-child { display: none; }
-  .mobile-menu-btn { display: flex !important; }
+  
   
   .nav.scrolled 
   .inner { padding: 1.2rem !important; }
@@ -836,9 +821,9 @@ p, li, .card-excerpt, .feat-excerpt,
 }
 
 /* ── FIX 4: Mobile menu button visible and working ── */
-.mobile-menu-btn { display: none; }
+
 @media(max-width:700px) {
-  .mobile-menu-btn { display: flex !important; }
+  
   
   .nav-right > svg:not(:last-child) { display: none !important; }
 }
@@ -1005,13 +990,13 @@ p, li, .card-excerpt, .feat-excerpt,
 }
 
 /* ISSUE 4: Mobile menu button visible and working */
-.mobile-menu-btn { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+
 .mobile-menu-btn span { display: block; width: 22px; height: 1.5px; background: #666; transition: all 0.3s ease; }
 .mobile-menu-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
 .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
 .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 @media (max-width: 700px) {
-  .mobile-menu-btn { display: flex !important; }
+  
   
   .nav-right > svg:first-child { display: none !important; }
 }
@@ -1077,7 +1062,7 @@ p, li, .card-excerpt, .feat-excerpt,
 .featured { cursor: pointer !important; transition: box-shadow 0.3s ease !important; }
 .featured:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.1) !important; }
 
-@media(max-width:900px){.mobile-menu-btn{display:flex !important;}}
+@media(max-width:900px){}
 .mobile-menu-btn span{display:block;width:22px;height:2px;background:#888;border-radius:2px;}
 @media(max-width:900px){.card-grid{grid-template-columns:repeat(2,1fr)!important;}}
 @media(max-width:600px){.card-grid{grid-template-columns:1fr!important;}}
@@ -1133,10 +1118,18 @@ p, li, .card-excerpt, .feat-excerpt,
 .nav-links a.active{color:var(--text);border-bottom:1.5px solid var(--sage);padding-bottom:2px;}
 .nav-links a:hover{color:var(--sage);}
 .nav-right{display:flex;align-items:center;gap:16px;}
-.mobile-menu-btn{display:flex !important;}
+
 /* Force tagline visible */
 .page-header-left { display: flex; flex-direction: row; align-items: center; gap: 2rem; }
 .page-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#aaa;font-weight:400;line-height:1.6;max-width:260px;padding-left:2rem;border-left:0.5px solid var(--border);}
+
+.mobile-drawer{position:fixed;top:0;right:-100%;width:80%;max-width:320px;height:100vh;background:#fff;z-index:1000;padding:5rem 2.5rem 3rem;transition:right 0.35s ease;display:flex;flex-direction:column;overflow-y:auto;}
+.mobile-drawer.open{right:0;}
+.mobile-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;}
+.mobile-drawer-overlay.open{opacity:1;pointer-events:all;}
+
+.mobile-menu-btn{display:none;}
+@media(max-width:900px){.nav-links{display:none !important;}.mobile-menu-btn{display:flex !important;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}}
 </style>
 </head>
 <body>
@@ -1146,15 +1139,15 @@ p, li, .card-excerpt, .feat-excerpt,
   <div class="nav-links"><a href="index.html">Home</a><a href="the-source.html">The Source</a><a href="ancestral-kitchen.html" class="active">Ancestral Kitchen</a><a href="experiment.html">The Experiment</a><a href="about.html">About</a><a href="social-feed.html">Social Feed</a></div>
   <div class="nav-right">
     <svg onclick="openSearch()" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#999" stroke-width="1.5" style="cursor:pointer"><circle cx="11" cy="11" r="8" fill="none"/><path d="m21 21-4.35-4.35" fill="none"/></svg>
-    <button class="mobile-menu-btn" id="mobile-btn" onclick="openMobileMenu()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px;">
+    <button class="mobile-menu-btn" id="mobile-btn" onclick="openMobileMenu()">
       <span style="display:block;width:22px;height:2px;background:#888;border-radius:2px;"></span>
       <span style="display:block;width:22px;height:2px;background:#888;border-radius:2px;"></span>
       <span style="display:block;width:22px;height:2px;background:#888;border-radius:2px;"></span>
     </button>
   </div>
 </nav>
-<div class="mobile-drawer-overlay" id="mobile-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;" onclick="closeMobileMenu()"></div>
-<div class="mobile-drawer" id="mobile-drawer" style="position:fixed;top:0;right:-100%;width:80%;max-width:320px;height:100vh;background:#fff;z-index:1000;padding:5rem 2.5rem 3rem;transition:right 0.35s ease;display:flex;flex-direction:column;overflow-y:auto;">
+<div class="mobile-drawer-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">&#x2715;</button>
   <a href="index.html">Home</a>
   <a href="the-source.html">The Source</a>

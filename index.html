@@ -162,22 +162,10 @@ p, li, .card-excerpt, .feat-excerpt,
 .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
 /* Mobile drawer */
-.mobile-drawer {
-  position: fixed; top: 0; right: -100%; width: 80%; max-width: 320px;
-  height: 100vh; background: #fff; z-index: 1000;
-  padding: 5rem 2.5rem 3rem;
-  transition: right 0.35s ease;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.12);
-  display: flex; flex-direction: column; gap: 0;
-  overflow-y: auto;
-}
-.mobile-drawer.open { right: 0; }
-.mobile-drawer-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  z-index: 999; opacity: 0; pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-.mobile-drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+
+
+
 .mobile-drawer a {
   display: block; padding: 1.2rem 0;
   border-bottom: 0.5px solid var(--border);
@@ -804,6 +792,11 @@ body { overflow-y: auto !important; overflow-x: hidden; }
 @media(max-width:700px) {
   .home-intro { padding: 3.5rem 1.4rem; }
 }
+
+.mobile-drawer{position:fixed;top:0;right:-100%;width:80%;max-width:320px;height:100vh;background:#fff;z-index:1000;padding:5rem 2.5rem 3rem;transition:right 0.35s ease;display:flex;flex-direction:column;overflow-y:auto;}
+.mobile-drawer.open{right:0;}
+.mobile-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;}
+.mobile-drawer-overlay.open{opacity:1;pointer-events:all;}
 </style>
 </head>
 <body>
@@ -821,8 +814,8 @@ body { overflow-y: auto !important; overflow-x: hidden; }
   </div>
   <div class="nav-right"><svg viewBox="0 0 24 24" onclick="openSearch()" style="cursor:pointer;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><button class="mobile-menu-btn" id="mobile-btn" onclick="openMobileMenu()"><span></span><span></span><span></span></button></div>
 </nav>
-<div class="mobile-drawer-overlay" id="mobile-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;" onclick="closeMobileMenu()"></div>
-<div class="mobile-drawer" id="mobile-drawer" style="position:fixed;top:0;right:-100%;width:80%;max-width:320px;height:100vh;background:#fff;z-index:1000;padding:5rem 2.5rem 3rem;transition:right 0.35s ease;display:flex;flex-direction:column;overflow-y:auto;">
+<div class="mobile-drawer-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">&#x2715;</button>
   <a href="index.html" class="active">Home</a>
   <a href="the-source.html">The Source</a>
