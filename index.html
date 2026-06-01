@@ -927,25 +927,8 @@ body { overflow-y: auto !important; overflow-x: hidden; }
 
   
 
-  <div style="position:relative;border-radius:12px;overflow:hidden;margin-bottom:3rem;">
-    <div style="position:absolute;inset:0;background-image:url('data:image/jpeg;base64,');background-size:cover;background-position:center;"></div>
-    <div style="position:absolute;inset:0;background:rgba(15,10,25,0.68);"></div>
-    <div style="position:relative;z-index:1;padding:5rem 4rem;text-align:center;">
-      <span style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#a8bb8a;display:block;margin-bottom:16px;font-weight:500;font-family:'Jost',sans-serif;">Free weekly newsletter</span>
-      <h3 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(32px,5vw,56px);color:#fff;margin-bottom:14px;font-weight:400;">Nourish your inbox</h3>
-      <p style="font-size:17px;color:rgba(255,255,255,0.75);margin-bottom:2.5rem;line-height:1.8;max-width:480px;margin-left:auto;margin-right:auto;font-weight:300;">Wellness insights, wholefood recipes and ancestral wisdom, delivered free, with intention.</p>
-      <div style="display:flex;gap:0;max-width:460px;margin:0 auto 1.5rem;border-radius:4px;overflow:hidden;">
-        <input type="email" placeholder="your@email.com" style="flex:1;padding:16px 22px;border:none;background:rgba(255,255,255,0.95);font-size:15px;color:#333;outline:none;font-family:'Jost',sans-serif;font-weight:300;"/>
-        <button type="button" style="padding:16px 28px;background:var(--sage);border:none;color:#fff;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;font-weight:500;white-space:nowrap;">Subscribe free</button>
-      </div>
-      <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:0.5rem;font-weight:300;">&#127807; No spam. Unsubscribe anytime. Your details are never shared.</p>
-    </div>
-  </div>
-
-</div>
-
-  <!-- FOOTER -->
-  <div class="footer"><div class="footer-inner">
+  
+<div class="footer"><div class="footer-inner">
     <div class="footer-left"><span class="footer-copy">© 2026 Pristine Wellness</span></div>
     <div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div>
     <div class="footer-socials">
@@ -981,31 +964,37 @@ body { overflow-y: auto !important; overflow-x: hidden; }
 </script>
 
 <script>
-/* ════════════════════════════════════════
-   COMPREHENSIVE FIX JS — ALL ISSUES
-   ════════════════════════════════════════ */
+/* ════════════════════════════════════════════════
+   PRISTINE WELLNESS — MASTER JS v2 CLEAN
+   Single source of truth. Applied once per page.
+   ════════════════════════════════════════════════ */
 
-// ISSUE 4: Mobile menu
+// NAV SCROLL + BACK TO TOP
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('main-nav'); if (!nav) return;
+  if (nav) {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }
+  var btt = document.getElementById('back-to-top');
+  if (btt) btt.classList.toggle('visible', window.scrollY > 400);
+});
+
+// MOBILE MENU
 function openMobileMenu() {
-  var d = document.getElementById('mobile-drawer');
-  var o = document.getElementById('mobile-overlay');
-  var b = document.getElementById('mobile-btn');
-  if (d) d.classList.add('open');
-  if (o) o.classList.add('open');
-  if (b) b.classList.add('open');
+  var d=document.getElementById('mobile-drawer');if(d)d.classList.add('open');
+  var o=document.getElementById('mobile-overlay');if(o)o.classList.add('open');
+  var b=document.getElementById('mobile-btn');if(b)b.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 function closeMobileMenu() {
-  var d = document.getElementById('mobile-drawer');
-  var o = document.getElementById('mobile-overlay');
-  var b = document.getElementById('mobile-btn');
-  if (d) d.classList.remove('open');
-  if (o) o.classList.remove('open');
-  if (b) b.classList.remove('open');
+  var d=document.getElementById('mobile-drawer');if(d)d.classList.remove('open');
+  var o=document.getElementById('mobile-overlay');if(o)o.classList.remove('open');
+  var btn = document.getElementById('mobile-btn');
+  if (btn) btn.classList.remove('open');
   document.body.style.overflow = '';
 }
 
-// ISSUE 7: Legal submenu
+// LEGAL SUBMENU
 function initLegalSubmenu() {
   var toggle = document.getElementById('legal-toggle');
   var sub = document.getElementById('legal-subnav');
@@ -1017,26 +1006,12 @@ function initLegalSubmenu() {
   });
 }
 
-// ISSUE 5 & 9: Filter pills
-function initFilters() {
-  var pills = document.querySelectorAll('.filter-pill');
-  if (!pills.length) return;
-  pills.forEach(function(pill) {
-    pill.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      pills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      filterCards(pill.textContent.trim());
-    });
-  });
-}
-
+// FILTER PILLS
 function filterCards(cat) {
-  var cards = document.querySelectorAll('[data-cat]');
-  if (!cards.length) {
-    cards = document.querySelectorAll('.article-card, .card');
-  }
+  document.querySelectorAll('.filter-pill').forEach(function(p) {
+    p.classList.toggle('active', p.textContent.trim() === cat);
+  });
+  var cards = document.querySelectorAll('[data-cat], .article-card, .recipe-card');
   cards.forEach(function(card) {
     if (cat === 'All') {
       card.style.display = '';
@@ -1046,6 +1021,112 @@ function filterCards(cat) {
     }
   });
 }
+
+// CONTACT MODAL
+function openContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+  var m = document.getElementById('contact-modal');
+  if (!m) return;
+  m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+function handleModalClick(e) {
+  if (e.target === document.getElementById('contact-modal')) closeContactModal();
+}
+
+// SEARCH
+var searchDocs = [
+  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
+  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
+  {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
+  {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
+  {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
+  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
+  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
+  {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
+];
+
+function openSearch() {
+  var so=document.getElementById('search-overlay');if(so)so.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { var si=document.getElementById('search-input');if(si)si.focus(); }, 100);
+}
+function closeSearch() {
+  var so=document.getElementById('search-overlay');if(so)so.classList.remove('open');
+  var si=document.getElementById('search-input');if(si)si.value='';
+  var sr=document.getElementById('search-results');if(sr)sr.innerHTML='';
+  document.body.style.overflow = '';
+}
+function doSearch(q) {
+  var results = document.getElementById('search-results');
+  if (!q || q.length < 2) { results.innerHTML = ''; return; }
+  var ql = q.toLowerCase();
+  var matches = searchDocs.filter(function(d) {
+    return d.title.toLowerCase().indexOf(ql) > -1 ||
+           d.excerpt.toLowerCase().indexOf(ql) > -1 ||
+           d.cat.toLowerCase().indexOf(ql) > -1;
+  });
+  if (!matches.length) {
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    return;
+  }
+  results.innerHTML = matches.map(function(d) {
+    return '<div class="search-result-item" onclick="window.location=\'' + d.url + '\'">' +
+      '<div><span class="search-result-cat">' + d.cat + '</span>' +
+      '<div class="search-result-title">' + d.title + '</div>' +
+      '<div class="search-result-excerpt">' + d.excerpt + '</div></div></div>';
+  }).join('');
+}
+
+// COPY LINK
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    var btn = document.getElementById('copy-btn');
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  });
+}
+
+// KEYBOARD
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeContactModal(); closeSearch(); closeMobileMenu(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+});
+
+// INIT
+document.addEventListener('DOMContentLoaded', function() {
+  initLegalSubmenu();
+  // Init filter pills
+  document.querySelectorAll('.filter-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterCards(pill.textContent.trim());
+    });
+  });
+});
+
+
+/* ════════════════════════════════════════
+   COMPREHENSIVE FIX JS — ALL ISSUES
+   ════════════════════════════════════════ */
+
+// ISSUE 4: Mobile menu
+
+
+
+// ISSUE 7: Legal submenu
+
+
+// ISSUE 5 & 9: Filter pills
+
+
+
 
 // ISSUE 8 & 10: Timers
 var activeTimers = {};
@@ -1115,44 +1196,13 @@ function initUnitToggle() {
 }
 
 // MODAL
-function openContactModal() {
-  var m = document.getElementById('contact-modal');
-  if (!m) return;
-  m.style.display = 'flex';
-  setTimeout(function() { m.classList.add('open'); }, 10);
-  document.body.style.overflow = 'hidden';
-}
-function closeContactModal() {
-  var m = document.getElementById('contact-modal');
-  if (!m) return;
-  m.classList.remove('open');
-  setTimeout(function() { m.style.display = 'none'; }, 300);
-  document.body.style.overflow = '';
-}
-function handleModalClick(e) {
-  if (e.target === document.getElementById('contact-modal')) closeContactModal();
-}
+
+
+
 
 // SEARCH
-function openSearch() {
-  var o = document.getElementById('search-overlay');
-  var i = document.getElementById('search-input');
-  if (!o) return;
-  o.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  if (i) setTimeout(function() { i.focus(); }, 100);
-  if (!window.searchIndex) buildSearchIndex();
-}
-function closeSearch() {
-  var o = document.getElementById('search-overlay');
-  var i = document.getElementById('search-input');
-  var r = document.getElementById('search-results');
-  if (!o) return;
-  o.classList.remove('open');
-  document.body.style.overflow = '';
-  if (i) i.value = '';
-  if (r) r.innerHTML = '';
-}
+
+
 
 // BACK TO TOP
 window.addEventListener('scroll', function() {
@@ -1202,69 +1252,12 @@ window.addEventListener('scroll', function() {
 // ── SEARCH ──
 var searchIndex, searchDocs = [];
 
-function buildSearchIndex() {
-  searchDocs = [
-    { title: 'The Ancient Power of Forest Bathing', cat: 'Mental Wellness', excerpt: 'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.', url: 'article-forest-bathing.html' },
-    { title: 'What Robert Gourlay Taught Us About Water', cat: 'Hydration', excerpt: 'The structured water science that may explain everything about human health and longevity.', url: 'article-forest-bathing.html' },
-    { title: 'The Six Pillars of Pristine Living', cat: 'Foundations', excerpt: 'Pure water, nutrient dense food, grounding, nature immersion, restorative sleep and intentional living.', url: 'the-source.html' },
-    { title: 'Chickpea & Green Bean Curry', cat: 'Recipes · Mains', excerpt: 'A warming plant-based curry loaded with anti-inflammatory turmeric, cumin and coconut milk.', url: 'recipe-chickpea-curry.html' },
-    { title: 'Morning Olive Oil & Lemon Elixir', cat: 'Recipes · Drinks', excerpt: 'The ancient morning ritual that supports liver health and natural detoxification.', url: 'recipe-chickpea-curry.html' },
-    { title: 'Avocado Chocolate Mousse', cat: 'Recipes · Desserts', excerpt: 'Rich, creamy and packed with healthy fats, guilt-free indulgence at its finest.', url: 'recipe-chickpea-curry.html' },
-    { title: 'About Pristine Wellness', cat: 'About', excerpt: 'A family on a mission to share what we know, rooted in ancestral wisdom.', url: 'about.html' },
-    { title: 'Robert Gourlay, Water Quality Scientist', cat: 'About', excerpt: 'Founder of Phion, inventor of the MEA device, and our family\'s guiding mentor.', url: 'about.html' },
-    { title: 'The Industrial Revolution That Disconnected Us', cat: 'Wellness', excerpt: 'Rubber soles, concrete floors, processed food, how modernity quietly stripped our health away.', url: 'the-source.html' },
-    { title: 'Anti-Inflammatory Foods: Building Your Daily Plate', cat: 'Nutrition', excerpt: 'Simple evidence-backed choices that calm the body from the inside out.', url: 'the-source.html' },
-  ];
-  if (typeof lunr !== 'undefined') {
-    searchIndex = lunr(function() {
-      this.field('title', { boost: 10 });
-      this.field('cat', { boost: 5 });
-      this.field('excerpt');
-      this.ref('url');
-      searchDocs.forEach(function(doc, i) {
-        this.add({ url: doc.url + '_' + i, title: doc.title, cat: doc.cat, excerpt: doc.excerpt });
-      }, this);
-    });
-  }
-}
 
 
 
 
-function doSearch(q) {
-  var results = document.getElementById('search-results');
-  if (!q || q.length < 2) { results.innerHTML = ''; return; }
-  var matches = [];
-  if (searchIndex) {
-    try {
-      var r = searchIndex.search(q + '*');
-      r.forEach(function(item) {
-        var idx = parseInt(item.ref.split('_').pop());
-        if (searchDocs[idx]) matches.push(searchDocs[idx]);
-      });
-    } catch(e) {}
-  }
-  // Fallback: simple text match
-  if (matches.length === 0) {
-    var ql = q.toLowerCase();
-    searchDocs.forEach(function(doc) {
-      if (doc.title.toLowerCase().includes(ql) || doc.excerpt.toLowerCase().includes(ql) || doc.cat.toLowerCase().includes(ql)) {
-        matches.push(doc);
-      }
-    });
-  }
-  if (matches.length === 0) {
-    results.innerHTML = '<div class="search-empty"><p>No results for "' + q + '", try another search.</p></div>';
-    return;
-  }
-  results.innerHTML = matches.map(function(doc) {
-    return '<div class="search-result-item" onclick="window.location=\'' + doc.url + '\'">' +
-      '<div><span class="search-result-cat">' + doc.cat + '</span>' +
-      '<div class="search-result-title">' + doc.title + '</div>' +
-      '<div class="search-result-excerpt">' + doc.excerpt + '</div></div>' +
-      '</div>';
-  }).join('');
-}
+
+
 
 // ── CONTACT MODAL ──
 
@@ -1385,8 +1378,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initServings();
   initUnitToggle();
 });
-
-
 </script>
 </body>
 </html>
