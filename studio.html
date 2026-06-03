@@ -364,7 +364,7 @@ async function generateArticle() {
   var systemPrompt = [
     'You are the content writer for Pristine Wellness, an evidence-based ancestral wellness brand from Australia.',
     'Brand voice rules: first person plural (we/our/us), warm grounded intelligent tone, never preachy, short paragraphs max 4 sentences, occasional italics with em tags, NO em dashes or en dashes ever, no AI tells (no delve, unlock, journey, fascinating), ancestral wisdom meets modern science, Australian spelling.',
-    'Output ONLY valid JSON no markdown no preamble with these exact keys:',
+    'Output ONLY valid JSON no markdown no preamble. Never use em dashes or special characters inside JSON strings. Use plain ASCII punctuation only. Keys:',
     '{"title":"Full article title","intro":"Opening 2-3 sentences","sections":[{"heading":"Section heading","content":"2-4 paragraphs separated by double newline"}],"pullQuote":"Powerful single sentence","closing":"1-2 sentence closing"}'
   ].join(' ');
 
@@ -498,6 +498,12 @@ async function generateRecipe() {
     var data = await response.json();
     var rawText = data.content.map(function(i){ return i.text||''; }).filter(Boolean).join('');
     var clean = rawText.replace(/```json|```/g,'').trim();
+    var jsonStart = clean.indexOf('{');
+    var jsonEnd = clean.lastIndexOf('}');
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      clean = clean.slice(jsonStart, jsonEnd + 1);
+    }
+    clean = clean.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, ' ');
     var recipe = JSON.parse(clean);
     var finalSteps = (recipe.enrichedSteps && recipe.enrichedSteps.length > 0) ? recipe.enrichedSteps : steps;
     generatedRecipeData = { recipe: recipe, ings: ings, finalSteps: finalSteps, name: name, category: category, servings: servings, prep: prep, cook: cook };
