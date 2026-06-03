@@ -372,7 +372,7 @@ async function generateArticle() {
   var userPrompt = 'Write a ' + readtime + ' article for Pristine Wellness about: "' + topic + '". Category: ' + category + '. ' + notesLine + ' No em dashes or en dashes anywhere.';
 
   try {
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
+    var response = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -485,7 +485,7 @@ async function generateRecipe() {
   var userPrompt = 'Write recipe for: "' + name + '". Category: ' + (category||'General') + '. Servings: ' + servings + '. Prep: ' + (prep||'n/a') + '. Cook: ' + (cook||'n/a') + '. Ingredients: ' + ingList + '. Steps: ' + stepList + '.' + tipLine + ' No em dashes or en dashes.';
 
   try {
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
+    var response = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
