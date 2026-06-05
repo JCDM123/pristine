@@ -161,12 +161,13 @@ img{max-width:100%;display:block;}
         <div class="field"><label>Topic *</label><input type="text" id="a-topic" placeholder="e.g. The benefits of cold water immersion"></div>
         <div class="field-row">
           <div class="field"><label>Category *</label>
-            <select id="a-category">
+            <select id="a-category" onchange="handleCatChange('a')">
               <option value="">Select category</option>
               <option>Mental Wellness</option><option>Nutrition</option><option>Movement</option>
               <option>Sleep</option><option>Ancestral Living</option><option>Water</option>
               <option>Nature</option><option>Gut Health</option><option>Children</option><option>Mindset</option>
             </select>
+            <input type="text" id="a-category-custom" placeholder="Type new category..." style="display:none;margin-top:6px;width:100%;padding:10px 12px;border:1px solid var(--border);font-family:'Jost',sans-serif;font-size:14px;border-radius:2px;" onblur="saveCustomCat('a', this.value)">
           </div>
           <div class="field"><label>Read Time</label>
             <select id="a-readtime">
@@ -227,12 +228,13 @@ img{max-width:100%;display:block;}
         <div class="field"><label>Recipe Name *</label><input type="text" id="r-name" placeholder="e.g. Turmeric Golden Milk Latte"></div>
         <div class="field-row">
           <div class="field"><label>Category</label>
-            <select id="r-category">
+            <select id="r-category" onchange="handleCatChange('r')">
               <option value="">Select category</option>
               <option>Breakfast</option><option>Lunch</option><option>Dinner</option>
               <option>Snacks</option><option>Drinks</option><option>Ferments</option>
               <option>Broths</option><option>Desserts</option><option>Sauces</option>
             </select>
+            <input type="text" id="r-category-custom" placeholder="Type new category..." style="display:none;margin-top:6px;width:100%;padding:10px 12px;border:1px solid var(--border);font-family:'Jost',sans-serif;font-size:14px;border-radius:2px;" onblur="saveCustomCat('r', this.value)">
           </div>
           <div class="field"><label>Servings</label><input type="number" id="r-servings" min="1" max="20" value="4"></div>
         </div>
@@ -368,7 +370,7 @@ var generatedArticleData = null;
 
 async function generateArticle() {
   var topic = document.getElementById('a-topic').value.trim();
-  var category = document.getElementById('a-category').value;
+  var category = getCategoryValue('a');
   var readtime = document.getElementById('a-readtime').value;
   var author = document.getElementById('a-author').value.trim() || 'Pristine Wellness';
   var dateVal = document.getElementById('a-date').value;
@@ -464,7 +466,17 @@ async function loadArticleTemplates() {
   TMPL_TOP = html.slice(0, heroDivStart).replace('<title>The Ancient Power of Forest Bathing — Pristine Wellness</title>', 'ARTICLE_TITLE_PLACEHOLDER');
   TMPL_HERO = html.slice(heroUrlEnd, introStart).replace('Mental Wellness','ARTICLE_CAT').replace('May 20, 2026','ARTICLE_DATE').replace('6 min read','ARTICLE_RT').replace('The Ancient Power of Forest Bathing for Modern Wellbeing','ARTICLE_H1');
   TMPL_MID = html.slice(introEnd, midEnd);
-  TMPL_BOTTOM = html.slice(ratingsStart);
+  var rawBottom = html.slice(ratingsStart);
+  // Clear existing comments, keep the form and structure
+  var commentsStart = rawBottom.indexOf('<div class="comments-section">');
+  var commentFormStart = rawBottom.indexOf('<div class="comment-form">');
+  if (commentsStart > -1 && commentFormStart > -1) {
+    TMPL_BOTTOM = rawBottom.slice(0, commentsStart) + 
+      '<div class="comments-section">\n      <h3 class="comments-title">Join the conversation</h3>\n' +
+      rawBottom.slice(commentFormStart);
+  } else {
+    TMPL_BOTTOM = rawBottom;
+  }
 }
 
 
@@ -523,7 +535,7 @@ var generatedRecipeData = null;
 
 async function generateRecipe() {
   var name = document.getElementById('r-name').value.trim();
-  var category = document.getElementById('r-category').value;
+  var category = getCategoryValue('r');
   var servings = document.getElementById('r-servings').value;
   var prep = document.getElementById('r-prep').value.trim();
   var cook = document.getElementById('r-cook').value.trim();
@@ -626,16 +638,97 @@ function downloadFile(filename, content) {
   URL.revokeObjectURL(a.href);
 }
 
+// Custom category management
+function loadSavedCats() {
+  var aCats = JSON.parse(localStorage.getItem('pristine_a_cats') || '[]');
+  var rCats = JSON.parse(localStorage.getItem('pristine_r_cats') || '[]');
+  var aSel = document.getElementById('a-category');
+  var rSel = document.getElementById('r-category');
+  if (aSel) {
+    aCats.forEach(function(cat) {
+      if (!Array.from(aSel.options).some(function(o){ return o.value === cat; })) {
+        var opt = document.createElement('option');
+        opt.value = cat; opt.textContent = cat;
+        aSel.insertBefore(opt, aSel.lastElementChild);
+      }
+    });
+    // Add Other option at bottom
+    if (!Array.from(aSel.options).some(function(o){ return o.value === '__other__'; })) {
+      var other = document.createElement('option');
+      other.value = '__other__'; other.textContent = 'Other...';
+      aSel.appendChild(other);
+    }
+  }
+  if (rSel) {
+    rCats.forEach(function(cat) {
+      if (!Array.from(rSel.options).some(function(o){ return o.value === cat; })) {
+        var opt = document.createElement('option');
+        opt.value = cat; opt.textContent = cat;
+        rSel.insertBefore(opt, rSel.lastElementChild);
+      }
+    });
+    if (!Array.from(rSel.options).some(function(o){ return o.value === '__other__'; })) {
+      var other = document.createElement('option');
+      other.value = '__other__'; other.textContent = 'Other...';
+      rSel.appendChild(other);
+    }
+  }
+}
+
+function handleCatChange(prefix) {
+  var sel = document.getElementById(prefix + '-category');
+  var custom = document.getElementById(prefix + '-category-custom');
+  if (sel.value === '__other__') {
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+  }
+}
+
+function saveCustomCat(prefix, val) {
+  val = val.trim();
+  if (!val) return;
+  var sel = document.getElementById(prefix + '-category');
+  var custom = document.getElementById(prefix + '-category-custom');
+  // Check if already exists
+  if (Array.from(sel.options).some(function(o){ return o.value === val; })) {
+    sel.value = val;
+    custom.style.display = 'none';
+    return;
+  }
+  // Save to localStorage
+  var key = 'pristine_' + prefix + '_cats';
+  var saved = JSON.parse(localStorage.getItem(key) || '[]');
+  if (!saved.includes(val)) { saved.push(val); localStorage.setItem(key, JSON.stringify(saved)); }
+  // Add to dropdown before Other option
+  var opt = document.createElement('option');
+  opt.value = val; opt.textContent = val;
+  var otherOpt = Array.from(sel.options).find(function(o){ return o.value === '__other__'; });
+  sel.insertBefore(opt, otherOpt);
+  sel.value = val;
+  custom.style.display = 'none';
+  custom.value = '';
+}
+
+function getCategoryValue(prefix) {
+  var sel = document.getElementById(prefix + '-category');
+  var custom = document.getElementById(prefix + '-category-custom');
+  if (sel.value === '__other__') return custom.value.trim();
+  return sel.value;
+}
+
+
 // GitHub token management
 function saveToken(val) {
-  sessionStorage.setItem('gh_token', val.trim());
+  localStorage.setItem('gh_token', val.trim());
   var status = document.getElementById('gh-token-status');
   status.textContent = val.trim() ? 'Token saved for this session' : '';
   status.style.color = '#8A9B6E';
 }
 
 function getToken() {
-  var t = sessionStorage.getItem('gh_token');
+  var t = localStorage.getItem('gh_token');
   if (!t) {
     var inp = document.getElementById('gh-token-input');
     if (inp) t = inp.value.trim();
@@ -645,7 +738,7 @@ function getToken() {
 
 // On load, restore token to input if saved
 document.addEventListener('DOMContentLoaded', function() {
-  var saved = sessionStorage.getItem('gh_token');
+  var saved = localStorage.getItem('gh_token');
   var inp = document.getElementById('gh-token-input');
   if (saved && inp) {
     inp.value = saved;
@@ -771,11 +864,49 @@ async function publishArticle() {
       '\n        </div>' +
       '\n      </div>';
 
-    // 5. Insert new card at top of article-grid
+    // 5. Move current featured article to grid, set new article as featured
+    var featStart = sourceHTML.indexOf('<div class="featured">');
+    var featEnd = sourceHTML.indexOf('</div>\n    </div>', featStart) + 17;
+    var currentFeat = sourceHTML.slice(featStart, featEnd);
+    
+    // Extract current featured info to make a grid card from it
+    var oldHrefMatch = currentFeat.match(/href="([^"]+\.html)"/);
+    var oldHref = oldHrefMatch ? oldHrefMatch[1] : '';
+    var oldTitleMatch = currentFeat.match(/feat-title[^>]*>([^<]+)</);
+    var oldTitle = oldTitleMatch ? oldTitleMatch[1] : '';
+    var oldCatMatch = currentFeat.match(/feat-cat[^>]*>([^<]+)</);
+    var oldCat = oldCatMatch ? oldCatMatch[1] : '';
+    var oldExcerptMatch = currentFeat.match(/feat-excerpt[^>]*>([^<]+)</);
+    var oldExcerpt = oldExcerptMatch ? oldExcerptMatch[1] : '';
+    var oldMetaMatch = currentFeat.match(/feat-meta[^>]*>([^&<]+)/);
+    var oldMeta = oldMetaMatch ? oldMetaMatch[1].trim() : '';
+    var oldImgMatch = currentFeat.match(/feat-img[^"]*"[^"]*"([^"]+)"/);
+    // Get the bg image from feat-img style
+    var oldBgMatch = currentFeat.match(/background-image:url\('([^']+)'\)/);
+    var oldBg = oldBgMatch ? oldBgMatch[1] : '';
+    
+    var oldCard = oldHref ? '\n      <div class="article-card" data-cat="' + oldCat + '" onclick="window.location=\'' + oldHref + '\'" style="cursor:pointer">' +
+      '\n        <div class="card-img"><div class="card-img-inner" style="background-image:url(\'' + oldBg + '\')"></div>' +
+      '<span class="card-cat-badge">' + oldCat + '</span></div>' +
+      '\n        <div class="card-body">' +
+      '\n          <h3 class="card-title">' + oldTitle + '</h3>' +
+      '\n          <p class="card-excerpt">' + oldExcerpt + '</p>' +
+      '\n          <div class="card-footer"><span class="card-date">' + oldMeta + '</span></div>' +
+      '\n        </div>\n      </div>' : '';
+
+    // Build new featured section
+    var newFeatBg = articleImageBase64 ? articleImageBase64 : 'var(--forest)';
+    var newFeatBgStyle = articleImageBase64 ? "background-image:url('" + newFeatBg + "')" : "background:var(--forest)";
+    var tagPillsHTML = tags.slice(0,3).map(function(t){ return '<span class="tag-pill">' + t + '</span>'; }).join('');
+    var newFeatured = '<div class="featured">\n      <div class="feat-img" style="' + newFeatBgStyle + ';">\n        <div class="feat-img-overlay"></div>\n        <div class="feat-label">\n          <span class="feat-badge">Latest post</span>\n          <div class="feat-img-title">' + article.title + '</div>\n        </div>\n      </div>\n      <div class="feat-body">\n        <span class="feat-cat">' + d.category + '</span>\n        <h2 class="feat-title">' + article.title + '</h2>\n        <p class="feat-excerpt">' + article.intro.slice(0,200) + '</p>\n        <div class="tag-pills">' + tagPillsHTML + '</div>\n        <div class="feat-meta">' + date + ' &nbsp;·&nbsp; ' + d.readtime + '</div>\n        <a class="read-link" href="' + filename + '">Read article <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>\n      </div>\n    </div>';
+
+    // Replace featured + insert old featured as first card in grid
+    var sourceWithNewFeat = sourceHTML.slice(0, featStart) + newFeatured + sourceHTML.slice(featEnd);
+    
     var insertAfter = '<div class="article-grid">';
-    var insertPos = sourceHTML.indexOf(insertAfter);
+    var insertPos = sourceWithNewFeat.indexOf(insertAfter);
     if (insertPos === -1) throw new Error('Could not find article-grid in the-source.html');
-    var updatedSource = sourceHTML.slice(0, insertPos + insertAfter.length) + newCard + sourceHTML.slice(insertPos + insertAfter.length);
+    var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertAfter.length) + oldCard + newCard + sourceWithNewFeat.slice(insertPos + insertAfter.length);
 
     // 6. Push updated the-source.html
     var sourceContent = btoa(unescape(encodeURIComponent(updatedSource)));
