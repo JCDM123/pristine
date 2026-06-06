@@ -115,6 +115,42 @@ img{max-width:100%;display:block;}
 .wc-badge{font-size:11px;color:var(--sage);margin-left:auto;padding:2px 8px;background:rgba(138,155,110,0.1);border-radius:2px;}
 .img-upload-zone{border:1.5px dashed var(--border);border-radius:4px;cursor:pointer;overflow:hidden;transition:border-color 0.2s;background:#fafaf8;min-height:80px;}
 .img-upload-zone:hover{border-color:var(--sage);}
+.img-source-toggle{display:flex;gap:0;margin-bottom:10px;border:1px solid var(--border);border-radius:2px;overflow:hidden;}
+.img-source-btn{flex:1;padding:8px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:transparent;border:none;cursor:pointer;color:var(--muted);font-family:'Jost',sans-serif;transition:all 0.15s;}
+.img-source-btn.active{background:var(--forest);color:#F5F0E8;}
+.img-source-btn:hover:not(.active){background:rgba(44,74,46,0.06);}
+.ai-img-panel,.upload-img-panel{display:none;}
+.ai-img-panel.show,.upload-img-panel.show{display:block;}
+.ai-img-prompt-wrap{margin-top:8px;}
+.ai-gen-img-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--sage);color:var(--sage-dark);font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.ai-gen-img-btn:hover{background:var(--sage);color:#fff;}
+.ai-gen-img-btn:disabled{background:#eee;border-color:#ccc;color:#999;cursor:not-allowed;}
+.ai-img-result{margin-top:10px;position:relative;display:none;}
+.ai-img-result img{width:100%;border-radius:4px;display:block;}
+.ai-img-result .clear-ai-img{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;}
+/* Manage Content */
+.manage-wrap{padding:2rem;max-width:900px;margin:0 auto;}
+.manage-section{background:#fff;border:1px solid var(--border);border-radius:6px;padding:1.6rem;margin-bottom:2rem;}
+.manage-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.4rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border);}
+.manage-section-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;font-weight:400;color:#111;margin-bottom:4px;}
+.manage-section-sub{font-size:12px;color:#999;max-width:480px;}
+.manage-status-bar{display:flex;align-items:center;gap:6px;font-size:12px;color:#999;white-space:nowrap;margin-top:4px;}
+.manage-list{display:flex;flex-direction:column;gap:0;}
+.manage-loading{font-size:13px;color:#aaa;padding:1rem 0;}
+.manage-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.manage-row:last-child{border-bottom:none;}
+.manage-row-title{flex:1;font-size:14px;color:#222;font-weight:400;line-height:1.4;}
+.manage-row-meta{font-size:11px;color:#aaa;white-space:nowrap;}
+.manage-row-cat{font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:20px;color:#999;white-space:nowrap;}
+.manage-pin-btn{display:flex;align-items:center;gap:5px;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:all 0.15s;white-space:nowrap;border:1px solid var(--border);background:#fff;color:#999;font-family:'Jost',sans-serif;}
+.manage-pin-btn.pinned{background:var(--sage);border-color:var(--sage);color:#fff;}
+.manage-pin-btn:hover:not(.pinned){border-color:var(--sage);color:var(--sage);}
+.manage-del-btn{width:28px;height:28px;border:1px solid #f0d0d0;background:#fff;border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#cc8888;font-size:14px;transition:all 0.15s;flex-shrink:0;}
+.manage-del-btn:hover{background:#fff0f0;border-color:#e08888;color:#c44;}
+.manage-save-btn{width:100%;margin-top:1.2rem;padding:11px;background:var(--forest);color:#F5F0E8;border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background 0.2s;}
+.manage-save-btn:hover{background:#1e3520;}
+.manage-save-btn:disabled{background:#ccc;cursor:not-allowed;}
+.manage-empty{font-size:13px;color:#bbb;padding:1rem 0;}
 @media(max-width:900px){.studio-grid{grid-template-columns:1fr;}.preview-card{position:static;}}
 @media(max-width:600px){.studio-main{padding:1.5rem;}.form-card{padding:1.5rem;}.field-row{grid-template-columns:1fr;}}
 .trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
@@ -178,6 +214,7 @@ img{max-width:100%;display:block;}
     <button class="tab-btn active" onclick="switchTab('trending',this)">Trending</button>
     <button class="tab-btn" onclick="switchTab('article',this)">Article Generator</button>
     <button class="tab-btn" onclick="switchTab('recipe',this)">Recipe Generator</button>
+    <button class="tab-btn" onclick="switchTab('manage',this);loadManageTab()">Manage Content</button>
   </div>
 
   <div id="tab-trending" class="tab-panel active">
@@ -242,18 +279,39 @@ img{max-width:100%;display:block;}
         <div class="field"><label>Tags (comma-separated)</label><input type="text" id="a-tags" placeholder="e.g. cold therapy, immunity, cortisol"></div>
         <div class="field"><label>Key points (optional)</label><textarea id="a-notes" placeholder="Any specific angles or research to include..."></textarea></div>
         <div class="field">
-          <label>Hero image (optional)</label>
-          <div class="img-upload-zone" id="a-img-zone" onclick="document.getElementById('a-img-input').click()">
-            <div id="a-img-preview-wrap" style="display:none;position:relative;">
-              <img id="a-img-preview" style="width:100%;height:140px;object-fit:cover;border-radius:4px;display:block;">
-              <button onclick="clearArticleImage(event)" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">x</button>
+          <label>Hero image</label>
+          <div class="img-source-toggle">
+            <button class="img-source-btn active" id="img-tab-ai" onclick="switchImgTab('ai')">Generate with AI</button>
+            <button class="img-source-btn" id="img-tab-upload" onclick="switchImgTab('upload')">Upload your own</button>
+          </div>
+
+          <div class="ai-img-panel show" id="ai-img-panel">
+            <div class="ai-img-prompt-wrap">
+              <textarea id="a-ai-img-prompt" class="field textarea" rows="2" placeholder="Describe the image you want, e.g. Morning sunlight through a forest canopy, earthy tones, editorial style" style="width:100%;resize:vertical;min-height:62px;"></textarea>
             </div>
-            <div id="a-img-placeholder" style="display:flex;flex-direction:column;align-items:center;padding:1.5rem;">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span style="font-size:12px;color:#bbb;margin-top:6px;display:block;">Click to upload JPEG</span>
+            <button class="ai-gen-img-btn" id="ai-gen-img-btn" onclick="generateHeroImage()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Generate image
+            </button>
+            <div class="ai-img-result" id="ai-img-result">
+              <img id="ai-img-preview-el" src="" alt="Generated hero image">
+              <button class="clear-ai-img" onclick="clearAiImage()" title="Remove">&times;</button>
             </div>
           </div>
-          <input type="file" id="a-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleArticleImage(event)">
+
+          <div class="upload-img-panel" id="upload-img-panel">
+            <div class="img-upload-zone" id="a-img-zone" onclick="document.getElementById('a-img-input').click()">
+              <div id="a-img-preview-wrap" style="display:none;position:relative;">
+                <img id="a-img-preview" style="width:100%;height:140px;object-fit:cover;border-radius:4px;display:block;">
+                <button onclick="clearArticleImage(event)" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">x</button>
+              </div>
+              <div id="a-img-placeholder" style="display:flex;flex-direction:column;align-items:center;padding:1.5rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span style="font-size:12px;color:#bbb;margin-top:6px;display:block;">Click to upload JPEG</span>
+              </div>
+            </div>
+            <input type="file" id="a-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleArticleImage(event)">
+          </div>
         </div>
         <button class="generate-btn" id="a-gen-btn" onclick="generateArticle()">Generate Article</button>
       </div>
@@ -346,7 +404,40 @@ img{max-width:100%;display:block;}
 </div>
 </div>
 
-<script>
+<!-- ===== MANAGE CONTENT TAB ===== -->
+<div id="tab-manage" class="tab-panel">
+  <div class="manage-wrap">
+
+    <!-- THE SOURCE -->
+    <div class="manage-section">
+      <div class="manage-section-head">
+        <div>
+          <h2 class="manage-section-title">The Source</h2>
+          <p class="manage-section-sub">Articles on the live site. Toggle Essential Reading to pin stories; delete to remove from the grid.</p>
+        </div>
+        <div class="manage-status-bar"><div class="status-dot" id="src-dot"></div><span id="src-status">Ready</span></div>
+      </div>
+      <div id="manage-source-list" class="manage-list">
+        <div class="manage-loading">Loading articles from GitHub...</div>
+      </div>
+    </div>
+
+    <!-- ANCESTRAL KITCHEN -->
+    <div class="manage-section">
+      <div class="manage-section-head">
+        <div>
+          <h2 class="manage-section-title">Ancestral Kitchen</h2>
+          <p class="manage-section-sub">Recipes on the live site. Toggle pinned to feature in the pinned section; delete to remove from the grid.</p>
+        </div>
+        <div class="manage-status-bar"><div class="status-dot" id="kit-dot"></div><span id="kit-status">Ready</span></div>
+      </div>
+      <div id="manage-kitchen-list" class="manage-list">
+        <div class="manage-loading">Loading recipes from GitHub...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
 const STUDIO_PASSWORD = 'pristine2026';
 
 function checkPassword() {
@@ -1234,6 +1325,94 @@ renderTrends();
 // Article image handling
 var articleImageBase64 = '';
 
+function switchImgTab(tab) {
+  document.getElementById('img-tab-ai').classList.toggle('active', tab === 'ai');
+  document.getElementById('img-tab-upload').classList.toggle('active', tab === 'upload');
+  document.getElementById('ai-img-panel').classList.toggle('show', tab === 'ai');
+  document.getElementById('upload-img-panel').classList.toggle('show', tab === 'upload');
+}
+
+async function generateHeroImage() {
+  var prompt = document.getElementById('a-ai-img-prompt').value.trim();
+  if (!prompt) { alert('Please describe the image you want.'); return; }
+
+  var btn = document.getElementById('ai-gen-img-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generating...';
+
+  var fullPrompt = 'Create a high-quality editorial wellness photograph for a blog hero image. ' +
+    'Style: natural, earthy, soft natural light, film-like warmth, no text or overlays. ' +
+    'Subject: ' + prompt + '. ' +
+    'Aspect ratio: landscape 16:9. Colour palette: sage greens, warm creams, forest tones.';
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: fullPrompt
+        }],
+        tools: [{
+          type: 'computer_use_20241022',
+          name: 'computer',
+          display_width_px: 1280,
+          display_height_px: 720,
+          display_number: 1
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      var errData = await response.json();
+      throw new Error(errData.error ? errData.error.message : 'API error ' + response.status);
+    }
+
+    var data = await response.json();
+    var imageBlock = (data.content || []).find(function(b) { return b.type === 'image'; });
+
+    if (!imageBlock) {
+      // Fallback: try images API via the worker
+      var imgResp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-opus-4-5',
+          max_tokens: 1024,
+          messages: [{ role: 'user', content: 'Generate an image: ' + fullPrompt }]
+        })
+      });
+      var imgData = await imgResp.json();
+      imageBlock = (imgData.content || []).find(function(b) { return b.type === 'image'; });
+    }
+
+    if (imageBlock && imageBlock.source && imageBlock.source.data) {
+      var dataUrl = 'data:' + (imageBlock.source.media_type || 'image/jpeg') + ';base64,' + imageBlock.source.data;
+      articleImageBase64 = dataUrl;
+      var el = document.getElementById('ai-img-preview-el');
+      el.src = dataUrl;
+      document.getElementById('ai-img-result').style.display = 'block';
+    } else {
+      throw new Error('No image returned. Try a more specific description, or use the Upload tab instead.');
+    }
+  } catch(err) {
+    alert('Image generation failed: ' + err.message);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate image';
+}
+
+function clearAiImage() {
+  articleImageBase64 = '';
+  document.getElementById('ai-img-preview-el').src = '';
+  document.getElementById('ai-img-result').style.display = 'none';
+  document.getElementById('a-ai-img-prompt').value = '';
+}
+
 function handleArticleImage(event) {
   var file = event.target.files[0];
   if (!file) return;
@@ -1254,6 +1433,332 @@ function clearArticleImage(event) {
   document.getElementById('a-img-preview-wrap').style.display = 'none';
   document.getElementById('a-img-placeholder').style.display = 'flex';
   document.getElementById('a-img-input').value = '';
+}
+
+// ===== MANAGE CONTENT =====
+var manageSourceData = null;
+var manageKitchenData = null;
+var manageLoaded = false;
+
+async function loadManageTab() {
+  if (manageLoaded) return;
+  manageLoaded = true;
+  await Promise.all([loadSourceForManage(), loadKitchenForManage()]);
+}
+
+async function loadSourceForManage() {
+  var el = document.getElementById('manage-source-list');
+  el.innerHTML = '<div class="manage-loading">Loading from GitHub...</div>';
+  try {
+    var token = localStorage.getItem('gh_token') || '';
+    var headers = token ? { 'Authorization': 'token ' + token } : {};
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html');
+    var html = await r.text();
+    manageSourceData = parseSourceArticles(html);
+    renderSourceList();
+  } catch(e) {
+    el.innerHTML = '<div class="manage-empty">Could not load The Source page. Check your token.</div>';
+  }
+}
+
+async function loadKitchenForManage() {
+  var el = document.getElementById('manage-kitchen-list');
+  el.innerHTML = '<div class="manage-loading">Loading from GitHub...</div>';
+  try {
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html');
+    var html = await r.text();
+    manageKitchenData = parseKitchenRecipes(html);
+    renderKitchenList();
+  } catch(e) {
+    el.innerHTML = '<div class="manage-empty">Could not load Ancestral Kitchen page. Check your token.</div>';
+  }
+}
+
+function parseSourceArticles(html) {
+  // Parse article-grid cards
+  var articles = [];
+  var gridStart = html.indexOf('<div class="article-grid">');
+  var gridEnd = html.indexOf('<!-- ESSENTIAL READING');
+  if (gridStart === -1 || gridEnd === -1) return [];
+  var gridHtml = html.slice(gridStart, gridEnd);
+
+  var cardRe = /<div class="article-card"([^>]*)>([\s\S]*?)<\/div>\s*<\/div>/g;
+  var match;
+  while ((match = cardRe.exec(gridHtml)) !== null) {
+    var attrs = match[1];
+    var inner = match[2];
+    var cat = (attrs.match(/data-cat="([^"]*)"/) || ['',''])[1];
+    var onclick = (attrs.match(/onclick="window\.location='([^']+)'/) || ['',''])[1];
+    var titleM = inner.match(/<h3 class="card-title">([^<]+)<\/h3>/);
+    var title = titleM ? titleM[1] : '';
+    var dateM = inner.match(/<span class="card-date">([^<]+)<\/span>/);
+    var date = dateM ? dateM[1] : '';
+    if (title) articles.push({ title: title, cat: cat, date: date, url: onclick, rawCard: match[0], pinned: false });
+  }
+
+  // Parse essential reading to mark pinned articles
+  var erStart = html.indexOf('id="essential-reading"');
+  var erEnd = html.indexOf('</div>', html.indexOf('</div>', html.lastIndexOf('grid-template-columns:repeat(3', erStart)) + 1);
+  if (erStart !== -1) {
+    var erHtml = html.slice(erStart, erStart + 5000);
+    articles.forEach(function(a) {
+      if (erHtml.indexOf(a.title) !== -1) a.pinned = true;
+    });
+  }
+  return articles;
+}
+
+function parseKitchenRecipes(html) {
+  var recipes = [];
+  var gridStart = html.indexOf('id="recipe-grid"');
+  if (gridStart === -1) return [];
+  var gridHtml = html.slice(gridStart, gridStart + 60000);
+  // Stop at pinned section
+  var pinnedIdx = gridHtml.indexOf('id="pinned-section"');
+  if (pinnedIdx !== -1) gridHtml = gridHtml.slice(0, pinnedIdx);
+
+  // Each recipe card: <div class="card ..."> ... </div>
+  var cardRe = /<div class="card[^"]*">([\s\S]*?)<\/div>\s*<\/div>/g;
+  var match;
+  while ((match = cardRe.exec(gridHtml)) !== null) {
+    var inner = match[1];
+    var titleM = inner.match(/<h3 class="card-title">([^<]+)<\/h3>/);
+    var title = titleM ? titleM[1] : '';
+    var badgeM = inner.match(/<span class="card-badge">([^<]+)<\/span>/);
+    var cat = badgeM ? badgeM[1] : '';
+    var dateM = inner.match(/<span class="card-date">([^<]+)<\/span>/);
+    var date = dateM ? dateM[1] : '';
+    if (title) recipes.push({ title: title, cat: cat, date: date, rawCard: match[0], pinned: false });
+  }
+
+  // Check pinned section
+  var pinStart = html.indexOf('id="pinned-section"');
+  if (pinStart !== -1) {
+    var pinHtml = html.slice(pinStart, pinStart + 10000);
+    recipes.forEach(function(r) {
+      if (pinHtml.indexOf(r.title) !== -1) r.pinned = true;
+    });
+  }
+  return recipes;
+}
+
+function renderSourceList() {
+  var el = document.getElementById('manage-source-list');
+  if (!manageSourceData || manageSourceData.length === 0) {
+    el.innerHTML = '<div class="manage-empty">No articles found in The Source grid.</div>';
+    return;
+  }
+  var html = '';
+  manageSourceData.forEach(function(a, i) {
+    html += '<div class="manage-row" id="src-row-' + i + '">' +
+      '<div class="manage-row-title">' + escHtml(a.title) + '</div>' +
+      '<span class="manage-row-cat">' + escHtml(a.cat || 'Uncategorised') + '</span>' +
+      '<span class="manage-row-meta">' + escHtml(a.date) + '</span>' +
+      '<button class="manage-pin-btn' + (a.pinned ? ' pinned' : '') + '" onclick="toggleSourcePin(' + i + ')" title="Toggle Essential Reading">' +
+        (a.pinned ? '&#128204; Essential' : '&#128204; Pin') +
+      '</button>' +
+      '<button class="manage-del-btn" onclick="deleteSourceArticle(' + i + ')" title="Delete article">&#215;</button>' +
+    '</div>';
+  });
+  html += '<button class="manage-save-btn" id="src-save-btn" onclick="saveSourceChanges()">Save Changes to The Source</button>';
+  el.innerHTML = html;
+}
+
+function renderKitchenList() {
+  var el = document.getElementById('manage-kitchen-list');
+  if (!manageKitchenData || manageKitchenData.length === 0) {
+    el.innerHTML = '<div class="manage-empty">No recipes found in Ancestral Kitchen grid.</div>';
+    return;
+  }
+  var html = '';
+  manageKitchenData.forEach(function(r, i) {
+    html += '<div class="manage-row" id="kit-row-' + i + '">' +
+      '<div class="manage-row-title">' + escHtml(r.title) + '</div>' +
+      '<span class="manage-row-cat">' + escHtml(r.cat || 'Uncategorised') + '</span>' +
+      '<span class="manage-row-meta">' + escHtml(r.date) + '</span>' +
+      '<button class="manage-pin-btn' + (r.pinned ? ' pinned' : '') + '" onclick="toggleKitchenPin(' + i + ')" title="Toggle pinned recipe">' +
+        (r.pinned ? '&#128204; Pinned' : '&#128204; Pin') +
+      '</button>' +
+      '<button class="manage-del-btn" onclick="deleteKitchenRecipe(' + i + ')" title="Delete recipe">&#215;</button>' +
+    '</div>';
+  });
+  html += '<button class="manage-save-btn" id="kit-save-btn" onclick="saveKitchenChanges()">Save Changes to Ancestral Kitchen</button>';
+  el.innerHTML = html;
+}
+
+function toggleSourcePin(i) {
+  manageSourceData[i].pinned = !manageSourceData[i].pinned;
+  var btn = document.querySelector('#src-row-' + i + ' .manage-pin-btn');
+  if (btn) {
+    btn.classList.toggle('pinned', manageSourceData[i].pinned);
+    btn.innerHTML = manageSourceData[i].pinned ? '&#128204; Essential' : '&#128204; Pin';
+  }
+}
+
+function toggleKitchenPin(i) {
+  manageKitchenData[i].pinned = !manageKitchenData[i].pinned;
+  var btn = document.querySelector('#kit-row-' + i + ' .manage-pin-btn');
+  if (btn) {
+    btn.classList.toggle('pinned', manageKitchenData[i].pinned);
+    btn.innerHTML = manageKitchenData[i].pinned ? '&#128204; Pinned' : '&#128204; Pin';
+  }
+}
+
+function deleteSourceArticle(i) {
+  if (!confirm('Remove "' + manageSourceData[i].title + '" from The Source grid?')) return;
+  manageSourceData.splice(i, 1);
+  renderSourceList();
+}
+
+function deleteKitchenRecipe(i) {
+  if (!confirm('Remove "' + manageKitchenData[i].title + '" from Ancestral Kitchen?')) return;
+  manageKitchenData.splice(i, 1);
+  renderKitchenList();
+}
+
+function setManageStatus(page, msg, busy) {
+  var dot = document.getElementById(page + '-dot');
+  var status = document.getElementById(page + '-status');
+  if (dot) { dot.style.background = busy ? '#f0a500' : (msg.toLowerCase().includes('error') ? '#c44' : '#8A9B6E'); }
+  if (status) status.textContent = msg;
+}
+
+async function saveSourceChanges() {
+  var token = localStorage.getItem('gh_token') || '';
+  if (!token) { alert('Enter your GitHub token in the token bar first.'); return; }
+  var btn = document.getElementById('src-save-btn');
+  if (btn) btn.disabled = true;
+  setManageStatus('src', 'Saving...', true);
+  try {
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html');
+    var html = await r.text();
+    html = rebuildSourceGrid(html);
+    var sha = await getFileSHA('the-source.html');
+    await githubRequest('PUT', 'the-source.html', {
+      message: 'Studio: update article grid',
+      content: btoa(unescape(encodeURIComponent(html))),
+      sha: sha
+    });
+    setManageStatus('src', 'Saved!', false);
+    setTimeout(function() { setManageStatus('src', 'Ready', false); }, 3000);
+  } catch(e) {
+    setManageStatus('src', 'Error: ' + e.message, false);
+  }
+  if (btn) btn.disabled = false;
+}
+
+async function saveKitchenChanges() {
+  var token = localStorage.getItem('gh_token') || '';
+  if (!token) { alert('Enter your GitHub token in the token bar first.'); return; }
+  var btn = document.getElementById('kit-save-btn');
+  if (btn) btn.disabled = true;
+  setManageStatus('kit', 'Saving...', true);
+  try {
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html');
+    var html = await r.text();
+    html = rebuildKitchenGrid(html);
+    var sha = await getFileSHA('ancestral-kitchen.html');
+    await githubRequest('PUT', 'ancestral-kitchen.html', {
+      message: 'Studio: update recipe grid',
+      content: btoa(unescape(encodeURIComponent(html))),
+      sha: sha
+    });
+    setManageStatus('kit', 'Saved!', false);
+    setTimeout(function() { setManageStatus('kit', 'Ready', false); }, 3000);
+  } catch(e) {
+    setManageStatus('kit', 'Error: ' + e.message, false);
+  }
+  if (btn) btn.disabled = false;
+}
+
+function rebuildSourceGrid(html) {
+  // Replace article-grid contents
+  var gridStart = html.indexOf('<div class="article-grid">');
+  var afterGrid = html.indexOf('<!-- ESSENTIAL READING');
+  if (gridStart === -1 || afterGrid === -1) return html;
+
+  var newGrid = '<div class="article-grid">\n';
+  manageSourceData.forEach(function(a) { newGrid += a.rawCard + '\n\n'; });
+  newGrid += '    </div>\n    \n    ';
+
+  // Rebuild essential reading cards from pinned articles
+  var erStart = html.indexOf('id="essential-reading"');
+  var erSectionClose = html.indexOf('</div>\n\n  \n\n    <div style="border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin:0 0 3rem');
+  if (erStart === -1 || erSectionClose === -1) {
+    return html.slice(0, gridStart) + newGrid + html.slice(afterGrid);
+  }
+
+  var erBefore = html.slice(erStart, html.indexOf('<div style="display:grid;grid-template-columns:repeat(3,1fr)', erStart));
+  var erAfter = html.slice(erSectionClose);
+
+  var pinnedArticles = manageSourceData.filter(function(a) { return a.pinned; });
+  var erGrid = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-bottom:2.5rem;">\n';
+  pinnedArticles.forEach(function(a) {
+    erGrid += '        <div style="display:flex;flex-direction:column;border-radius:12px;overflow:hidden;border:0.5px solid var(--border);background:#fff;cursor:pointer;transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform=\'translateY(-4px)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.08)\'" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'\'">\n' +
+      '          <div style="padding:1.5rem;flex:1;display:flex;flex-direction:column;">\n' +
+      '            <h3 style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:22px;font-weight:400;color:#111;line-height:1.3;margin-bottom:8px;flex:1;">' + escHtml(a.title) + '</h3>\n' +
+      '            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:0.5px solid var(--border-light);"><span style="font-size:11px;color:#888;">' + escHtml(a.date) + '</span></div>\n' +
+      '          </div>\n        </div>\n';
+  });
+  erGrid += '      </div>\n';
+
+  var newEr = '<div id="essential-reading">\n' + html.slice(erStart + 'id="essential-reading">'.length + 1, html.indexOf('<div style="display:grid;grid-template-columns:repeat(3,1fr)', erStart)) + erGrid + '    </div>';
+
+  return html.slice(0, gridStart) + newGrid + html.slice(afterGrid, erStart) + newEr + erAfter;
+}
+
+function rebuildKitchenGrid(html) {
+  var gridStart = html.indexOf('id="recipe-grid"');
+  if (gridStart === -1) return html;
+  var openTag = html.lastIndexOf('<', gridStart);
+  var gridClose = html.indexOf('</div>', gridStart);
+  // Find the actual end of the grid (after all cards)
+  // Count divs
+  var pos = html.indexOf('>', gridStart) + 1;
+  var depth = 1;
+  while (pos < html.length && depth > 0) {
+    var nextOpen = html.indexOf('<div', pos);
+    var nextClose = html.indexOf('</div>', pos);
+    if (nextClose === -1) break;
+    if (nextOpen !== -1 && nextOpen < nextClose) { depth++; pos = nextOpen + 1; }
+    else { depth--; pos = nextClose + 6; if (depth === 0) gridClose = nextClose + 6; }
+  }
+
+  var gridTag = html.slice(openTag, html.indexOf('>', gridStart) + 1);
+  var newGrid = gridTag + '\n';
+  manageKitchenData.filter(function(r){ return !r.pinned; }).forEach(function(r) {
+    newGrid += r.rawCard + '\n';
+  });
+  newGrid += '</div>';
+
+  var pinned = manageKitchenData.filter(function(r){ return r.pinned; });
+  var pinStart = html.indexOf('id="pinned-section"');
+  var pinSectionOpen = pinStart !== -1 ? html.lastIndexOf('<div', pinStart) : -1;
+
+  if (pinned.length > 0 && pinStart !== -1) {
+    // Rebuild pinned section
+    var pinOpenTag = html.slice(pinSectionOpen, html.indexOf('>', pinStart) + 1);
+    var pinInnerStart = html.indexOf('>', html.indexOf('id="pinned-section"')) + 1;
+    var pinGridStart = html.indexOf('<div style="display:grid', pinInnerStart);
+    var pinBefore = html.slice(pinInnerStart, pinGridStart);
+    var pinGridClose = html.indexOf('</div>', html.indexOf('</div>', pinGridStart) + 6) + 6;
+    var pinAfter = html.slice(pinGridClose);
+
+    var pinGrid = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-bottom:2.5rem;">\n';
+    pinned.forEach(function(r) {
+      pinGrid += r.rawCard + '\n';
+    });
+    pinGrid += '</div>';
+
+    var newPinSection = html.slice(pinSectionOpen, pinInnerStart) + pinBefore + pinGrid + pinAfter.slice(0, pinAfter.indexOf('</div>') + 6);
+    return html.slice(0, openTag) + newGrid + '\n' + newPinSection + html.slice(pinStart + 1000);
+  }
+
+  return html.slice(0, openTag) + newGrid + html.slice(gridClose);
+}
+
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
