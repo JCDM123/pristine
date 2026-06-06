@@ -99,6 +99,20 @@ img{max-width:100%;display:block;}
 .ap-author-avatar{width:44px;height:44px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-family:'Cormorant Garamond',serif;flex-shrink:0;}
 .ap-author-info .name{font-size:13px;font-weight:500;}
 .ap-author-info .role{font-size:11px;color:var(--muted);}
+.edit-hint{font-size:10px;color:var(--sage);letter-spacing:1px;text-transform:uppercase;padding:6px 0 2px;opacity:0.7;}
+[contenteditable]{outline:none;border-radius:2px;transition:background 0.15s;}
+[contenteditable]:hover{background:rgba(138,155,110,0.08);}
+[contenteditable]:focus{background:rgba(138,155,110,0.13);box-shadow:0 0 0 2px rgba(138,155,110,0.35);}
+.body-images-section{margin-top:1.2rem;}
+.body-images-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block;}
+.body-images-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.body-img-slot{position:relative;height:90px;border:1.5px dashed var(--border);border-radius:3px;background:#fafafa;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color 0.2s;}
+.body-img-slot:hover{border-color:var(--sage);}
+.body-img-slot.drag-over{border-color:var(--sage);background:rgba(138,155,110,0.08);}
+.body-img-slot img{width:100%;height:100%;object-fit:cover;display:block;}
+.body-img-slot .slot-label{font-size:11px;color:#bbb;text-align:center;padding:8px;}
+.body-img-slot .rm-body-img{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.55);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;}
+.ap-body-img{width:100%;margin:1.2rem 0;border-radius:2px;display:block;}
 .rp-header{background:var(--forest);color:#F5F0E8;padding:2rem 2rem 1.5rem;margin:-2rem -2rem 1.5rem;}
 .rp-cat{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
 .rp-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;font-weight:400;line-height:1.2;margin-bottom:0.8rem;}
@@ -312,6 +326,24 @@ img{max-width:100%;display:block;}
             </div>
             <input type="file" id="a-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleArticleImage(event)">
           </div>
+        </div>
+        <div class="field body-images-section">
+          <span class="body-images-label">Body images (optional, up to 4)</span>
+          <div class="body-images-grid" id="body-images-grid">
+            <div class="body-img-slot" id="bslot-0" onclick="triggerBodyImgUpload(0)" ondragover="bodyImgDragOver(event,0)" ondragleave="bodyImgDragLeave(0)" ondrop="bodyImgDrop(event,0)">
+              <span class="slot-label">Image 1<br>drag or click</span>
+            </div>
+            <div class="body-img-slot" id="bslot-1" onclick="triggerBodyImgUpload(1)" ondragover="bodyImgDragOver(event,1)" ondragleave="bodyImgDragLeave(1)" ondrop="bodyImgDrop(event,1)">
+              <span class="slot-label">Image 2<br>drag or click</span>
+            </div>
+            <div class="body-img-slot" id="bslot-2" onclick="triggerBodyImgUpload(2)" ondragover="bodyImgDragOver(event,2)" ondragleave="bodyImgDragLeave(2)" ondrop="bodyImgDrop(event,2)">
+              <span class="slot-label">Image 3<br>drag or click</span>
+            </div>
+            <div class="body-img-slot" id="bslot-3" onclick="triggerBodyImgUpload(3)" ondragover="bodyImgDragOver(event,3)" ondragleave="bodyImgDragLeave(3)" ondrop="bodyImgDrop(event,3)">
+              <span class="slot-label">Image 4<br>drag or click</span>
+            </div>
+          </div>
+          <input type="file" id="body-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleBodyImgUpload(event)">
         </div>
         <button class="generate-btn" id="a-gen-btn" onclick="generateArticle()">Generate Article</button>
       </div>
@@ -555,8 +587,8 @@ async function generateArticle() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 4000,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 6000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
       })
@@ -587,20 +619,68 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
   var tags = tagsRaw ? tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
   var initial = author.charAt(0).toUpperCase();
   var sectionsHTML = '';
+  var totalSections = article.sections ? article.sections.length : 0;
+  // Spread body images evenly across sections
+  var imgSlots = articleBodyImages.filter(Boolean);
   if (article.sections) {
-    article.sections.forEach(function(sec) {
-      var paras = sec.content.split(/\n\n+/).map(function(p){ return p.trim(); }).filter(Boolean);
-      sectionsHTML += '<h2>' + sec.heading + '</h2>';
-      paras.forEach(function(p) { sectionsHTML += '<p>' + p + '</p>'; });
+    article.sections.forEach(function(sec, i) {
+      var paras = sec.content.split(/
+
++/).map(function(p){ return p.trim(); }).filter(Boolean);
+      sectionsHTML += '<h2 contenteditable="true" data-field="section-heading-' + i + '" onblur="syncPreviewEdit(this)">' + sec.heading + '</h2>';
+      paras.forEach(function(p, pi) {
+        sectionsHTML += '<p contenteditable="true" data-field="section-para-' + i + '-' + pi + '" onblur="syncPreviewEdit(this)">' + p + '</p>';
+      });
+      // Insert body image after each section if available
+      if (imgSlots.length > 0) {
+        var imgIdx = Math.floor(i * imgSlots.length / totalSections);
+        if (i < imgSlots.length) {
+          sectionsHTML += '<img class="ap-body-img" src="' + imgSlots[i] + '" alt="Article image">';
+        }
+      }
     });
   }
-  var pullHTML = article.pullQuote ? '<div class="ap-pull"><p>' + article.pullQuote + '</p></div>' : '';
+  var pullHTML = article.pullQuote ? '<div class="ap-pull"><p contenteditable="true" data-field="pullQuote" onblur="syncPreviewEdit(this)">' + article.pullQuote + '</p></div>' : '';
   var tagsHTML = tags.length ? '<div class="ap-tags">' + tags.map(function(t){ return '<span class="ap-tag">' + t + '</span>'; }).join('') + '</div>' : '';
   document.getElementById('a-preview').innerHTML =
-    '<div class="ap-hero"><div class="ap-cat">' + category + '</div><div class="ap-title">' + article.title + '</div><div class="ap-meta"><span>' + date + '</span><span>' + readtime + '</span><span>' + author + '</span></div></div>' +
-    '<div class="ap-body"><p><strong>' + article.intro + '</strong></p>' + sectionsHTML + pullHTML +
-    '<p>' + (article.closing || '') + '</p>' + tagsHTML +
+    '<p class="edit-hint">Click any text to edit</p>' +
+    '<div class="ap-hero"><div class="ap-cat">' + category + '</div>' +
+    '<div class="ap-title" contenteditable="true" data-field="title" onblur="syncPreviewEdit(this)">' + article.title + '</div>' +
+    '<div class="ap-meta"><span>' + date + '</span><span>' + readtime + '</span><span>' + author + '</span></div></div>' +
+    '<div class="ap-body">' +
+    '<p contenteditable="true" data-field="intro" onblur="syncPreviewEdit(this)" style="font-weight:600">' + article.intro + '</p>' +
+    sectionsHTML + pullHTML +
+    '<p contenteditable="true" data-field="closing" onblur="syncPreviewEdit(this)">' + (article.closing || '') + '</p>' +
+    tagsHTML +
     '<div class="ap-author"><div class="ap-author-avatar">' + initial + '</div><div class="ap-author-info"><div class="name">' + author + '</div><div class="role">Pristine Wellness</div></div></div></div>';
+}
+
+function syncPreviewEdit(el) {
+  if (!generatedArticleData) return;
+  var field = el.getAttribute('data-field');
+  var val = el.innerText.trim();
+  var article = generatedArticleData.article;
+  if (field === 'title') { article.title = val; }
+  else if (field === 'intro') { article.intro = val; }
+  else if (field === 'closing') { article.closing = val; }
+  else if (field === 'pullQuote') { article.pullQuote = val; }
+  else if (field && field.startsWith('section-heading-')) {
+    var idx = parseInt(field.split('-')[2]);
+    if (article.sections && article.sections[idx]) article.sections[idx].heading = val;
+  } else if (field && field.startsWith('section-para-')) {
+    var parts = field.split('-');
+    var si = parseInt(parts[2]);
+    var pi = parseInt(parts[3]);
+    if (article.sections && article.sections[si]) {
+      var paras = article.sections[si].content.split(/
+
++/).map(function(p){ return p.trim(); }).filter(Boolean);
+      paras[pi] = val;
+      article.sections[si].content = paras.join('
+
+');
+    }
+  }
 }
 
 // ── ARTICLE TEMPLATE: load from live site at publish time ──
@@ -643,6 +723,7 @@ async function downloadArticle() {
   var tags = d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
 
   var sectionsHTML = '';
+  var bodyImgsForExport = articleBodyImages.filter(Boolean);
   if (article.sections) {
     var midPoint = Math.floor(article.sections.length / 2);
     article.sections.forEach(function(sec, i) {
@@ -651,6 +732,9 @@ async function downloadArticle() {
       paras.forEach(function(p) { sectionsHTML += '      <p>' + p + '</p>\n'; });
       if (i === midPoint - 1 && article.pullQuote) {
         sectionsHTML += '    </div>\n    <div class="pull-quote">\n      <blockquote>' + article.pullQuote + '</blockquote>\n      <cite>' + d.author + '</cite>\n    </div>\n    <div class="article-text">\n';
+      }
+      if (i < bodyImgsForExport.length) {
+        sectionsHTML += '      <img src="' + bodyImgsForExport[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
       }
     });
   }
@@ -725,7 +809,7 @@ async function generateRecipe() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 1200,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
@@ -958,6 +1042,7 @@ async function publishArticle() {
 
     // 1. Build full article HTML (same as download)
     var sectionsHTML = '';
+    var bodyImgsForPub = articleBodyImages.filter(Boolean);
     if (article.sections) {
       var midPoint = Math.floor(article.sections.length / 2);
       article.sections.forEach(function(sec, i) {
@@ -966,6 +1051,9 @@ async function publishArticle() {
         paras.forEach(function(p) { sectionsHTML += '      <p>' + p + '</p>\n'; });
         if (i === midPoint - 1 && article.pullQuote) {
           sectionsHTML += '    </div>\n    <div class="pull-quote">\n      <blockquote>' + article.pullQuote + '</blockquote>\n      <cite>' + d.author + '</cite>\n    </div>\n    <div class="article-text">\n';
+        }
+        if (i < bodyImgsForPub.length) {
+          sectionsHTML += '      <img src="' + bodyImgsForPub[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
         }
       });
     }
@@ -1057,7 +1145,7 @@ async function publishArticle() {
     // Replace featured + insert old featured as first card in grid
     var sourceWithNewFeat = sourceHTML.slice(0, featStart) + newFeatured + sourceHTML.slice(featEnd);
     
-    var insertAfter = '<div class="article-grid">';
+    var insertAfter = sourceWithNewFeat.match(/ *<div class="article-grid">/)?.[0] || '<div class="article-grid">';
     var insertPos = sourceWithNewFeat.indexOf(insertAfter);
     if (insertPos === -1) throw new Error('Could not find article-grid in the-source.html');
     var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertAfter.length) + oldCard + newCard + sourceWithNewFeat.slice(insertPos + insertAfter.length);
@@ -1325,6 +1413,75 @@ renderTrends();
 
 // Article image handling
 var articleImageBase64 = '';
+var articleBodyImages = [null, null, null, null]; // up to 4 body images
+var _bodyImgUploadIdx = 0;
+
+function triggerBodyImgUpload(idx) {
+  _bodyImgUploadIdx = idx;
+  document.getElementById('body-img-input').click();
+}
+
+function handleBodyImgUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var idx = _bodyImgUploadIdx;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    articleBodyImages[idx] = e.target.result;
+    renderBodyImgSlot(idx, e.target.result);
+    if (generatedArticleData) {
+      var d = generatedArticleData;
+      renderArticlePreview(d.article, d.category, d.readtime, d.author, d.dateVal, d.tagsRaw);
+    }
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function renderBodyImgSlot(idx, src) {
+  var slot = document.getElementById('bslot-' + idx);
+  if (!slot) return;
+  slot.innerHTML = '<img src="' + src + '" alt="Body image ' + (idx+1) + '"><button class="rm-body-img" onclick="removeBodyImg(event,' + idx + ')">&times;</button>';
+}
+
+function removeBodyImg(event, idx) {
+  event.stopPropagation();
+  articleBodyImages[idx] = null;
+  var slot = document.getElementById('bslot-' + idx);
+  if (slot) slot.innerHTML = '<span class="slot-label">Image ' + (idx+1) + '<br>drag or click</span>';
+  if (generatedArticleData) {
+    var d = generatedArticleData;
+    renderArticlePreview(d.article, d.category, d.readtime, d.author, d.dateVal, d.tagsRaw);
+  }
+}
+
+function bodyImgDragOver(event, idx) {
+  event.preventDefault();
+  var slot = document.getElementById('bslot-' + idx);
+  if (slot) slot.classList.add('drag-over');
+}
+
+function bodyImgDragLeave(idx) {
+  var slot = document.getElementById('bslot-' + idx);
+  if (slot) slot.classList.remove('drag-over');
+}
+
+function bodyImgDrop(event, idx) {
+  event.preventDefault();
+  bodyImgDragLeave(idx);
+  var file = event.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    articleBodyImages[idx] = e.target.result;
+    renderBodyImgSlot(idx, e.target.result);
+    if (generatedArticleData) {
+      var d = generatedArticleData;
+      renderArticlePreview(d.article, d.category, d.readtime, d.author, d.dateVal, d.tagsRaw);
+    }
+  };
+  reader.readAsDataURL(file);
+}
 
 function switchImgTab(tab) {
   document.getElementById('img-tab-ai').classList.toggle('active', tab === 'ai');
