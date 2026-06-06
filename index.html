@@ -125,9 +125,9 @@ p, li, .card-excerpt, .feat-excerpt,
   transition: min-height 0.4s ease, padding 0.4s ease;
 }
 .nav.scrolled { min-height: 64px; padding: 0.6rem 2.5rem; box-shadow: 0 1px 0 var(--border); }
-.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-links { display: flex; gap: 2.5rem; align-items: center; }
 .nav-links a {
-  font-size: 11px !important; letter-spacing: 2px;
+  font-size: 12px !important; letter-spacing: 2px;
   text-transform: uppercase; color: var(--muted) !important;
   font-weight: 500 !important; transition: color 0.2s; text-decoration: none;
 }
@@ -783,6 +783,7 @@ p, li, .card-excerpt, .feat-excerpt,
 .scroll-line { background: rgba(255,255,255,0.4) !important; }
 
 body { overflow-y: auto !important; overflow-x: hidden; }
+html { scrollbar-gutter: stable; }
 
 /* HOME BODY */
 .home-body { background: #fff; max-width: 1280px; margin: 0 auto; box-shadow: 0 0 80px rgba(0,0,0,0.08); }
@@ -797,6 +798,11 @@ body { overflow-y: auto !important; overflow-x: hidden; }
 .mobile-drawer.open{right:0;}
 .mobile-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;}
 .mobile-drawer-overlay.open{opacity:1;pointer-events:all;}
+.mobile-drawer-search{position:relative;margin-bottom:1.5rem;}
+.mobile-drawer-search-input{width:100%;padding:10px 36px 10px 12px;border:0.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Jost',sans-serif;color:var(--text);background:#fafaf8;outline:none;}
+.mobile-drawer-search-input:focus{border-color:var(--sage);}
+.mobile-drawer-search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;}
+
 </style>
 </head>
 <body>
@@ -817,6 +823,10 @@ body { overflow-y: auto !important; overflow-x: hidden; }
 <div class="mobile-drawer-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
 <div class="mobile-drawer" id="mobile-drawer">
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">&#x2715;</button>
+  <div class="mobile-drawer-search">
+    <input type="text" class="mobile-drawer-search-input" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/>
+    <svg class="mobile-drawer-search-icon" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="16" height="16"><circle cx="11" cy="11" r="8" fill="none"/><path d="m21 21-4.35-4.35" fill="none"/></svg>
+  </div>
   <a href="index.html" class="active">Home</a>
   <a href="the-source.html">The Source</a>
   <a href="ancestral-kitchen.html">Ancestral Kitchen</a>
@@ -921,15 +931,7 @@ body { overflow-y: auto !important; overflow-x: hidden; }
   
 
   
-<div class="footer"><div class="footer-inner">
-    <div class="footer-left"><span class="footer-copy">© 2026 Pristine Wellness</span></div>
-    <div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div>
-    <div class="footer-socials">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/><circle cx="17.5" cy="6.5" r="0.5" fill="#ccc"/></svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg>
-    </div>
-  </div></div>
+<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg></div></div></div>
 
 </div>
 
@@ -1034,14 +1036,13 @@ function handleModalClick(e) {
 
 // SEARCH
 var searchDocs = [
-  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
   {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
+  {title:'Longevity and Healthspan',cat:'Wellness',excerpt:'Making the science of living longer work in everyday life.',url:'article-longevity-and-healthspan-making-it-work-.html'},
   {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
   {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
   {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
-  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
-  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
   {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
+  {title:'The Source',cat:'Wellness',excerpt:'Articles on ancestral wisdom, pure water, nutrition and modern science.',url:'the-source.html'},
 ];
 
 function openSearch() {
@@ -1095,7 +1096,6 @@ document.addEventListener('keydown', function(e) {
 
 // INIT
 document.addEventListener('DOMContentLoaded', function() {
-  initLegalSubmenu();
   // Init filter pills
   document.querySelectorAll('.filter-pill').forEach(function(pill) {
     pill.addEventListener('click', function() {
@@ -1217,7 +1217,6 @@ document.addEventListener('keydown', function(e) {
 // INIT ALL
 document.addEventListener('DOMContentLoaded', function() {
   initFilters();
-  initLegalSubmenu();
   initServings();
   initUnitToggle();
 });
@@ -1367,7 +1366,6 @@ function toggleStepTimer(stepId, seconds) {
 // ── INIT ALL ──
 document.addEventListener('DOMContentLoaded', function() {
   initFilters();
-  initLegalSubmenu();
   initServings();
   initUnitToggle();
 });

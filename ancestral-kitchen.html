@@ -1127,9 +1127,15 @@ p, li, .card-excerpt, .feat-excerpt,
 .mobile-drawer.open{right:0;}
 .mobile-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;}
 .mobile-drawer-overlay.open{opacity:1;pointer-events:all;}
+.mobile-drawer-search{position:relative;margin-bottom:1.5rem;}
+.mobile-drawer-search-input{width:100%;padding:10px 36px 10px 12px;border:0.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Jost',sans-serif;color:var(--text);background:#fafaf8;outline:none;}
+.mobile-drawer-search-input:focus{border-color:var(--sage);}
+.mobile-drawer-search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;}
+
 
 .mobile-menu-btn{display:none;}
-@media(max-width:900px){.nav-links{display:none !important;}.mobile-menu-btn{display:flex !important;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}}
+@media(max-width:900px){.nav-links{display:none !important;}.mobile-menu-btn{display:flex !important;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}.nav-right > svg:first-child{display:none !important;}}
+html { scrollbar-gutter: stable; }
 </style>
 </head>
 <body>
@@ -1149,6 +1155,10 @@ p, li, .card-excerpt, .feat-excerpt,
 <div class="mobile-drawer-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
 <div class="mobile-drawer" id="mobile-drawer">
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">&#x2715;</button>
+  <div class="mobile-drawer-search">
+    <input type="text" class="mobile-drawer-search-input" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/>
+    <svg class="mobile-drawer-search-icon" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="16" height="16"><circle cx="11" cy="11" r="8" fill="none"/><path d="m21 21-4.35-4.35" fill="none"/></svg>
+  </div>
   <a href="index.html">Home</a>
   <a href="the-source.html">The Source</a>
   <a href="ancestral-kitchen.html" class="active">Ancestral Kitchen</a>
@@ -1399,15 +1409,7 @@ p, li, .card-excerpt, .feat-excerpt,
 </div>
 
 
-<div class="footer"><div class="footer-inner">
-    <div class="footer-left"><span class="footer-copy">© 2026 Pristine Wellness</span></div>
-    <div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div>
-    <div class="footer-socials">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/><circle cx="17.5" cy="6.5" r="0.5" fill="#ccc"/></svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg>
-    </div>
-</div></div>
+<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg></div></div></div>
 </div>
 <div class="modal-overlay" id="contact-modal" style="display:none;" onclick="handleModalClick(event)"><div class="modal"><button class="modal-close" onclick="closeContactModal()">×</button><h3>Get in touch</h3><p>We read every message and aim to respond within 48 hours.</p><div class="mfg"><input class="mi" type="text" placeholder="Your name"/></div><div class="mfg"><input class="mi" type="email" placeholder="Your email"/></div><div class="mfg"><input class="mi" type="text" placeholder="Subject"/></div><div class="mfg"><textarea class="mt" placeholder="Your message..."></textarea></div><p class="mn">Your details are never shared. 🌿</p><button class="ms" type="button" onclick="closeContactModal()">Send message</button></div></div>
 <script>
@@ -1454,19 +1456,26 @@ function initLegalSubmenu() {
 }
 
 // FILTER PILLS
-function filterCards(cat) {
+function filterCards(btn, cat) {
+  // accept both calling conventions
+  if (typeof btn === 'string') { cat = btn; btn = null; }
   document.querySelectorAll('.filter-pill').forEach(function(p) {
     p.classList.toggle('active', p.textContent.trim() === cat);
   });
-  var cards = document.querySelectorAll('[data-cat], .article-card, .recipe-card');
-  cards.forEach(function(card) {
-    if (cat === 'All') {
-      card.style.display = '';
-    } else {
-      var cardCat = card.getAttribute('data-cat') || '';
-      card.style.display = (cardCat === cat || cardCat.indexOf(cat) > -1) ? '' : 'none';
-    }
-  });
+  // Let pagination handle show/hide — just reset to page 1
+  if (typeof showPage === 'function') {
+    showPage(1);
+  } else {
+    var cards = document.querySelectorAll('[data-cat], .article-card, .recipe-card');
+    cards.forEach(function(card) {
+      if (cat === 'All') {
+        card.style.display = '';
+      } else {
+        var cardCat = card.getAttribute('data-cat') || '';
+        card.style.display = (cardCat === cat || cardCat.indexOf(cat) > -1) ? '' : 'none';
+      }
+    });
+  }
 }
 
 // CONTACT MODAL
@@ -1488,14 +1497,13 @@ function handleModalClick(e) {
 
 // SEARCH
 var searchDocs = [
-  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
   {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
+  {title:'Longevity and Healthspan',cat:'Wellness',excerpt:'Making the science of living longer work in everyday life.',url:'article-longevity-and-healthspan-making-it-work-.html'},
   {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
   {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
   {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
-  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
-  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
   {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
+  {title:'The Source',cat:'Wellness',excerpt:'Articles on ancestral wisdom, pure water, nutrition and modern science.',url:'the-source.html'},
 ];
 
 function openSearch() {
@@ -1549,7 +1557,6 @@ document.addEventListener('keydown', function(e) {
 
 // INIT
 document.addEventListener('DOMContentLoaded', function() {
-  initLegalSubmenu();
   // Init filter pills
   document.querySelectorAll('.filter-pill').forEach(function(pill) {
     pill.addEventListener('click', function() {
@@ -1671,7 +1678,6 @@ document.addEventListener('keydown', function(e) {
 // INIT ALL
 document.addEventListener('DOMContentLoaded', function() {
   initFilters();
-  initLegalSubmenu();
   initServings();
   initUnitToggle();
 });
@@ -1723,22 +1729,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+// ── PAGINATION ──
+(function() {
+  var CARDS_PER_PAGE = 4;
+  var currentPage = 1;
 
+  function getVisibleCards() {
+    // respect active filter
+    var activeFilter = document.querySelector('.filter-pill.active');
+    var activeCat = activeFilter ? activeFilter.textContent.trim() : 'All';
+    var allCards = Array.from(document.querySelectorAll('.card-grid .card'));
+    if (activeCat === 'All') return allCards;
+    return allCards.filter(function(c) {
+      return (c.getAttribute('data-cat') || '') === activeCat;
+    });
+  }
 
+  function showPage(page) {
+    var visible = getVisibleCards();
+    var total = Math.ceil(visible.length / CARDS_PER_PAGE);
+    currentPage = Math.max(1, Math.min(page, total));
+    var start = (currentPage - 1) * CARDS_PER_PAGE;
+    var end = start + CARDS_PER_PAGE;
 
+    // Show/hide all cards
+    var allCards = document.querySelectorAll('.card-grid .card');
+    allCards.forEach(function(c) { c.style.display = 'none'; });
+    visible.forEach(function(c, i) {
+      c.style.display = (i >= start && i < end) ? '' : 'none';
+    });
 
-,2000);});}
+    // Update button states
+    document.querySelectorAll('.page-btn').forEach(function(btn) {
+      var t = btn.textContent.trim();
+      var n = parseInt(t);
+      if (!isNaN(n)) {
+        btn.classList.toggle('active', n === currentPage);
+        btn.style.display = n <= total ? '' : 'none';
+      }
+    });
 
+  }
 
-
-document.querySelectorAll('.page-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.page-btn').forEach(function(b){b.classList.remove('active');});
-    this.classList.add('active');
-    var ps=document.getElementById('pinned-section');
-    if(ps){ps.style.display=this.textContent.trim()==='1'?'block':'none';}
+  document.querySelectorAll('.page-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var t = btn.textContent.trim();
+      var n = parseInt(t);
+      if (!isNaN(n)) showPage(n);
+      else showPage(currentPage + 1);
+      var grid = document.querySelector('.card-grid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   });
-});
+
+  // Init on load and re-run when filter changes
+  document.addEventListener('DOMContentLoaded', function() {
+    showPage(1);
+    document.querySelectorAll('.filter-pill').forEach(function(pill) {
+      pill.addEventListener('click', function() { showPage(1); });
+    });
+  });
+})();
 
 
 /* ════════════════════════════════════════
@@ -1814,7 +1865,6 @@ function toggleStepTimer(stepId, seconds) {
 // ── INIT ALL ──
 document.addEventListener('DOMContentLoaded', function() {
   initFilters();
-  initLegalSubmenu();
   initServings();
   initUnitToggle();
 });

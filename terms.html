@@ -466,9 +466,6 @@ body{font-family:'Jost',sans-serif;background:url('data:image/jpeg;base64,/9j/4A
 .nav-right svg{width:20px;height:20px;stroke:#aaa;fill:none;stroke-width:1.5;cursor:pointer;transition:stroke 0.2s;}
 .nav-right svg:hover{stroke:var(--sage);}
 
-.nav.scrolled 
-
-@media(max-width:900px){}
 .mobile-menu-btn span{display:block;width:22px;height:2px;background:#888;border-radius:2px;}
 
 .nav{
@@ -502,13 +499,85 @@ body{font-family:'Jost',sans-serif;background:url('data:image/jpeg;base64,/9j/4A
 .nav-links a:hover{color:var(--sage);}
 .nav-right{display:flex;align-items:center;gap:16px;}
 
+.mobile-drawer a {
+  display: block; padding: 1.2rem 0;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+  color: #111; font-weight: 500; font-family: 'Jost', sans-serif;
+  transition: color 0.2s;
+}
+.mobile-drawer a:last-child { border-bottom: none; }
+.mobile-drawer a:hover { color: var(--sage); }
+.mobile-drawer-socials {
+  display: flex; gap: 1.5rem; margin-top: auto; padding-top: 2rem;
+}
+.mobile-drawer-socials svg { width: 20px; height: 20px; stroke: #bbb; fill: none; stroke-width: 1.5; cursor: pointer; }
+.mobile-drawer-socials svg:hover { stroke: var(--sage); }
+.mobile-drawer-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--border-light); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #888;
+}
 .mobile-drawer{position:fixed;top:0;right:-100%;width:80%;max-width:320px;height:100vh;background:#fff;z-index:1000;padding:5rem 2.5rem 3rem;transition:right 0.35s ease;display:flex;flex-direction:column;overflow-y:auto;}
 .mobile-drawer.open{right:0;}
 .mobile-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;}
 .mobile-drawer-overlay.open{opacity:1;pointer-events:all;}
+.mobile-drawer-search{position:relative;margin-bottom:1.5rem;}
+.mobile-drawer-search-input{width:100%;padding:10px 36px 10px 12px;border:0.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Jost',sans-serif;color:var(--text);background:#fafaf8;outline:none;}
+.mobile-drawer-search-input:focus{border-color:var(--sage);}
+.mobile-drawer-search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;}
+
 
 .mobile-menu-btn{display:none;}
-@media(max-width:900px){.nav-links{display:none !important;}.mobile-menu-btn{display:flex !important;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}}
+@media(max-width:900px){.nav-links{display:none !important;}.mobile-menu-btn{display:flex !important;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}.nav-right > svg:first-child{display:none !important;}}
+html { scrollbar-gutter: stable; }
+.search-overlay {
+  position: fixed; inset: 0; background: rgba(255,255,255,0.97);
+  z-index: 500; display: flex; flex-direction: column;
+  align-items: center; padding: 8rem 5% 4rem;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.search-overlay.open { opacity: 1; pointer-events: all; }
+.search-close {
+  position: absolute; top: 2rem; right: 2.5rem;
+  font-size: 28px; color: #bbb; cursor: pointer;
+  background: none; border: none; transition: color 0.2s;
+}
+.search-close:hover { color: #111; }
+.search-input-wrap {
+  width: 100%; max-width: 680px;
+  border-bottom: 2px solid #111; display: flex; align-items: center; gap: 1rem;
+  padding-bottom: 1rem; margin-bottom: 3rem;
+}
+.search-input-wrap svg { width: 22px; height: 22px; stroke: #bbb; fill: none; stroke-width: 1.5; flex-shrink: 0; }
+.search-input {
+  flex: 1; border: none; outline: none;
+  font-size: 28px; font-family: 'Cormorant Garamond', serif;
+  font-style: italic; color: #111; background: transparent;
+}
+.search-input::placeholder { color: #ccc; }
+.search-results { width: 100%; max-width: 680px; }
+.search-result-item {
+  display: flex; gap: 1.5rem; align-items: flex-start;
+  padding: 1.5rem 0; border-bottom: 0.5px solid var(--border);
+  cursor: pointer; transition: all 0.2s;
+}
+.search-result-item:hover { padding-left: 8px; }
+.search-result-item:hover .search-result-title { color: var(--sage); }
+.search-result-cat { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--sage); font-weight: 500; display: block; margin-bottom: 4px; }
+.search-result-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; color: #111; line-height: 1.2; margin-bottom: 4px; transition: color 0.2s; }
+.search-result-excerpt { font-size: 13px; color: #888; font-weight: 300; line-height: 1.6; }
+.search-empty { text-align: center; padding: 3rem 0; }
+.search-empty p { font-size: 16px; color: #bbb; font-weight: 300; }
+.mobile-drawer-legal{border-bottom:0.5px solid var(--border);}
+.mobile-drawer-legal-toggle{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:1.2rem 0!important;border-bottom:none!important;cursor:pointer!important;font-size:13px!important;letter-spacing:2px!important;text-transform:uppercase!important;color:#111!important;font-weight:500!important;font-family:'Jost',sans-serif!important;background:none!important;border:none!important;width:100%!important;text-align:left!important;}
+.mobile-drawer-legal-toggle svg{width:14px!important;height:14px!important;stroke:#aaa!important;fill:none!important;stroke-width:2!important;transition:transform 0.2s!important;flex-shrink:0!important;}
+.mobile-drawer-legal-toggle.open svg{transform:rotate(180deg)!important;}
+.mobile-drawer-subnav{display:none!important;flex-direction:column!important;padding-left:1rem!important;padding-bottom:0.5rem!important;gap:0!important;}
+.mobile-drawer-subnav.open{display:flex!important;}
+.mobile-drawer-subnav a{padding:0.8rem 0!important;font-size:12px!important;letter-spacing:1.5px!important;color:#888!important;border-bottom:none!important;}
 </style>
 </head>
 <body>
@@ -528,6 +597,10 @@ body{font-family:'Jost',sans-serif;background:url('data:image/jpeg;base64,/9j/4A
 <div class="mobile-drawer-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
 <div class="mobile-drawer" id="mobile-drawer">
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">&#x2715;</button>
+  <div class="mobile-drawer-search">
+    <input type="text" class="mobile-drawer-search-input" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/>
+    <svg class="mobile-drawer-search-icon" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="16" height="16"><circle cx="11" cy="11" r="8" fill="none"/><path d="m21 21-4.35-4.35" fill="none"/></svg>
+  </div>
   <a href="index.html">Home</a>
   <a href="the-source.html">The Source</a>
   <a href="ancestral-kitchen.html">Ancestral Kitchen</a>
@@ -636,23 +709,9 @@ body{font-family:'Jost',sans-serif;background:url('data:image/jpeg;base64,/9j/4A
 </div>
 
 </div>
-<div class="footer">
-  <div class="footer-inner">
-    <div class="footer-left"><span class="footer-copy">© 2026 Pristine Wellness</span></div>
-    <div class="footer-links">
-      <a href="terms.html">Terms</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="disclaimer.html">Disclaimer</a>
-      <a onclick="openContactModal()">Contact</a>
-    </div>
-    <div class="footer-socials">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/><circle cx="17.5" cy="6.5" r="0.5" fill="#ccc"/></svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg>
-    </div>
-  </div>
+<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg></div></div></div>
 </div>
-</div>
+<div class="search-overlay" id="search-overlay"><button class="search-close" onclick="closeSearch()">&#x2715;</button><div class="search-input-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input class="search-input" id="search-input" type="text" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/></div><div class="search-results" id="search-results"></div></div>
 <div class="modal-overlay" id="contact-modal" onclick="handleModalClick(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeContactModal()">×</button>
@@ -744,14 +803,13 @@ function handleModalClick(e) {
 
 // SEARCH
 var searchDocs = [
-  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
   {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
+  {title:'Longevity and Healthspan',cat:'Wellness',excerpt:'Making the science of living longer work in everyday life.',url:'article-longevity-and-healthspan-making-it-work-.html'},
   {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
   {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
   {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
-  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
-  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
   {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
+  {title:'The Source',cat:'Wellness',excerpt:'Articles on ancestral wisdom, pure water, nutrition and modern science.',url:'the-source.html'},
 ];
 
 function openSearch() {
@@ -805,7 +863,6 @@ document.addEventListener('keydown', function(e) {
 
 // INIT
 document.addEventListener('DOMContentLoaded', function() {
-  initLegalSubmenu();
   // Init filter pills
   document.querySelectorAll('.filter-pill').forEach(function(pill) {
     pill.addEventListener('click', function() {
@@ -847,7 +904,7 @@ window.addEventListener('scroll', function() {
 
 // SEARCH
 var searchDocs = [
-  {title:'What Robert Gourlay Taught Us About the Water We Drink',cat:'Pure Water',excerpt:'A water quality scientist, a device that transforms tap water, and the moment a shower changed how we understood health forever.',url:'article-robert-gourlay-water.html'},
+
   {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
   {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
   {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
@@ -872,7 +929,6 @@ document.addEventListener('keydown', function(e) {
 
 // INIT
 document.addEventListener('DOMContentLoaded', function() {
-  initLegalSubmenu();
   // Init filter pills
   document.querySelectorAll('.filter-pill').forEach(function(pill) {
     pill.addEventListener('click', function() {
