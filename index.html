@@ -226,8 +226,8 @@ p, li, .card-excerpt, .feat-excerpt,
 .nl-pdf { display: block; font-size: 13px; color: rgba(168,187,138,0.9); margin-top: 0.8rem; font-weight: 400; font-style: italic; }
 
 /* ── FOOTER ── */
-.footer { background: #fafaf8; border-top: 0.5px solid var(--border); }
-.footer-inner { padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.footer { background: #fafaf8; border-top: 0.5px solid var(--border); width: 100%; display: block; }
+.footer-inner { width: 100%; padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; box-sizing: border-box; }
 .footer-copy { font-size: 12px; color: #bbb; font-weight: 300; }
 .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
 .footer-links a { font-size: 10px !important; letter-spacing: 1.5px; text-transform: uppercase; color: #bbb; font-weight: 400 !important; transition: color 0.2s; cursor: pointer; }
@@ -900,7 +900,7 @@ html { scrollbar-gutter: stable; }
         <span class="explore-topic">Mental Wellness</span>
         <span class="explore-topic">Detox</span>
       </div>
-      <a class="explore-btn" href="the-source.html">Explore The Source <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a class="explore-btn sage" href="the-source.html">Explore The Source <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
 
     <div class="explore-panel">
@@ -924,9 +924,10 @@ html { scrollbar-gutter: stable; }
   
 
   
-<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg></div></div></div>
 
 </div>
+
+<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg></div></div></div>
 
 <div class="search-overlay" id="search-overlay">
   <button class="search-close" onclick="closeSearch()">×</button>
