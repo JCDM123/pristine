@@ -624,9 +624,7 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
   var imgSlots = articleBodyImages.filter(Boolean);
   if (article.sections) {
     article.sections.forEach(function(sec, i) {
-      var paras = sec.content.split(/
-
-+/).map(function(p){ return p.trim(); }).filter(Boolean);
+      var paras = sec.content.split(/\n\n+/).map(function(p){ return p.trim(); }).filter(Boolean);
       sectionsHTML += '<h2 contenteditable="true" data-field="section-heading-' + i + '" onblur="syncPreviewEdit(this)">' + sec.heading + '</h2>';
       paras.forEach(function(p, pi) {
         sectionsHTML += '<p contenteditable="true" data-field="section-para-' + i + '-' + pi + '" onblur="syncPreviewEdit(this)">' + p + '</p>';
