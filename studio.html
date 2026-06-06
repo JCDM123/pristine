@@ -672,9 +672,7 @@ function syncPreviewEdit(el) {
     if (article.sections && article.sections[si]) {
       var paras = article.sections[si].content.split(/\n\n+/).map(function(p){ return p.trim(); }).filter(Boolean);
       paras[pi] = val;
-      article.sections[si].content = paras.join('
-
-');
+      article.sections[si].content = paras.join('\n\n');
     }
   }
 }
