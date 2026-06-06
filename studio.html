@@ -117,6 +117,32 @@ img{max-width:100%;display:block;}
 .img-upload-zone:hover{border-color:var(--sage);}
 @media(max-width:900px){.studio-grid{grid-template-columns:1fr;}.preview-card{position:static;}}
 @media(max-width:600px){.studio-main{padding:1.5rem;}.form-card{padding:1.5rem;}.field-row{grid-template-columns:1fr;}}
+.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.trend-col-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.trend-col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.trend-col-dot.general{background:var(--gold);}
+.trend-col-dot.niche{background:var(--sage);}
+.trend-col-head h3{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:500;}
+.trend-col-head span{font-size:11px;color:var(--border);margin-left:auto;}
+.trend-card{background:rgba(245,240,232,0.93);border:0.5px solid var(--border);padding:0;}
+.trend-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:0.5px solid var(--border-light);transition:background 0.15s;}
+.trend-item:last-child{border-bottom:none;}
+.trend-item:hover{background:rgba(138,155,110,0.07);}
+.trend-rank{font-size:11px;color:var(--border);font-weight:500;min-width:16px;padding-top:2px;font-family:'Cormorant Garamond',serif;font-style:italic;}
+.trend-body{flex:1;}
+.trend-label{font-size:13px;color:var(--text);font-weight:500;line-height:1.35;}
+.trend-meta{font-size:11px;color:var(--muted);margin-top:3px;}
+.trend-badge{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-top:5px;display:inline-block;}
+.trend-badge.hot{background:rgba(201,169,110,0.15);color:#7a5a1a;}
+.trend-badge.rising{background:rgba(138,155,110,0.15);color:var(--sage-dark);}
+.trend-badge.niche{background:rgba(44,74,46,0.1);color:var(--forest);}
+.trend-arrow{font-size:12px;color:var(--border);padding-top:3px;align-self:center;}
+.trend-prefill-banner{display:none;background:rgba(44,74,46,0.07);border:0.5px solid rgba(44,74,46,0.2);border-radius:3px;padding:8px 14px;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--forest);}
+.trend-prefill-banner .clear-prefill{margin-left:auto;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;background:none;border:none;padding:0 4px;}
+.trend-refresh-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.trend-refresh-row p{font-size:12px;color:var(--muted);}
+.trend-refresh-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:6px 14px;cursor:pointer;transition:all 0.2s;}
+.trend-refresh-btn:hover{border-color:var(--sage);color:var(--sage-dark);}
 </style>
 </head>
 <body>
@@ -149,11 +175,42 @@ img{max-width:100%;display:block;}
     <span id="gh-token-status" style="font-size:12px;color:#bbb;"></span>
   </div>
   <div class="studio-tabs">
-    <button class="tab-btn active" onclick="switchTab('article',this)">Article Generator</button>
+    <button class="tab-btn active" onclick="switchTab('trending',this)">Trending</button>
+    <button class="tab-btn" onclick="switchTab('article',this)">Article Generator</button>
     <button class="tab-btn" onclick="switchTab('recipe',this)">Recipe Generator</button>
   </div>
 
-  <div id="tab-article" class="tab-panel active">
+  <div id="tab-trending" class="tab-panel active">
+    <div class="trend-refresh-row">
+      <p>Tap any topic to pre-fill the generator.</p>
+      <button class="trend-refresh-btn" onclick="refreshTrends(this)">Refresh</button>
+    </div>
+    <div class="trend-grid">
+      <div>
+        <div class="trend-col-head">
+          <div class="trend-col-dot general"></div>
+          <h3>Trending now</h3>
+          <span>Broad health topics today</span>
+        </div>
+        <div class="trend-card" id="trend-general"></div>
+      </div>
+      <div>
+        <div class="trend-col-head">
+          <div class="trend-col-dot niche"></div>
+          <h3>In your world</h3>
+          <span>Ancestral and Pristine niche</span>
+        </div>
+        <div class="trend-card" id="trend-niche"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-article" class="tab-panel">
+    <div id="a-prefill-banner" class="trend-prefill-banner" style="display:none;">
+      <span>&#8599; Topic pre-filled from trending:</span>
+      <strong id="a-prefill-label"></strong>
+      <button class="clear-prefill" onclick="clearPrefill('a')" title="Clear">&times;</button>
+    </div>
     <div class="studio-grid">
       <div class="form-card">
         <h2>New Article</h2>
@@ -221,6 +278,11 @@ img{max-width:100%;display:block;}
   </div>
 
   <div id="tab-recipe" class="tab-panel">
+    <div id="r-prefill-banner" class="trend-prefill-banner" style="display:none;">
+      <span>&#8599; Idea pre-filled from trending:</span>
+      <strong id="r-prefill-label"></strong>
+      <button class="clear-prefill" onclick="clearPrefill('r')" title="Clear">&times;</button>
+    </div>
     <div class="studio-grid">
       <div class="form-card">
         <h2>New Recipe</h2>
@@ -1097,6 +1159,77 @@ async function publishRecipe() {
     btn.style.background = 'var(--forest)';
   }
 }
+
+// ── TRENDING DASHBOARD ──
+var GENERAL_TRENDS = [
+  { label: 'Magnesium deficiency and modern disease', meta: '1.2M searches this week', badge: 'hot' },
+  { label: 'Cold exposure and longevity science', meta: 'Surging 340% past 7 days', badge: 'rising' },
+  { label: 'Seed oils and chronic inflammation', meta: 'Evergreen, very high volume', badge: 'hot' },
+  { label: 'Ozempic and long-term metabolic effects', meta: 'Top health story this week', badge: 'hot' },
+  { label: 'Red light therapy at home', meta: 'Rising steadily, 88K daily searches', badge: 'rising' },
+  { label: 'Sleep debt and cognitive decline', meta: 'Big week, 2.1M impressions', badge: 'hot' },
+  { label: 'Gut microbiome and mental health', meta: 'Strong growth, cross-pillar', badge: 'rising' },
+];
+var NICHE_TRENDS = [
+  { label: 'Nose breathing during exercise', meta: 'Strong in ancestral health circles', badge: 'niche' },
+  { label: 'Beef liver supplements vs whole food', meta: 'Trending across paleo communities', badge: 'niche' },
+  { label: 'Fermented foods and microbiome diversity', meta: 'Gut health pillar, rising', badge: 'rising' },
+  { label: 'Grounding and cortisol reduction', meta: 'Nature pillar crossover', badge: 'niche' },
+  { label: 'Walking after meals for glucose control', meta: 'Movement plus metabolic, surging', badge: 'rising' },
+  { label: 'Raw dairy and ancestral nutrition', meta: 'Whole food pillar, niche audience', badge: 'niche' },
+  { label: 'Barefoot running and foot mechanics', meta: 'Movement pillar, growing steadily', badge: 'niche' },
+];
+
+function renderTrends() {
+  function buildItems(trends) {
+    return trends.map(function(t, i) {
+      var badgeLabel = t.badge === 'hot' ? 'Hot' : t.badge === 'rising' ? 'Rising' : 'Niche';
+      var safeTopic = t.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return '<div class="trend-item" onclick="prefillFromTrend(\'' + safeTopic + '\')">' +
+        '<span class="trend-rank">' + (i + 1) + '</span>' +
+        '<div class="trend-body">' +
+          '<div class="trend-label">' + t.label + '</div>' +
+          '<div class="trend-meta">' + t.meta + '</div>' +
+          '<span class="trend-badge ' + t.badge + '">' + badgeLabel + '</span>' +
+        '</div>' +
+        '<span class="trend-arrow">&#8599;</span>' +
+      '</div>';
+    }).join('');
+  }
+  var gEl = document.getElementById('trend-general');
+  var nEl = document.getElementById('trend-niche');
+  if (gEl) gEl.innerHTML = buildItems(GENERAL_TRENDS);
+  if (nEl) nEl.innerHTML = buildItems(NICHE_TRENDS);
+}
+
+function prefillFromTrend(label) {
+  var artTopic = document.getElementById('a-topic');
+  if (artTopic) artTopic.value = label;
+  var aBanner = document.getElementById('a-prefill-banner');
+  var aLabel = document.getElementById('a-prefill-label');
+  if (aBanner && aLabel) { aLabel.textContent = label; aBanner.style.display = 'flex'; }
+  var recName = document.getElementById('r-name');
+  if (recName) recName.value = label;
+  var rBanner = document.getElementById('r-prefill-banner');
+  var rLabel = document.getElementById('r-prefill-label');
+  if (rBanner && rLabel) { rLabel.textContent = label; rBanner.style.display = 'flex'; }
+  var artBtn = document.querySelectorAll('.tab-btn')[1];
+  if (artBtn) switchTab('article', artBtn);
+}
+
+function clearPrefill(prefix) {
+  var banner = document.getElementById(prefix + '-prefill-banner');
+  if (banner) banner.style.display = 'none';
+  if (prefix === 'a') { var el = document.getElementById('a-topic'); if (el) el.value = ''; }
+  if (prefix === 'r') { var el = document.getElementById('r-name'); if (el) el.value = ''; }
+}
+
+function refreshTrends(btn) {
+  btn.textContent = 'Refreshing...';
+  setTimeout(function() { btn.textContent = 'Refresh'; }, 900);
+}
+
+renderTrends();
 
 // Article image handling
 var articleImageBase64 = '';
