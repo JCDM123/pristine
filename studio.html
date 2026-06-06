@@ -670,9 +670,7 @@ function syncPreviewEdit(el) {
     var si = parseInt(parts[2]);
     var pi = parseInt(parts[3]);
     if (article.sections && article.sections[si]) {
-      var paras = article.sections[si].content.split(/
-
-+/).map(function(p){ return p.trim(); }).filter(Boolean);
+      var paras = article.sections[si].content.split(/\n\n+/).map(function(p){ return p.trim(); }).filter(Boolean);
       paras[pi] = val;
       article.sections[si].content = paras.join('
 
