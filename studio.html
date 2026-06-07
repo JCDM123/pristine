@@ -199,6 +199,18 @@ img{max-width:100%;display:block;}
 .trend-refresh-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:6px 14px;cursor:pointer;transition:all 0.2s;}
 .trend-refresh-btn:hover{border-color:var(--sage);color:var(--sage-dark);}
 
+/* ===== CITATIONS & SOURCES ===== */
+.ap-sources { margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid var(--border-light); }
+.ap-sources-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; color:var(--forest); margin-bottom:1rem; }
+.ap-sources-list { padding-left:0; list-style:none; }
+.ap-sources-list li { font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:0.5rem; display:flex; gap:0.4rem; }
+.ap-source-num { font-weight:600; color:var(--sage); min-width:18px; }
+.ap-sources-list a { color:var(--forest); text-decoration:underline; }
+.ap-sources-list a:hover { color:var(--sage); }
+.ap-source-pub { color:#aaa; }
+sup.cite { font-size:10px; color:var(--sage); font-weight:600; cursor:pointer; }
+sup.cite:hover { text-decoration:underline; }
+
 /* ===== SLIDES EDITOR ===== */
 .slide-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;position:relative;}
 .slide-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;}
@@ -644,21 +656,24 @@ async function generateArticle() {
   var systemPrompt = [
     'You are the content writer for Pristine Wellness, an evidence-based ancestral wellness brand from Australia.',
     'Brand voice rules: first person plural (we/our/us), warm grounded intelligent tone, never preachy, short paragraphs max 4 sentences, occasional italics with em tags, NO em dashes or en dashes ever, no AI tells (no delve, unlock, journey, fascinating), ancestral wisdom meets modern science, Australian spelling.',
+    'Use the web search tool to find 3-6 real, credible sources (PubMed studies, peer-reviewed journals, reputable health publications) relevant to the article topic. Then write the article with inline superscript citation numbers [1] [2] etc referencing those sources.',
     'Output ONLY valid JSON no markdown no preamble. Never use em dashes or special characters inside JSON strings. Use plain ASCII punctuation only. Keys:',
-    '{"title":"Full article title","intro":"Opening 2-3 sentences","sections":[{"heading":"Section heading","content":"2-4 paragraphs separated by double newline"}],"pullQuote":"Powerful single sentence","closing":"1-2 sentence closing"}'
+    '{"title":"Full article title","intro":"Opening 2-3 sentences with citation numbers where relevant e.g. sentence.[1]","sections":[{"heading":"Section heading","content":"2-4 paragraphs separated by double newline, with inline citation numbers e.g. sentence.[2]"}],"pullQuote":"Powerful single sentence","closing":"1-2 sentence closing","sources":[{"num":1,"title":"Source title","url":"https://...","publication":"Journal or site name"}]}'
   ].join(' ');
 
   var notesLine = notes ? 'Key points to cover: ' + notes : '';
-  var userPrompt = 'Write a ' + readtime + ' article for Pristine Wellness about: "' + topic + '". Category: ' + category + '. ' + notesLine + ' No em dashes or en dashes anywhere.';
+  var userPrompt = 'Search for real credible sources then write a ' + readtime + ' article for Pristine Wellness about: "' + topic + '". Category: ' + category + '. ' + notesLine + ' Include 3-6 inline superscript citation numbers and a sources array. No em dashes or en dashes anywhere.';
 
   try {
+    setStatus('a', 'active', 'Searching for sources...');
     var response = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 6000,
+        max_tokens: 8000,
         system: systemPrompt,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         messages: [{ role: 'user', content: userPrompt }]
       })
     });
@@ -667,7 +682,9 @@ async function generateArticle() {
       var msg = (data.error && data.error.message) || data.type || ('HTTP ' + response.status);
       throw new Error(msg);
     }
-    var rawText = data.content.map(function(i) { return i.text || ''; }).filter(Boolean).join('');
+    // Extract the final text block (after tool use)
+    var rawText = data.content.map(function(i) { return i.type === 'text' ? i.text : ''; }).filter(Boolean).join('');
+    setStatus('a', 'active', 'Writing article...');
     var clean = rawText.replace(/```json|```/g, '').trim();
     var article = JSON.parse(clean);
     generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: tagsRaw };
@@ -700,7 +717,7 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
       var paras = sec.content.split(/\n\n+/).map(function(p){ return p.trim(); }).filter(Boolean);
       sectionsHTML += '<h2 contenteditable="true" data-field="section-heading-' + i + '" onblur="syncPreviewEdit(this)">' + sec.heading + '</h2>';
       paras.forEach(function(p, pi) {
-        sectionsHTML += '<p contenteditable="true" data-field="section-para-' + i + '-' + pi + '" onblur="syncPreviewEdit(this)">' + p + '</p>';
+        sectionsHTML += '<p contenteditable="true" data-field="section-para-' + i + '-' + pi + '" onblur="syncPreviewEdit(this)">' + renderCitations(p) + '</p>';
       });
       // Insert body image after each section if available
       if (imgSlots.length > 0) {
@@ -713,17 +730,30 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
   }
   var pullHTML = article.pullQuote ? '<div class="ap-pull"><p contenteditable="true" data-field="pullQuote" onblur="syncPreviewEdit(this)">' + article.pullQuote + '</p></div>' : '';
   var tagsHTML = tags.length ? '<div class="ap-tags">' + tags.map(function(t){ return '<span class="ap-tag">' + t + '</span>'; }).join('') + '</div>' : '';
+  // Sources / citations section
+  var sourcesHTML = '';
+  if (article.sources && article.sources.length) {
+    sourcesHTML = '<div class="ap-sources"><h3 class="ap-sources-title">Sources</h3><ol class="ap-sources-list">';
+    article.sources.forEach(function(s) {
+      sourcesHTML += '<li id="source-' + s.num + '"><span class="ap-source-num">' + s.num + '.</span> ';
+      sourcesHTML += '<a href="' + escHtml(s.url) + '" target="_blank" rel="noopener">' + escHtml(s.title) + '</a>';
+      if (s.publication) sourcesHTML += ' <span class="ap-source-pub">— ' + escHtml(s.publication) + '</span>';
+      sourcesHTML += '</li>';
+    });
+    sourcesHTML += '</ol></div>';
+  }
   document.getElementById('a-preview').innerHTML =
     '<p class="edit-hint">Click any text to edit</p>' +
     '<div class="ap-hero"><div class="ap-cat">' + category + '</div>' +
     '<div class="ap-title" contenteditable="true" data-field="title" onblur="syncPreviewEdit(this)">' + article.title + '</div>' +
     '<div class="ap-meta"><span>' + date + '</span><span>' + readtime + '</span><span>' + author + '</span></div></div>' +
     '<div class="ap-body">' +
-    '<p contenteditable="true" data-field="intro" onblur="syncPreviewEdit(this)" style="font-weight:600">' + article.intro + '</p>' +
+    '<p contenteditable="true" data-field="intro" onblur="syncPreviewEdit(this)" style="font-weight:600">' + renderCitations(article.intro) + '</p>' +
     sectionsHTML + pullHTML +
-    '<p contenteditable="true" data-field="closing" onblur="syncPreviewEdit(this)">' + (article.closing || '') + '</p>' +
+    '<p contenteditable="true" data-field="closing" onblur="syncPreviewEdit(this)">' + renderCitations(article.closing || '') + '</p>' +
     tagsHTML +
-    '<div class="ap-author"><div class="ap-author-avatar">' + initial + '</div><div class="ap-author-info"><div class="name">' + author + '</div><div class="role">Pristine Wellness</div></div></div></div>';
+    '<div class="ap-author"><div class="ap-author-avatar">' + initial + '</div><div class="ap-author-info"><div class="name">' + author + '</div><div class="role">Pristine Wellness</div></div></div>' +
+    sourcesHTML + '</div>';
 }
 
 function syncPreviewEdit(el) {
@@ -796,7 +826,7 @@ async function downloadArticle() {
     article.sections.forEach(function(sec, i) {
       var paras = sec.content.split(/\n\n+/).map(function(p){ return p.trim(); }).filter(Boolean);
       sectionsHTML += '      <h2>' + sec.heading + '</h2>\n';
-      paras.forEach(function(p) { sectionsHTML += '      <p>' + p + '</p>\n'; });
+      paras.forEach(function(p) { sectionsHTML += '      <p>' + renderCitationsForExport(p) + '</p>\n'; });
       if (i === midPoint - 1 && article.pullQuote) {
         sectionsHTML += '    </div>\n    <div class="pull-quote">\n      <blockquote>' + article.pullQuote + '</blockquote>\n      <cite>' + d.author + '</cite>\n    </div>\n    <div class="article-text">\n';
       }
@@ -820,11 +850,12 @@ async function downloadArticle() {
   var fullHTML = topPart
     + '<div class="article-hero"' + bgStyle + '>'
     + heroShell
-    + '<p class="article-intro">' + article.intro + '</p>'
+    + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>'
     + TMPL_MID
     + sectionsHTML
-    + '      <p>' + (article.closing || '') + '</p>\n'
+    + '      <p>' + renderCitationsForExport(article.closing || '') + '</p>\n'
     + '    </div>\n'
+    + buildSourcesHTML(article)
     + TMPL_BOTTOM;
 
   var slug = article.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
@@ -1119,7 +1150,7 @@ async function publishArticle() {
       article.sections.forEach(function(sec, i) {
         var paras = sec.content.split(/\n\n+/).map(function(p){ return p.trim(); }).filter(Boolean);
         sectionsHTML += '      <h2>' + sec.heading + '</h2>\n';
-        paras.forEach(function(p) { sectionsHTML += '      <p>' + p + '</p>\n'; });
+        paras.forEach(function(p) { sectionsHTML += '      <p>' + renderCitationsForExport(p) + '</p>\n'; });
         if (i === midPoint - 1 && article.pullQuote) {
           sectionsHTML += '    </div>\n    <div class="pull-quote">\n      <blockquote>' + article.pullQuote + '</blockquote>\n      <cite>' + d.author + '</cite>\n    </div>\n    <div class="article-text">\n';
         }
@@ -1137,7 +1168,7 @@ async function publishArticle() {
         ? ' style="background-image:url(' + articleImageBase64 + ')"'
         : ' style="background:var(--forest)"';
     var heroShell = TMPL_HERO.replace('ARTICLE_CAT', d.category).replace('ARTICLE_DATE', date).replace('ARTICLE_RT', d.readtime).replace('ARTICLE_H1', article.title);
-    var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + article.intro + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + (article.closing || '') + '</p>\n    </div>\n' + TMPL_BOTTOM;
+    var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + (article.closing || '') + '</p>\n    </div>\n' + TMPL_BOTTOM;
 
     // 2. Upload article file to GitHub
     var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
@@ -1564,6 +1595,37 @@ function bodyImgDrop(event, idx) {
 }
 
 
+
+/* ===== IMAGE COMPRESSION UTILITY ===== */
+function compressImage(file, maxWidth, maxHeight, quality) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var w = img.width;
+        var h = img.height;
+        // Scale down to fit within maxWidth x maxHeight
+        if (w > maxWidth || h > maxHeight) {
+          var ratio = Math.min(maxWidth / w, maxHeight / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        // Output as JPEG with quality
+        var dataUrl = canvas.toDataURL('image/jpeg', quality || 0.82);
+        resolve({ dataUrl: dataUrl, base64: dataUrl.split(',')[1], width: w, height: h });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 async function handleArticleImage(event) {
   var file = event.target.files[0];
   if (!file) return;
@@ -1581,10 +1643,10 @@ async function handleArticleImage(event) {
   var slug = topic ? topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,30) + '-hero' : 'article-hero-' + Date.now();
   var ext = file.name.split('.').pop().toLowerCase() || 'jpg';
   var imgPath = 'images/' + slug + '.' + ext;
-  // Read as base64 for GitHub API
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var base64 = e.target.result.split(',')[1];
+  // Compress before uploading (1200x630 for article heroes)
+  if (label) label.textContent = 'Compressing...';
+  compressImage(file, 1200, 630, 0.82).then(async function(compressed) {
+    var base64 = compressed.base64;
     try {
       // Check if file exists (need SHA to overwrite)
       var existing = null;
@@ -1603,22 +1665,20 @@ async function handleArticleImage(event) {
       });
       if (!uploadResp.ok) throw new Error('Upload failed: ' + uploadResp.status);
       articleImagePath = imgPath;
-      articleImageBase64 = e.target.result; // keep for preview only
-      if (label) label.textContent = 'Image ready: ' + imgPath;
+      articleImageBase64 = compressed.dataUrl; // keep for preview only
+      if (label) label.textContent = 'Image ready: ' + imgPath + ' (' + compressed.width + 'x' + compressed.height + ')';
       document.getElementById('a-img-preview').src = articleImageBase64;
       document.getElementById('a-img-preview-wrap').style.display = 'block';
       document.getElementById('a-img-placeholder').style.display = 'none';
     } catch(uploadErr) {
       if (label) label.textContent = 'Upload failed: ' + uploadErr.message;
-      // Fall back to base64 preview
-      articleImageBase64 = e.target.result;
+      articleImageBase64 = compressed.dataUrl;
       articleImagePath = '';
       document.getElementById('a-img-preview').src = articleImageBase64;
       document.getElementById('a-img-preview-wrap').style.display = 'block';
       document.getElementById('a-img-placeholder').style.display = 'none';
     }
-  };
-  reader.readAsDataURL(file);
+  });
 }
 
 function clearArticleImage(event) {
@@ -2237,10 +2297,14 @@ async function uploadToImageLibrary(input) {
   statusEl.textContent = 'Uploading ' + file.name + '...';
   setImgLibStatus('Uploading...', null);
 
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var base64 = e.target.result.split(',')[1];
-    var imgPath = 'images/' + file.name;
+  // Smart compression based on filename
+  var maxW = 1200, maxH = 630;
+  if (file.name.toLowerCase().includes('slide')) { maxW = 1920; maxH = 1080; }
+  else if (file.name.toLowerCase().includes('body')) { maxW = 900; maxH = 600; }
+  statusEl.textContent = 'Compressing ' + file.name + '...';
+  compressImage(file, maxW, maxH, 0.82).then(async function(compressed) {
+    var base64 = compressed.base64;
+    var imgPath = 'images/' + file.name.replace(/\.[^.]+$/, '.jpg');
     try {
       var existing = null;
       try {
@@ -2257,15 +2321,14 @@ async function uploadToImageLibrary(input) {
         body: JSON.stringify(body)
       });
       if (!uploadResp.ok) throw new Error('Upload failed: ' + uploadResp.status);
-      statusEl.textContent = 'Uploaded: ' + imgPath;
+      statusEl.textContent = 'Uploaded: ' + imgPath + ' (' + compressed.width + 'x' + compressed.height + ')';
       setImgLibStatus('Uploaded successfully.', true);
       setTimeout(loadImageLibrary, 1500);
     } catch(err) {
       statusEl.textContent = 'Failed: ' + err.message;
       setImgLibStatus('Upload failed.', false);
     }
-  };
-  reader.readAsDataURL(file);
+  });
 }
 
 function copyImagePath(btn) {
@@ -2306,6 +2369,32 @@ function setImgLibStatus(msg, ok) {
   dot.style.background = ok === true ? '#27ae60' : ok === false ? '#e74c3c' : '#f39c12';
 }
 
+
+
+function buildSourcesHTML(article) {
+  if (!article.sources || !article.sources.length) return '';
+  var html = '<div class="article-sources" style="margin:3rem 0 2rem;padding:2rem;background:#f9f7f2;border-radius:4px;">';
+  html += '<h3 style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:500;color:#2C4A2E;margin-bottom:1rem;">Sources</h3>';
+  html += '<ol style="padding-left:0;list-style:none;">';
+  article.sources.forEach(function(s) {
+    html += '<li id="source-' + s.num + '" style="font-size:13px;color:#666;line-height:1.7;margin-bottom:0.6rem;display:flex;gap:0.5rem;">';
+    html += '<span style="font-weight:600;color:#8A9B6E;min-width:20px;">' + s.num + '.</span>';
+    html += '<span><a href="' + (s.url || '#') + '" target="_blank" rel="noopener" style="color:#2C4A2E;">' + (s.title || '') + '</a>';
+    if (s.publication) html += ' <span style="color:#aaa;">— ' + s.publication + '</span>';
+    html += '</span></li>';
+  });
+  html += '</ol></div>';
+  return html;
+}
+
+function renderCitationsForExport(text) {
+  return (text || '').replace(/\[(\d+)\]/g, '<sup style="font-size:10px;color:#8A9B6E;font-weight:600;"><a href="#source-$1" style="color:#8A9B6E;text-decoration:none;">[$1]</a></sup>');
+}
+
+function renderCitations(text) {
+  // Convert [1] [2] etc to superscript links
+  return (text || '').replace(/\[(\d+)\]/g, '<sup class="cite"><a href="#source-$1">[$1]</a></sup>');
+}
 
 function escHtml(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
