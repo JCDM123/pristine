@@ -1185,7 +1185,7 @@ async function publishArticle() {
         ? ' style="background-image:url(' + articleImageBase64 + ')"'
         : ' style="background:var(--forest)"';
     var heroShell = TMPL_HERO.replace('ARTICLE_CAT', d.category).replace('ARTICLE_DATE', date).replace('ARTICLE_RT', d.readtime).replace('ARTICLE_H1', article.title);
-    var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + (article.closing || '') + '</p>\n    </div>\n' + TMPL_BOTTOM;
+    var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + (article.closing || '') + '</p>\n    </div>\n' + buildSourcesHTML(article) + TMPL_BOTTOM;
 
     // 2. Upload article file to GitHub
     var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
