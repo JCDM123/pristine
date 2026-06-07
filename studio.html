@@ -313,26 +313,7 @@ img{max-width:100%;display:block;}
         <div class="field"><label>Key points (optional)</label><textarea id="a-notes" placeholder="Any specific angles or research to include..."></textarea></div>
         <div class="field">
           <label>Hero image</label>
-          <div class="img-source-toggle">
-            <button class="img-source-btn active" id="img-tab-ai" onclick="switchImgTab('ai')">Generate with AI</button>
-            <button class="img-source-btn" id="img-tab-upload" onclick="switchImgTab('upload')">Upload your own</button>
-          </div>
-
-          <div class="ai-img-panel show" id="ai-img-panel">
-            <div class="ai-img-prompt-wrap">
-              <textarea id="a-ai-img-prompt" class="field textarea" rows="2" placeholder="Describe the image you want, e.g. Morning sunlight through a forest canopy, earthy tones, editorial style" style="width:100%;resize:vertical;min-height:62px;"></textarea>
-            </div>
-            <button class="ai-gen-img-btn" id="ai-gen-img-btn" onclick="generateHeroImage()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Generate image
-            </button>
-            <div class="ai-img-result" id="ai-img-result">
-              <img id="ai-img-preview-el" src="" alt="Generated hero image">
-              <button class="clear-ai-img" onclick="clearAiImage()" title="Remove">&times;</button>
-            </div>
-          </div>
-
-          <div class="upload-img-panel" id="upload-img-panel">
+          <div class="upload-img-panel" id="upload-img-panel" style="display:block;">
             <div class="img-upload-zone" id="a-img-zone" onclick="document.getElementById('a-img-input').click()">
               <div id="a-img-preview-wrap" style="display:none;position:relative;">
                 <img id="a-img-preview" style="width:100%;height:140px;object-fit:cover;border-radius:4px;display:block;">
@@ -453,7 +434,6 @@ img{max-width:100%;display:block;}
     </div>
   </div>
 </div>
-</div>
 
 
 <!-- ===== HOMEPAGE SLIDES TAB ===== -->
@@ -517,6 +497,7 @@ img{max-width:100%;display:block;}
 
   </div>
 </div>
+</div><!-- /#studio -->
 <script>
 const STUDIO_PASSWORD = 'pristine2026';
 
@@ -641,6 +622,10 @@ async function generateArticle() {
       })
     });
     var data = await response.json();
+    if (!response.ok || data.error || !data.content) {
+      var msg = (data.error && data.error.message) || data.type || ('HTTP ' + response.status);
+      throw new Error(msg);
+    }
     var rawText = data.content.map(function(i) { return i.text || ''; }).filter(Boolean).join('');
     var clean = rawText.replace(/```json|```/g, '').trim();
     var article = JSON.parse(clean);
@@ -857,6 +842,10 @@ async function generateRecipe() {
       })
     });
     var data = await response.json();
+    if (!response.ok || data.error || !data.content) {
+      var msg = (data.error && data.error.message) || data.type || ('HTTP ' + response.status);
+      throw new Error(msg);
+    }
     var rawText = data.content.map(function(i){ return i.text||''; }).filter(Boolean).join('');
     var clean = rawText.replace(/```json|```/g,'').trim();
     var jsonStart = clean.indexOf('{');
@@ -1524,93 +1513,6 @@ function bodyImgDrop(event, idx) {
   reader.readAsDataURL(file);
 }
 
-function switchImgTab(tab) {
-  document.getElementById('img-tab-ai').classList.toggle('active', tab === 'ai');
-  document.getElementById('img-tab-upload').classList.toggle('active', tab === 'upload');
-  document.getElementById('ai-img-panel').classList.toggle('show', tab === 'ai');
-  document.getElementById('upload-img-panel').classList.toggle('show', tab === 'upload');
-}
-
-async function generateHeroImage() {
-  var prompt = document.getElementById('a-ai-img-prompt').value.trim();
-  if (!prompt) { alert('Please describe the image you want.'); return; }
-
-  var btn = document.getElementById('ai-gen-img-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Generating...';
-
-  var fullPrompt = 'Create a high-quality editorial wellness photograph for a blog hero image. ' +
-    'Style: natural, earthy, soft natural light, film-like warmth, no text or overlays. ' +
-    'Subject: ' + prompt + '. ' +
-    'Aspect ratio: landscape 16:9. Colour palette: sage greens, warm creams, forest tones.';
-
-  try {
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 1024,
-        messages: [{
-          role: 'user',
-          content: fullPrompt
-        }],
-        tools: [{
-          type: 'computer_use_20241022',
-          name: 'computer',
-          display_width_px: 1280,
-          display_height_px: 720,
-          display_number: 1
-        }]
-      })
-    });
-
-    if (!response.ok) {
-      var errData = await response.json();
-      throw new Error(errData.error ? errData.error.message : 'API error ' + response.status);
-    }
-
-    var data = await response.json();
-    var imageBlock = (data.content || []).find(function(b) { return b.type === 'image'; });
-
-    if (!imageBlock) {
-      // Fallback: try images API via the worker
-      var imgResp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-opus-4-5',
-          max_tokens: 1024,
-          messages: [{ role: 'user', content: 'Generate an image: ' + fullPrompt }]
-        })
-      });
-      var imgData = await imgResp.json();
-      imageBlock = (imgData.content || []).find(function(b) { return b.type === 'image'; });
-    }
-
-    if (imageBlock && imageBlock.source && imageBlock.source.data) {
-      var dataUrl = 'data:' + (imageBlock.source.media_type || 'image/jpeg') + ';base64,' + imageBlock.source.data;
-      articleImageBase64 = dataUrl;
-      var el = document.getElementById('ai-img-preview-el');
-      el.src = dataUrl;
-      document.getElementById('ai-img-result').style.display = 'block';
-    } else {
-      throw new Error('No image returned. Try a more specific description, or use the Upload tab instead.');
-    }
-  } catch(err) {
-    alert('Image generation failed: ' + err.message);
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate image';
-}
-
-function clearAiImage() {
-  articleImageBase64 = '';
-  document.getElementById('ai-img-preview-el').src = '';
-  document.getElementById('ai-img-result').style.display = 'none';
-  document.getElementById('a-ai-img-prompt').value = '';
-}
 
 function handleArticleImage(event) {
   var file = event.target.files[0];
@@ -1979,10 +1881,28 @@ function loadSlidesTab() {
 
 function parseSlidesFromHTML(html) {
   var slides = [];
-  var regex = /<div class="slide[^"]*"\s+style="background-image:url\('([^']*)'\)[^"]*"[^>]*><\/div>/g;
-  var match;
-  while ((match = regex.exec(html)) !== null) {
-    slides.push({ image: match[1], bgpos: '' });
+  // Split on slide divs - find each one by looking for the class marker
+  var searchStr = '<div class="slide';
+  var pos = 0;
+  while (true) {
+    var idx = html.indexOf(searchStr, pos);
+    if (idx === -1) break;
+    // Skip slide-overlay and slide-dots
+    var chunk = html.substring(idx, idx + 30);
+    if (chunk.indexOf('slide-overlay') !== -1 || chunk.indexOf('slide-dots') !== -1) {
+      pos = idx + 10;
+      continue;
+    }
+    // Find the end of this div's opening tag
+    var tagEnd = html.indexOf('></div>', idx);
+    if (tagEnd === -1) { pos = idx + 10; continue; }
+    var tagContent = html.substring(idx, tagEnd);
+    // Extract the background-image URL
+    var urlMatch = tagContent.match(/background-image:url\('([^']+)'/);
+    if (urlMatch) {
+      slides.push({ image: urlMatch[1], bgpos: '' });
+    }
+    pos = tagEnd + 7;
   }
   // Also extract shared hero text (same across all slides on this site)
   var eyebrowM = html.match(/<span class="hero-eyebrow">([^<]*)<\/span>/);
