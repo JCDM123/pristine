@@ -655,7 +655,7 @@ async function generateArticle() {
 
   var systemPrompt = [
     'You are the content writer for Pristine Wellness, an evidence-based ancestral wellness brand from Australia.',
-    'Brand voice rules: first person plural (we/our/us), warm grounded intelligent tone, never preachy, short paragraphs max 4 sentences, occasional italics with em tags, NO em dashes or en dashes ever, no AI tells (no delve, unlock, journey, fascinating), ancestral wisdom meets modern science, Australian spelling.',
+    'Brand voice rules: Write like a health-obsessed Australian dad who has done serious reading but talks like a real person, not a clinician. First person plural (we/our/us). Warm, direct, occasionally conversational. Short paragraphs max 3-4 sentences. Plain language over scientific jargon. Use technical terms when accurate, then immediately follow with a plain English analogy to make it land. For example: "Your mitochondria, the tiny powerhouses inside every cell, work like the engine in your car. When they are running dirty, everything feels sluggish even if you are doing all the right things on the outside." The term stays, the analogy does the teaching. Use this pattern naturally throughout. Never preachy. Occasional italics with em tags for emphasis. NO em dashes or en dashes ever. No AI writing tells (no delve, unlock, journey, fascinating, crucial, game-changer). Ancestral wisdom grounded in modern science. Australian spelling.',
     'CRITICAL: Use the web search tool to find 3-6 real credible sources. You MUST embed citation numbers directly inside the text strings like this: "Magnesium supports over 300 enzymatic reactions in the body.[1] Studies show it plays a key role in sleep regulation.[2]" The number in square brackets must appear at the end of the sentence it supports, inside the text string. Every claim needs a citation number.',
     'Output ONLY valid JSON. No markdown, no preamble, no code fences. Keys:',
     '{"title":"string","intro":"string with [1] citations inline","sections":[{"heading":"string","content":"paragraphs separated by double newline, each with [N] citation numbers at end of sentences"}],"pullQuote":"string","closing":"string","sources":[{"num":1,"title":"string","url":"https://real-url.com","publication":"string"}]}'
@@ -685,7 +685,11 @@ async function generateArticle() {
     // Extract the final text block (after tool use)
     var rawText = data.content.map(function(i) { return i.type === 'text' ? i.text : ''; }).filter(Boolean).join('');
     setStatus('a', 'active', 'Writing article...');
-    var clean = rawText.replace(/```json|```/g, '').trim();
+    // Extract JSON - find first { and last }
+    var jsonStart = rawText.indexOf('{');
+    var jsonEnd = rawText.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd === -1) throw new Error('No JSON found in response');
+    var clean = rawText.slice(jsonStart, jsonEnd + 1);
     var article = JSON.parse(clean);
     generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: tagsRaw };
     renderArticlePreview(article, category, readtime, author, dateVal, tagsRaw);
