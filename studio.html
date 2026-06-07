@@ -248,6 +248,7 @@ img{max-width:100%;display:block;}
     <button class="tab-btn" onclick="switchTab('recipe',this)">Recipe Generator</button>
     <button class="tab-btn" onclick="switchTab('manage',this);loadManageTab()">Manage Content</button>
     <button class="tab-btn" onclick="switchTab('slides',this);loadSlidesTab()">Homepage Slides</button>
+    <button class="tab-btn" onclick="switchTab('images',this);loadImageLibrary()">Image Library</button>
   </div>
 
   <div id="tab-trending" class="tab-panel active">
@@ -313,6 +314,7 @@ img{max-width:100%;display:block;}
         <div class="field"><label>Key points (optional)</label><textarea id="a-notes" placeholder="Any specific angles or research to include..."></textarea></div>
         <div class="field">
           <label>Hero image</label>
+          <p style="font-size:11px;color:var(--muted);margin:-4px 0 8px;line-height:1.6;">Recommended: <strong>1200 x 630px</strong> JPG, under 200kb. Upload via Image Library tab first, then paste the path below, or upload directly here.</p>
           <div class="upload-img-panel" id="upload-img-panel" style="display:block;">
             <div class="img-upload-zone" id="a-img-zone" onclick="document.getElementById('a-img-input').click()">
               <div id="a-img-preview-wrap" style="display:none;position:relative;">
@@ -435,6 +437,45 @@ img{max-width:100%;display:block;}
   </div>
 </div>
 
+
+
+<!-- ===== IMAGE LIBRARY TAB ===== -->
+<div id="tab-images" class="tab-panel">
+  <div class="manage-wrap">
+    <div class="manage-section">
+      <div class="manage-section-head">
+        <div>
+          <h2 class="manage-section-title">Image Library</h2>
+          <p class="manage-section-sub">All images in your <code>images/</code> folder. Upload new images, copy paths, or delete unused ones. Use these paths in article and recipe hero fields.</p>
+        </div>
+        <div class="manage-status-bar">
+          <div class="status-dot" id="imglib-dot"></div>
+          <span id="imglib-status">Ready</span>
+        </div>
+      </div>
+
+      <div style="margin:1.5rem 0;padding:1.2rem 1.4rem;background:rgba(138,155,110,0.1);border-left:2px solid var(--sage);border-radius:2px;">
+        <p style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--sage);margin-bottom:0.5rem;">Recommended image sizes</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;">
+          Article / Recipe hero: <strong>1200 x 630px</strong>, JPG, under 200kb<br>
+          Homepage slides: <strong>1920 x 1080px</strong>, JPG, under 300kb<br>
+          Body images: <strong>900 x 600px</strong>, JPG, under 150kb
+        </p>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <label class="field-label">Upload new image</label>
+        <input type="file" id="imglib-file" accept="image/*" style="display:none" onchange="uploadToImageLibrary(this)">
+        <button class="gen-btn" onclick="document.getElementById('imglib-file').click()" style="background:var(--sage);">Upload Image</button>
+        <span id="imglib-upload-status" style="font-size:12px;color:var(--muted);margin-left:1rem;"></span>
+      </div>
+
+      <div id="imglib-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1rem;">
+        <div class="manage-loading">Loading images...</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ===== HOMEPAGE SLIDES TAB ===== -->
 <div id="tab-slides" class="tab-panel">
@@ -1090,9 +1131,11 @@ async function publishArticle() {
     var tags = d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
     var pageTitle = '<title>' + article.title + ' \u2014 Pristine Wellness</title>';
     var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle);
-    var bgStyle = articleImageBase64
-      ? ' style="background-image:url(' + articleImageBase64 + ')"'
-      : ' style="background:var(--forest)"';
+    var bgStyle = articleImagePath
+      ? ' style="background-image:url(' + articleImagePath + ')"'
+      : articleImageBase64
+        ? ' style="background-image:url(' + articleImageBase64 + ')"'
+        : ' style="background:var(--forest)"';
     var heroShell = TMPL_HERO.replace('ARTICLE_CAT', d.category).replace('ARTICLE_DATE', date).replace('ARTICLE_RT', d.readtime).replace('ARTICLE_H1', article.title);
     var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + article.intro + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + (article.closing || '') + '</p>\n    </div>\n' + TMPL_BOTTOM;
 
@@ -1109,20 +1152,16 @@ async function publishArticle() {
     setStatus('a', 'active', 'Article published, updating The Source...');
 
     // 3. Fetch current the-source.html
-    var sourceResp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/the-source.html', {
-      headers: {
-        'Authorization': 'token ' + token,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-    var sourceData = await sourceResp.json();
-    var sourceHTML = decodeURIComponent(escape(atob(sourceData.content.replace(/\n/g,''))));
+    var sourceData = await githubRequest('the-source.html', 'GET');
+    var sourceHTML = atob(sourceData.content.replace(/\n/g,''));
     var sourceSHA = sourceData.sha;
 
     // 4. Build new article card HTML
-    var cardImg = articleImageBase64
-      ? 'background-image:url(' + articleImageBase64 + ')'
-      : 'background:var(--forest)';
+    var cardImg = articleImagePath
+      ? 'background-image:url(' + articleImagePath + ')'
+      : articleImageBase64
+        ? 'background-image:url(' + articleImageBase64 + ')'
+        : 'background:var(--forest)';
     var cardTagsHTML = tags.slice(0,3).map(function(t){ return '<span class="card-tag">' + t + '</span>'; }).join('');
     var excerptText = article.intro.slice(0, 120) + (article.intro.length > 120 ? '...' : '');
     var newCard = '\n      <div class="article-card" data-cat="' + d.category + '" onclick="window.location=\'' + filename + '\'" style="cursor:pointer">' +
@@ -1175,10 +1214,17 @@ async function publishArticle() {
     // Replace featured + insert old featured as first card in grid
     var sourceWithNewFeat = sourceHTML.slice(0, featStart) + newFeatured + sourceHTML.slice(featEnd);
     
-    var insertAfter = sourceWithNewFeat.match(/ *<div class="article-grid">/)?.[0] || '<div class="article-grid">';
-    var insertPos = sourceWithNewFeat.indexOf(insertAfter);
-    if (insertPos === -1) throw new Error('Could not find article-grid in the-source.html');
-    var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertAfter.length) + oldCard + newCard + sourceWithNewFeat.slice(insertPos + insertAfter.length);
+    // Find injection point - try article-grid div first, then placeholder
+    var gridMarker = '<div class="article-grid">';
+    var gridPlaceholder = '<!-- GRID_PLACEHOLDER -->';
+    var insertPos = sourceWithNewFeat.indexOf(gridMarker);
+    var insertLen = gridMarker.length;
+    if (insertPos === -1) {
+      insertPos = sourceWithNewFeat.indexOf(gridPlaceholder);
+      insertLen = 0; // insert before the placeholder, replacing it
+      if (insertPos === -1) throw new Error('Could not find article grid in the-source.html');
+    }
+    var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertLen) + oldCard + newCard + sourceWithNewFeat.slice(insertPos + insertLen);
 
     // 6. Push updated the-source.html
     var sourceContent = btoa(unescape(encodeURIComponent(updatedSource)));
@@ -1318,11 +1364,8 @@ async function publishRecipe() {
     setStatus('r', 'active', 'Recipe published, updating Ancestral Kitchen...');
 
     // 2. Fetch ancestral-kitchen.html
-    var kitchenResp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/ancestral-kitchen.html', {
-      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    var kitchenData = await kitchenResp.json();
-    var kitchenHTML = decodeURIComponent(escape(atob(kitchenData.content.replace(/\n/g,''))));
+    var kitchenData = await githubRequest('ancestral-kitchen.html', 'GET');
+    var kitchenHTML = atob(kitchenData.content.replace(/\n/g,''));
     var kitchenSHA = kitchenData.sha;
 
     // 3. Build recipe card
@@ -1343,11 +1386,17 @@ async function publishRecipe() {
       '\n    <div class="card-footer"><span class="card-date">' + prepTime + ' prep</span><span class="card-time"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg> ' + (totalTime || 45) + ' min</span></div>' +
       '\n  </div>\n</div>';
 
-    // 4. Insert at top of recipe-grid
-    var insertAfter = 'id="recipe-grid">';
-    var insertPos = kitchenHTML.indexOf(insertAfter);
-    if (insertPos === -1) throw new Error('Could not find recipe-grid in ancestral-kitchen.html');
-    var updatedKitchen = kitchenHTML.slice(0, insertPos + insertAfter.length) + newCard + kitchenHTML.slice(insertPos + insertAfter.length);
+    // 4. Insert using placeholder or known markers
+    var kitchenPlaceholder = '<!-- RECIPE_CARDS_PLACEHOLDER -->';
+    var kitchenAlt = 'id="recipe-grid">';
+    var kInsertPos = kitchenHTML.indexOf(kitchenPlaceholder);
+    var kInsertLen = kitchenPlaceholder.length;
+    if (kInsertPos === -1) {
+      kInsertPos = kitchenHTML.indexOf(kitchenAlt);
+      kInsertLen = kitchenAlt.length;
+    }
+    if (kInsertPos === -1) throw new Error('Could not find recipe grid in ancestral-kitchen.html');
+    var updatedKitchen = kitchenHTML.slice(0, kInsertPos + kInsertLen) + newCard + kitchenHTML.slice(kInsertPos + kInsertLen);
 
     // 5. Push updated ancestral-kitchen.html
     var kitchenContent = btoa(unescape(encodeURIComponent(updatedKitchen)));
@@ -1443,6 +1492,7 @@ renderTrends();
 
 // Article image handling
 var articleImageBase64 = '';
+var articleImagePath = '';
 var articleBodyImages = [null, null, null, null]; // up to 4 body images
 var _bodyImgUploadIdx = 0;
 
@@ -1514,15 +1564,59 @@ function bodyImgDrop(event, idx) {
 }
 
 
-function handleArticleImage(event) {
+async function handleArticleImage(event) {
   var file = event.target.files[0];
   if (!file) return;
+  // Show uploading state
+  var preview = document.getElementById('a-img-preview');
+  var label = document.getElementById('a-img-label');
+  if (label) label.textContent = 'Uploading...';
+  var token = getToken();
+  if (!token) {
+    alert('Please enter your GitHub token first.');
+    return;
+  }
+  // Get slug for filename
+  var topic = document.getElementById('a-topic').value.trim();
+  var slug = topic ? topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,30) + '-hero' : 'article-hero-' + Date.now();
+  var ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+  var imgPath = 'images/' + slug + '.' + ext;
+  // Read as base64 for GitHub API
   var reader = new FileReader();
-  reader.onload = function(e) {
-    articleImageBase64 = e.target.result;
-    document.getElementById('a-img-preview').src = articleImageBase64;
-    document.getElementById('a-img-preview-wrap').style.display = 'block';
-    document.getElementById('a-img-placeholder').style.display = 'none';
+  reader.onload = async function(e) {
+    var base64 = e.target.result.split(',')[1];
+    try {
+      // Check if file exists (need SHA to overwrite)
+      var existing = null;
+      try {
+        var checkResp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + imgPath, {
+          headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (checkResp.ok) { var checkData = await checkResp.json(); existing = checkData.sha; }
+      } catch(e) {}
+      var uploadBody = { message: 'Upload image: ' + imgPath, content: base64 };
+      if (existing) uploadBody.sha = existing;
+      var uploadResp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + imgPath, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+        body: JSON.stringify(uploadBody)
+      });
+      if (!uploadResp.ok) throw new Error('Upload failed: ' + uploadResp.status);
+      articleImagePath = imgPath;
+      articleImageBase64 = e.target.result; // keep for preview only
+      if (label) label.textContent = 'Image ready: ' + imgPath;
+      document.getElementById('a-img-preview').src = articleImageBase64;
+      document.getElementById('a-img-preview-wrap').style.display = 'block';
+      document.getElementById('a-img-placeholder').style.display = 'none';
+    } catch(uploadErr) {
+      if (label) label.textContent = 'Upload failed: ' + uploadErr.message;
+      // Fall back to base64 preview
+      articleImageBase64 = e.target.result;
+      articleImagePath = '';
+      document.getElementById('a-img-preview').src = articleImageBase64;
+      document.getElementById('a-img-preview-wrap').style.display = 'block';
+      document.getElementById('a-img-placeholder').style.display = 'none';
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -1530,6 +1624,7 @@ function handleArticleImage(event) {
 function clearArticleImage(event) {
   event.stopPropagation();
   articleImageBase64 = '';
+  articleImagePath = '';
   document.getElementById('a-img-preview').src = '';
   document.getElementById('a-img-preview-wrap').style.display = 'none';
   document.getElementById('a-img-placeholder').style.display = 'flex';
@@ -2077,6 +2172,135 @@ function rebuildSlidesInHTML(html) {
 function setSlideStatus(msg, ok) {
   var dot = document.getElementById('slides-dot');
   var status = document.getElementById('slides-status');
+  if (!dot || !status) return;
+  status.textContent = msg;
+  dot.style.background = ok === true ? '#27ae60' : ok === false ? '#e74c3c' : '#f39c12';
+}
+
+
+/* ===== IMAGE LIBRARY ===== */
+
+async function loadImageLibrary() {
+  var token = getToken();
+  if (!token) { setImgLibStatus('No GitHub token set.', false); return; }
+  setImgLibStatus('Loading...', null);
+  try {
+    var resp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/images', {
+      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (resp.status === 404) {
+      document.getElementById('imglib-grid').innerHTML = '<p style="color:var(--muted);font-size:13px;">No images folder yet. Upload your first image to create it.</p>';
+      setImgLibStatus('Ready', true);
+      return;
+    }
+    var files = await resp.json();
+    var images = files.filter(function(f) { return /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f.name); });
+    renderImageLibrary(images);
+    setImgLibStatus('Loaded ' + images.length + ' image(s).', true);
+  } catch(e) {
+    setImgLibStatus('Error: ' + e.message, false);
+  }
+}
+
+function renderImageLibrary(images) {
+  var grid = document.getElementById('imglib-grid');
+  if (!images.length) {
+    grid.innerHTML = '<p style="color:var(--muted);font-size:13px;">No images yet. Upload your first image above.</p>';
+    return;
+  }
+  var html = '';
+  images.forEach(function(img) {
+    var path = 'images/' + img.name;
+    var url = 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + path;
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;">';
+    html += '<div style="height:130px;overflow:hidden;background:#eee;">';
+    html += '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">';
+    html += '</div>';
+    html += '<div style="padding:0.7rem;">';
+    html += '<p style="font-size:11px;color:var(--muted);margin-bottom:0.5rem;word-break:break-all;">' + img.name + '</p>';
+    html += '<div style="display:flex;gap:0.5rem;">';
+    html += '<button data-path="' + path + '" onclick="copyImagePath(this)" style="flex:1;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px;background:var(--sage);border:none;color:#fff;border-radius:2px;cursor:pointer;">Copy path</button>';
+    html += '<button data-path="' + path + '" data-sha="' + img.sha + '" onclick="deleteImage(this)" style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px;background:transparent;border:1px solid #c44;color:#c44;border-radius:2px;cursor:pointer;">Delete</button>';
+    html += '</div>';
+    html += '</div></div>';
+  });
+  grid.innerHTML = html;
+}
+
+async function uploadToImageLibrary(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var token = getToken();
+  if (!token) { alert('Please enter your GitHub token first.'); return; }
+
+  var statusEl = document.getElementById('imglib-upload-status');
+  statusEl.textContent = 'Uploading ' + file.name + '...';
+  setImgLibStatus('Uploading...', null);
+
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var base64 = e.target.result.split(',')[1];
+    var imgPath = 'images/' + file.name;
+    try {
+      var existing = null;
+      try {
+        var checkResp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + imgPath, {
+          headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (checkResp.ok) { var cd = await checkResp.json(); existing = cd.sha; }
+      } catch(ex) {}
+      var body = { message: 'Upload image: ' + imgPath, content: base64 };
+      if (existing) body.sha = existing;
+      var uploadResp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + imgPath, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+        body: JSON.stringify(body)
+      });
+      if (!uploadResp.ok) throw new Error('Upload failed: ' + uploadResp.status);
+      statusEl.textContent = 'Uploaded: ' + imgPath;
+      setImgLibStatus('Uploaded successfully.', true);
+      setTimeout(loadImageLibrary, 1500);
+    } catch(err) {
+      statusEl.textContent = 'Failed: ' + err.message;
+      setImgLibStatus('Upload failed.', false);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function copyImagePath(btn) {
+  var path = btn.getAttribute('data-path');
+  navigator.clipboard.writeText(path).then(function() {
+    setImgLibStatus('Copied: ' + path, true);
+  }).catch(function() {
+    prompt('Copy this path:', path);
+  });
+}
+
+async function deleteImage(btn) {
+  var path = btn.getAttribute('data-path');
+  var sha = btn.getAttribute('data-sha');
+  if (!confirm('Delete ' + path + '? This cannot be undone.')) return;
+  var token = getToken();
+  if (!token) { alert('No GitHub token.'); return; }
+  setImgLibStatus('Deleting...', null);
+  try {
+    var resp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + path, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+      body: JSON.stringify({ message: 'Delete image: ' + path, sha: sha })
+    });
+    if (!resp.ok) throw new Error('Delete failed: ' + resp.status);
+    setImgLibStatus('Deleted.', true);
+    setTimeout(loadImageLibrary, 1000);
+  } catch(e) {
+    setImgLibStatus('Error: ' + e.message, false);
+  }
+}
+
+function setImgLibStatus(msg, ok) {
+  var dot = document.getElementById('imglib-dot');
+  var status = document.getElementById('imglib-status');
   if (!dot || !status) return;
   status.textContent = msg;
   dot.style.background = ok === true ? '#27ae60' : ok === false ? '#e74c3c' : '#f39c12';
