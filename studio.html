@@ -1861,22 +1861,19 @@ function rebuildKitchenGrid(html) {
 /* ===== HOMEPAGE SLIDES EDITOR ===== */
 var slidesData = []; // [{image: base64orURL, headline, sub, eyebrow, cta1text, cta1href, cta2text, cta2href, bgpos}]
 
-function loadSlidesTab() {
+async function loadSlidesTab() {
   var token = getToken();
   if (!token) { setSlideStatus('No GitHub token set.', false); return; }
   setSlideStatus('Loading...', null);
-  githubRequest('index.html', 'GET').then(function(res) {
-    if (!res.ok) { setSlideStatus('Could not load index.html from GitHub.', false); return; }
-    return res.json();
-  }).then(function(data) {
-    if (!data) return;
+  try {
+    var data = await githubRequest('index.html', 'GET');
     var html = atob(data.content.replace(/\n/g,''));
     slidesData = parseSlidesFromHTML(html);
     renderSlidesEditor();
     setSlideStatus('Loaded ' + slidesData.length + ' slide(s).', true);
-  }).catch(function(e) {
+  } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
-  });
+  }
 }
 
 function parseSlidesFromHTML(html) {
@@ -1945,6 +1942,7 @@ function renderSlidesEditor() {
     html += imgHtml;
     html += '<input type="file" accept="image/*" id="slide-file-' + i + '" style="display:none" onchange="onSlideImageChange(' + i + ',this)">';
     html += '<button class="slide-upload-btn" onclick="triggerSlideUpload(' + i + ')">Replace image</button>';
+    html += '<p style="font-size:11px;color:var(--muted);margin:0 0 1rem;line-height:1.6;">Recommended: <strong>1920 &times; 1080px</strong> (16:9), JPG, under 300kb. Shoot wide &mdash; the image fills the full viewport and is cropped on mobile.</p>';
     // Only show hero text fields on first slide (shared across all)
     if (i === 0) {
       html += '<div class="slide-field-group"><span class="slide-field-label">Eyebrow text</span><input class="field" id="slide-eyebrow" value="' + escHtml(slide.eyebrow) + '" placeholder="Pristine Wellness"></div>';
@@ -2019,29 +2017,23 @@ function collectSlideTextFields() {
   slidesData.forEach(function(s) { Object.assign(s, text); });
 }
 
-function publishSlides() {
+async function publishSlides() {
   var token = getToken();
   if (!token) { setSlideStatus('No GitHub token.', false); return; }
   if (!slidesData.length) { setSlideStatus('No slides to publish.', false); return; }
   collectSlideTextFields();
   setSlideStatus('Fetching index.html...', null);
-  githubRequest('index.html', 'GET').then(function(res) {
-    return res.json();
-  }).then(function(data) {
+  try {
+    var data = await githubRequest('index.html', 'GET');
     var html = atob(data.content.replace(/\n/g,''));
     var sha = data.sha;
     html = rebuildSlidesInHTML(html);
     var encoded = btoa(unescape(encodeURIComponent(html)));
-    return githubRequest('index.html', 'PUT', { message: 'Update homepage slides via Studio', content: encoded, sha: sha });
-  }).then(function(res) {
-    if (res.ok) {
-      setSlideStatus('Published! Changes live within 60 seconds.', true);
-    } else {
-      return res.text().then(function(t) { setSlideStatus('Publish failed: ' + t.slice(0,80), false); });
-    }
-  }).catch(function(e) {
+    await githubRequest('index.html', 'PUT', { message: 'Update homepage slides via Studio', content: encoded, sha: sha });
+    setSlideStatus('Published! Changes live within 60 seconds.', true);
+  } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
-  });
+  }
 }
 
 function rebuildSlidesInHTML(html) {
