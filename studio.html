@@ -656,13 +656,13 @@ async function generateArticle() {
   var systemPrompt = [
     'You are the content writer for Pristine Wellness, an evidence-based ancestral wellness brand from Australia.',
     'Brand voice rules: first person plural (we/our/us), warm grounded intelligent tone, never preachy, short paragraphs max 4 sentences, occasional italics with em tags, NO em dashes or en dashes ever, no AI tells (no delve, unlock, journey, fascinating), ancestral wisdom meets modern science, Australian spelling.',
-    'Use the web search tool to find 3-6 real, credible sources (PubMed studies, peer-reviewed journals, reputable health publications) relevant to the article topic. Then write the article with inline superscript citation numbers [1] [2] etc referencing those sources.',
-    'Output ONLY valid JSON no markdown no preamble. Never use em dashes or special characters inside JSON strings. Use plain ASCII punctuation only. Keys:',
-    '{"title":"Full article title","intro":"Opening 2-3 sentences with citation numbers where relevant e.g. sentence.[1]","sections":[{"heading":"Section heading","content":"2-4 paragraphs separated by double newline, with inline citation numbers e.g. sentence.[2]"}],"pullQuote":"Powerful single sentence","closing":"1-2 sentence closing","sources":[{"num":1,"title":"Source title","url":"https://...","publication":"Journal or site name"}]}'
+    'CRITICAL: Use the web search tool to find 3-6 real credible sources. You MUST embed citation numbers directly inside the text strings like this: "Magnesium supports over 300 enzymatic reactions in the body.[1] Studies show it plays a key role in sleep regulation.[2]" The number in square brackets must appear at the end of the sentence it supports, inside the text string. Every claim needs a citation number.',
+    'Output ONLY valid JSON. No markdown, no preamble, no code fences. Keys:',
+    '{"title":"string","intro":"string with [1] citations inline","sections":[{"heading":"string","content":"paragraphs separated by double newline, each with [N] citation numbers at end of sentences"}],"pullQuote":"string","closing":"string","sources":[{"num":1,"title":"string","url":"https://real-url.com","publication":"string"}]}'
   ].join(' ');
 
   var notesLine = notes ? 'Key points to cover: ' + notes : '';
-  var userPrompt = 'Search for real credible sources then write a ' + readtime + ' article for Pristine Wellness about: "' + topic + '". Category: ' + category + '. ' + notesLine + ' Include 3-6 inline superscript citation numbers and a sources array. No em dashes or en dashes anywhere.';
+  var userPrompt = 'Search for real sources first, then write a ' + readtime + ' article about: "' + topic + '". Category: ' + category + '. ' + notesLine + ' IMPORTANT: Every factual claim must have a [N] citation number at the end of the sentence inside the JSON string. Include 3-6 sources. No em dashes or en dashes.';
 
   try {
     setStatus('a', 'active', 'Searching for sources...');
@@ -785,7 +785,7 @@ var TMPL_TOP = null, TMPL_HERO = null, TMPL_MID = null, TMPL_BOTTOM = null;
 
 async function loadArticleTemplates() {
   if (TMPL_TOP) return; // already loaded
-  var resp = await fetch('https://pristinewellness.com.au/article-forest-bathing.html');
+  var resp = await fetch('https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/article-template.html?t=' + Date.now());
   var html = await resp.text();
   // Extract parts
   var heroDivStart = html.indexOf('<div class="article-hero" style="background-image:url(');
