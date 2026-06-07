@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+  location.replace('https:' + location.href.substring(5));
+}
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio &mdash; Pristine Wellness</title>
@@ -2019,7 +2024,7 @@ function renderSlidesEditor() {
     html += '</div>';
     html += imgHtml;
     html += '<input type="file" accept="image/*" id="slide-file-' + i + '" style="display:none" onchange="onSlideImageChange(' + i + ',this)">';
-    html += '<button class="slide-upload-btn" onclick="document.getElementById(\'slide-file-' + i + '\').click()">Replace image</button>';
+    html += '<button class="slide-upload-btn" onclick="triggerSlideUpload(' + i + ')">Replace image</button>';
     // Only show hero text fields on first slide (shared across all)
     if (i === 0) {
       html += '<div class="slide-field-group"><span class="slide-field-label">Eyebrow text</span><input class="field" id="slide-eyebrow" value="' + escHtml(slide.eyebrow) + '" placeholder="Pristine Wellness"></div>';
@@ -2033,6 +2038,11 @@ function renderSlidesEditor() {
     html += '</div>';
   });
   container.innerHTML = html;
+}
+
+function triggerSlideUpload(idx) {
+  var el = document.getElementById('slide-file-' + idx);
+  if (el) el.click();
 }
 
 function onSlideImageChange(idx, input) {
