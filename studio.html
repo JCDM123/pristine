@@ -683,14 +683,27 @@ async function generateArticle() {
       throw new Error(msg);
     }
     // Extract the final text block (after tool use)
-    var rawText = data.content.map(function(i) { return i.type === 'text' ? i.text : ''; }).filter(Boolean).join('');
+    // With web search, response may have tool_use blocks followed by final text
+    // Get all text blocks and find the one containing JSON
+    var textBlocks = data.content.filter(function(i) { return i.type === 'text' && i.text; });
+    var rawText = '';
+    var article = null;
+    // Try each text block from last to first - the JSON is usually in the last text block
+    for (var bi = textBlocks.length - 1; bi >= 0; bi--) {
+      var block = textBlocks[bi].text;
+      var jsonStart = block.indexOf('{');
+      var jsonEnd = block.lastIndexOf('}');
+      if (jsonStart !== -1 && jsonEnd !== -1) {
+        try {
+          var candidate = block.slice(jsonStart, jsonEnd + 1);
+          article = JSON.parse(candidate);
+          rawText = block;
+          break;
+        } catch(e) { continue; }
+      }
+    }
+    if (!article) throw new Error('Could not find valid JSON in response');
     setStatus('a', 'active', 'Writing article...');
-    // Extract JSON - find first { and last }
-    var jsonStart = rawText.indexOf('{');
-    var jsonEnd = rawText.lastIndexOf('}');
-    if (jsonStart === -1 || jsonEnd === -1) throw new Error('No JSON found in response');
-    var clean = rawText.slice(jsonStart, jsonEnd + 1);
-    var article = JSON.parse(clean);
     generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: tagsRaw };
     renderArticlePreview(article, category, readtime, author, dateVal, tagsRaw);
     setStatus('a', 'done', 'Article ready');
