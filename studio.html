@@ -615,7 +615,7 @@ async function generateArticle() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 6000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
@@ -835,7 +835,7 @@ async function generateRecipe() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1200,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
@@ -1735,7 +1735,7 @@ async function saveSourceChanges() {
     var html = await r.text();
     html = rebuildSourceGrid(html);
     var sha = await getFileSHA('the-source.html');
-    await githubRequest('PUT', 'the-source.html', {
+    await githubRequest('the-source.html', 'PUT', {
       message: 'Studio: update article grid',
       content: btoa(unescape(encodeURIComponent(html))),
       sha: sha
@@ -1759,7 +1759,7 @@ async function saveKitchenChanges() {
     var html = await r.text();
     html = rebuildKitchenGrid(html);
     var sha = await getFileSHA('ancestral-kitchen.html');
-    await githubRequest('PUT', 'ancestral-kitchen.html', {
+    await githubRequest('ancestral-kitchen.html', 'PUT', {
       message: 'Studio: update recipe grid',
       content: btoa(unescape(encodeURIComponent(html))),
       sha: sha
