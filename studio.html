@@ -193,6 +193,19 @@ img{max-width:100%;display:block;}
 .trend-refresh-row p{font-size:12px;color:var(--muted);}
 .trend-refresh-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:6px 14px;cursor:pointer;transition:all 0.2s;}
 .trend-refresh-btn:hover{border-color:var(--sage);color:var(--sage-dark);}
+
+/* ===== SLIDES EDITOR ===== */
+.slide-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;position:relative;}
+.slide-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;}
+.slide-card-title{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--forest);}
+.slide-img-preview{width:100%;height:160px;object-fit:cover;border-radius:6px;display:block;margin-bottom:0.8rem;background:#eee;}
+.slide-img-placeholder{width:100%;height:160px;border-radius:6px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;margin-bottom:0.8rem;border:2px dashed var(--border);}
+.slide-upload-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:4px;cursor:pointer;margin-bottom:1rem;}
+.slide-upload-btn:hover{border-color:var(--sage);color:var(--sage);}
+.slide-delete-btn{background:transparent;border:none;color:#c0392b;font-size:12px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;padding:6px 10px;}
+.slide-delete-btn:hover{text-decoration:underline;}
+.slide-field-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;display:block;}
+.slide-field-group{margin-bottom:1rem;}
 </style>
 </head>
 <body>
@@ -229,6 +242,7 @@ img{max-width:100%;display:block;}
     <button class="tab-btn" onclick="switchTab('article',this)">Article Generator</button>
     <button class="tab-btn" onclick="switchTab('recipe',this)">Recipe Generator</button>
     <button class="tab-btn" onclick="switchTab('manage',this);loadManageTab()">Manage Content</button>
+    <button class="tab-btn" onclick="switchTab('slides',this);loadSlidesTab()">Homepage Slides</button>
   </div>
 
   <div id="tab-trending" class="tab-panel active">
@@ -434,6 +448,34 @@ img{max-width:100%;display:block;}
     </div>
   </div>
 </div>
+</div>
+
+
+<!-- ===== HOMEPAGE SLIDES TAB ===== -->
+<div id="tab-slides" class="tab-panel">
+  <div class="manage-wrap">
+    <div class="manage-section">
+      <div class="manage-section-head">
+        <div>
+          <h2 class="manage-section-title">Homepage Slideshow</h2>
+          <p class="manage-section-sub">Edit each slide image, headline, subtext and CTAs. Add or remove slides. Publish to save changes to the live homepage.</p>
+        </div>
+        <div class="manage-status-bar">
+          <div class="status-dot" id="slides-dot"></div>
+          <span id="slides-status">Ready</span>
+        </div>
+      </div>
+
+      <div id="slides-list" style="margin-top:1.5rem;">
+        <div class="manage-loading">Loading slides from GitHub...</div>
+      </div>
+
+      <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+        <button class="gen-btn" onclick="addSlide()" style="background:var(--sage);">+ Add Slide</button>
+        <button class="gen-btn" onclick="publishSlides()" style="background:var(--forest);">Publish Changes to Homepage</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== MANAGE CONTENT TAB ===== -->
@@ -1908,6 +1950,216 @@ function rebuildKitchenGrid(html) {
 
   return html.slice(0, openTag) + newGrid + html.slice(gridClose);
 }
+
+/* ===== HOMEPAGE SLIDES EDITOR ===== */
+var slidesData = []; // [{image: base64orURL, headline, sub, eyebrow, cta1text, cta1href, cta2text, cta2href, bgpos}]
+
+function loadSlidesTab() {
+  var token = getToken();
+  if (!token) { setSlideStatus('No GitHub token set.', false); return; }
+  setSlideStatus('Loading...', null);
+  githubRequest('index.html', 'GET').then(function(res) {
+    if (!res.ok) { setSlideStatus('Could not load index.html from GitHub.', false); return; }
+    return res.json();
+  }).then(function(data) {
+    if (!data) return;
+    var html = atob(data.content.replace(/\n/g,''));
+    slidesData = parseSlidesFromHTML(html);
+    renderSlidesEditor();
+    setSlideStatus('Loaded ' + slidesData.length + ' slide(s).', true);
+  }).catch(function(e) {
+    setSlideStatus('Error: ' + e.message, false);
+  });
+}
+
+function parseSlidesFromHTML(html) {
+  var slides = [];
+  var regex = /<div class="slide[^"]*"\s+style="background-image:url\('([^']*)'\)[^"]*"[^>]*><\/div>/g;
+  var match;
+  while ((match = regex.exec(html)) !== null) {
+    slides.push({ image: match[1], bgpos: '' });
+  }
+  // Also extract shared hero text (same across all slides on this site)
+  var eyebrowM = html.match(/<span class="hero-eyebrow">([^<]*)<\/span>/);
+  var headlineM = html.match(/<h1 class="hero-headline">([\s\S]*?)<\/h1>/);
+  var subM = html.match(/<p class="hero-sub">([^<]*)<\/p>/);
+  var cta1M = html.match(/<a class="hero-cta-primary"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/);
+  var cta2M = html.match(/<a class="hero-cta-secondary"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/);
+  var sharedText = {
+    eyebrow: eyebrowM ? eyebrowM[1] : 'Pristine Wellness',
+    headline: headlineM ? headlineM[1].replace(/<br>/g,'\n').replace(/<[^>]+>/g,'') : 'Live the way\nyou were\ndesigned to.',
+    sub: subM ? subM[1] : '',
+    cta1text: cta1M ? cta1M[2].trim() : 'Read The Source',
+    cta1href: cta1M ? cta1M[1] : 'the-source.html',
+    cta2text: cta2M ? cta2M[2].trim() : 'Our story',
+    cta2href: cta2M ? cta2M[1] : 'about.html'
+  };
+  // Apply shared text to each slide
+  slides.forEach(function(s) {
+    Object.assign(s, sharedText);
+  });
+  return slides;
+}
+
+function renderSlidesEditor() {
+  var container = document.getElementById('slides-list');
+  if (!slidesData.length) {
+    container.innerHTML = '<p style="color:var(--muted);font-size:14px;">No slides found. Add one below.</p>';
+    return;
+  }
+  var html = '';
+  slidesData.forEach(function(slide, i) {
+    var imgHtml = slide.image
+      ? '<img class="slide-img-preview" id="slide-preview-' + i + '" src="' + slide.image + '" alt="Slide ' + (i+1) + '">'
+      : '<div class="slide-img-placeholder" id="slide-preview-' + i + '">No image</div>';
+    html += '<div class="slide-card" id="slide-card-' + i + '">';
+    html += '<div class="slide-card-header">';
+    html += '<span class="slide-card-title">Slide ' + (i+1) + '</span>';
+    html += '<button class="slide-delete-btn" onclick="deleteSlide(' + i + ')">Remove slide</button>';
+    html += '</div>';
+    html += imgHtml;
+    html += '<input type="file" accept="image/*" id="slide-file-' + i + '" style="display:none" onchange="onSlideImageChange(' + i + ',this)">';
+    html += '<button class="slide-upload-btn" onclick="document.getElementById('slide-file-' + i + '').click()">Replace image</button>';
+    // Only show hero text fields on first slide (shared across all)
+    if (i === 0) {
+      html += '<div class="slide-field-group"><span class="slide-field-label">Eyebrow text</span><input class="field" id="slide-eyebrow" value="' + escHtml(slide.eyebrow) + '" placeholder="Pristine Wellness"></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Headline (use \\n for line breaks)</span><input class="field" id="slide-headline" value="' + escHtml(slide.headline) + '" placeholder="Live the way..."></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Subheading</span><input class="field" id="slide-sub" value="' + escHtml(slide.sub) + '" placeholder="Subheading text"></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA text</span><input class="field" id="slide-cta1text" value="' + escHtml(slide.cta1text) + '"></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA link</span><input class="field" id="slide-cta1href" value="' + escHtml(slide.cta1href) + '"></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Secondary CTA text</span><input class="field" id="slide-cta2text" value="' + escHtml(slide.cta2text) + '"></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Secondary CTA link</span><input class="field" id="slide-cta2href" value="' + escHtml(slide.cta2href) + '"></div>';
+    }
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function onSlideImageChange(idx, input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    slidesData[idx].image = e.target.result;
+    var preview = document.getElementById('slide-preview-' + idx);
+    if (preview.tagName === 'IMG') {
+      preview.src = e.target.result;
+    } else {
+      var img = document.createElement('img');
+      img.className = 'slide-img-preview';
+      img.id = 'slide-preview-' + idx;
+      img.src = e.target.result;
+      preview.parentNode.replaceChild(img, preview);
+    }
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function deleteSlide(idx) {
+  if (!confirm('Remove slide ' + (idx+1) + '? This cannot be undone until you publish.')) return;
+  slidesData.splice(idx, 1);
+  renderSlidesEditor();
+}
+
+function addSlide() {
+  var base = slidesData.length ? Object.assign({}, slidesData[0]) : {
+    eyebrow: 'Pristine Wellness',
+    headline: 'Live the way\nyou were\ndesigned to.',
+    sub: 'Evidence-based wellness and wholefood living rooted in ancestral wisdom, for you and your family.',
+    cta1text: 'Read The Source', cta1href: 'the-source.html',
+    cta2text: 'Our story', cta2href: 'about.html'
+  };
+  base.image = '';
+  slidesData.push(base);
+  renderSlidesEditor();
+  setSlideStatus('New slide added. Upload an image then publish.', true);
+}
+
+function collectSlideTextFields() {
+  // Read current text fields from the form (slide 0 holds the shared text)
+  var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+  var text = {
+    eyebrow: get('slide-eyebrow'),
+    headline: get('slide-headline'),
+    sub: get('slide-sub'),
+    cta1text: get('slide-cta1text'),
+    cta1href: get('slide-cta1href'),
+    cta2text: get('slide-cta2text'),
+    cta2href: get('slide-cta2href')
+  };
+  slidesData.forEach(function(s) { Object.assign(s, text); });
+}
+
+function publishSlides() {
+  var token = getToken();
+  if (!token) { setSlideStatus('No GitHub token.', false); return; }
+  if (!slidesData.length) { setSlideStatus('No slides to publish.', false); return; }
+  collectSlideTextFields();
+  setSlideStatus('Fetching index.html...', null);
+  githubRequest('index.html', 'GET').then(function(res) {
+    return res.json();
+  }).then(function(data) {
+    var html = atob(data.content.replace(/\n/g,''));
+    var sha = data.sha;
+    html = rebuildSlidesInHTML(html);
+    var encoded = btoa(unescape(encodeURIComponent(html)));
+    return githubRequest('index.html', 'PUT', { message: 'Update homepage slides via Studio', content: encoded, sha: sha });
+  }).then(function(res) {
+    if (res.ok) {
+      setSlideStatus('Published! Changes live within 60 seconds.', true);
+    } else {
+      return res.text().then(function(t) { setSlideStatus('Publish failed: ' + t.slice(0,80), false); });
+    }
+  }).catch(function(e) {
+    setSlideStatus('Error: ' + e.message, false);
+  });
+}
+
+function rebuildSlidesInHTML(html) {
+  // 1. Replace slide divs
+  var newSlideDivs = slidesData.map(function(s, i) {
+    var cls = i === 0 ? 'slide active' : 'slide';
+    return '  <div class="' + cls + '" style="background-image:url(\'' + s.image + '\');"></div>';
+  }).join('\n');
+
+  // Replace all existing slide divs block
+  html = html.replace(/<div class="slide[^"]*"\s+style="background-image:url[^>]+><\/div>\s*/g, '');
+  // Insert new slides before slide-overlay
+  html = html.replace('<div class="slide-overlay">', newSlideDivs + '\n  <div class="slide-overlay">');
+
+  // 2. Update dot nav count
+  var dots = slidesData.map(function(s, i) {
+    return '    <button class="dot' + (i===0?' active':'') + '" onclick="goSlide(' + i + ')"></button>';
+  }).join('\n');
+  html = html.replace(/<div class="slide-dots"[^>]*>[\s\S]*?<\/div>/, '<div class="slide-dots" id="slide-dots">\n' + dots + '\n  </div>');
+
+  // 3. Update JS slides array count (setInterval and nextSlide use slides.length so no change needed)
+
+  // 4. Update hero text
+  var sd = slidesData[0];
+  // eyebrow
+  html = html.replace(/<span class="hero-eyebrow">[^<]*<\/span>/, '<span class="hero-eyebrow">' + escHtml(sd.eyebrow) + '</span>');
+  // headline - convert \n to <br>
+  var headlineHtml = sd.headline.replace(/\n/g,'<br>');
+  html = html.replace(/<h1 class="hero-headline">[\s\S]*?<\/h1>/, '<h1 class="hero-headline">' + headlineHtml + '</h1>');
+  // sub
+  html = html.replace(/<p class="hero-sub">[^<]*<\/p>/, '<p class="hero-sub">' + escHtml(sd.sub) + '</p>');
+  // CTAs
+  html = html.replace(/<a class="hero-cta-primary"[^>]*href="[^"]*"[^>]*>[^<]*<\/a>/,
+    '<a class="hero-cta-primary" href="' + sd.cta1href + '">' + escHtml(sd.cta1text) + '</a>');
+  html = html.replace(/<a class="hero-cta-secondary"[^>]*href="[^"]*"[^>]*>[^<]*<\/a>/,
+    '<a class="hero-cta-secondary" href="' + sd.cta2href + '">' + escHtml(sd.cta2text) + '</a>');
+
+  return html;
+}
+
+function setSlideStatus(msg, ok) {
+  var dot = document.getElementById('slides-dot');
+  var status = document.getElementById('slides-status');
+  if (!dot || !status) return;
+  status.textContent = msg;
+  dot.style.background = ok === true ? '#27ae60' : ok === false ? '#e74c3c' : '#f39c12';
+}
+
 
 function escHtml(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
