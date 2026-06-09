@@ -1278,7 +1278,16 @@ async function downloadArticle() {
         sectionsHTML += '    </div>\n    <div class="pull-quote">\n      <blockquote>' + article.pullQuote + '</blockquote>\n      <cite>' + d.author + '</cite>\n    </div>\n    <div class="article-text">\n';
       }
       if (i < bodyImgsForExport.length) {
-        sectionsHTML += '      <img src="' + bodyImgsForExport[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
+        var capEl = document.getElementById('bcaption-' + i);
+        var cap = capEl ? capEl.value.trim() : '';
+        if (cap) {
+          sectionsHTML += '      <figure style="margin:1.5rem 0;">\n';
+          sectionsHTML += '        <img src="' + bodyImgsForExport[i] + '" alt="' + escHtml(cap) + '" style="width:100%;border-radius:2px;display:block;">\n';
+          sectionsHTML += '        <figcaption style="font-size:12px;color:#888;font-style:italic;margin-top:6px;text-align:center;">' + escHtml(cap) + '</figcaption>\n';
+          sectionsHTML += '      </figure>\n';
+        } else {
+          sectionsHTML += '      <img src="' + bodyImgsForExport[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
+        }
       }
     });
   }
@@ -1602,7 +1611,16 @@ async function publishArticle() {
           sectionsHTML += '    </div>\n    <div class="pull-quote">\n      <blockquote>' + article.pullQuote + '</blockquote>\n      <cite>' + d.author + '</cite>\n    </div>\n    <div class="article-text">\n';
         }
         if (i < bodyImgsForPub.length) {
-          sectionsHTML += '      <img src="' + bodyImgsForPub[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
+          var capEl = document.getElementById('bcaption-' + i);
+          var cap = capEl ? capEl.value.trim() : '';
+          if (cap) {
+            sectionsHTML += '      <figure style="margin:1.5rem 0;">\n';
+            sectionsHTML += '        <img src="' + bodyImgsForPub[i] + '" alt="' + escHtml(cap) + '" style="width:100%;border-radius:2px;display:block;">\n';
+            sectionsHTML += '        <figcaption style="font-size:12px;color:#888;font-style:italic;margin-top:6px;text-align:center;">' + escHtml(cap) + '</figcaption>\n';
+            sectionsHTML += '      </figure>\n';
+          } else {
+            sectionsHTML += '      <img src="' + bodyImgsForPub[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
+          }
         }
       });
     }
