@@ -1611,11 +1611,16 @@ async function publishArticle() {
     var pageTitle = '<title>' + seoTitleText + '</title>';
     var metaDescTag = article.metaDesc ? '<meta name="description" content="' + article.metaDesc.replace(/"/g,'&quot;') + '">' : '';
     var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle + '\n' + metaDescTag);
+    // Never embed base64 in published HTML - too large for GitHub
+    if (!articleImagePath && articleImageBase64) {
+      setStatus('a', 'error', 'Image still uploading. Wait a moment and try again, or remove the image.');
+      btn.disabled = false;
+      btn.textContent = 'Publish';
+      return;
+    }
     var bgStyle = articleImagePath
       ? ' style="background-image:url(' + articleImagePath + ')"'
-      : articleImageBase64
-        ? ' style="background-image:url(' + articleImageBase64 + ')"'
-        : ' style="background:var(--forest)"';
+      : ' style="background:var(--forest)"';
     var heroShell = TMPL_HERO.replace('ARTICLE_CAT', d.category).replace('ARTICLE_DATE', date).replace('ARTICLE_RT', d.readtime).replace('ARTICLE_H1', article.title);
     var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + (article.closing || '') + '</p>\n    </div>\n' + buildSourcesHTML(article) + TMPL_BOTTOM;
 
