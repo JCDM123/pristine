@@ -215,6 +215,23 @@ img{max-width:100%;display:block;}
 sup.cite { font-size:10px; color:var(--sage); font-weight:600; cursor:pointer; }
 sup.cite:hover { text-decoration:underline; }
 
+/* ===== TAG PICKER ===== */
+.tag-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; background:rgba(138,155,110,0.15); border:1px solid rgba(138,155,110,0.4); border-radius:20px; font-size:12px; color:var(--forest); }
+.tag-chip-remove { background:none; border:none; color:var(--sage); cursor:pointer; font-size:14px; line-height:1; padding:0; }
+.tag-suggestion-chip { display:inline-flex; align-items:center; padding:3px 10px; background:var(--surface); border:1px solid var(--border); border-radius:20px; font-size:12px; color:#666; cursor:pointer; transition:all 0.15s; }
+.tag-suggestion-chip:hover { background:var(--sage); color:#fff; border-color:var(--sage); }
+.tag-suggestion-chip.ai-suggested { border-color:var(--sage); color:var(--forest); background:rgba(138,155,110,0.08); }
+
+/* ===== CONTENT PIPELINE ===== */
+.ap-related-item { display:inline-flex; align-items:center; gap:3px; }
+.ap-save-topic-btn { background:transparent; border:1px solid var(--border); color:var(--muted); width:20px; height:20px; border-radius:50%; font-size:14px; line-height:1; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.ap-save-topic-btn:hover { background:var(--sage); border-color:var(--sage); color:#fff; }
+.pipeline-item { display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; }
+.pipeline-topic { flex:1; font-size:13px; color:var(--text); cursor:pointer; }
+.pipeline-topic:hover { color:var(--sage); }
+.pipeline-remove { background:transparent; border:none; color:#ccc; cursor:pointer; font-size:16px; line-height:1; padding:0 2px; }
+.pipeline-remove:hover { color:#c44; }
+
 /* ===== EXTRAS PANEL (SEO / SOCIAL / RELATED) ===== */
 .ap-extras { margin-top:2rem; padding:1.5rem; background:rgba(138,155,110,0.07); border-radius:6px; border:1px solid rgba(138,155,110,0.2); }
 .ap-extra-field { margin-bottom:1.2rem; }
@@ -369,7 +386,18 @@ sup.cite:hover { text-decoration:underline; }
 
         <div class="field-row">
           <div class="field"><label>Author</label><input type="text" id="a-author" value="Pristine Wellness"></div>
-          <div class="field"><label>Tags (comma-separated)</label><input type="text" id="a-tags" placeholder="e.g. sleep, cortisol"></div>
+          <div class="field">
+            <label style="display:flex;align-items:center;justify-content:space-between;">
+              <span>Tags</span>
+              <span style="font-size:11px;color:var(--muted);font-weight:400;">AI suggests after generate</span>
+            </label>
+            <div id="a-tag-picker" style="display:flex;flex-wrap:wrap;gap:5px;min-height:36px;padding:6px 8px;border:1px solid var(--border);border-radius:3px;background:var(--surface);cursor:text;" onclick="document.getElementById('a-tag-input').focus()">
+              <div id="a-tag-selected" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+              <input type="text" id="a-tag-input" placeholder="Type and Enter..." style="border:none;outline:none;background:transparent;font-family:Jost,sans-serif;font-size:13px;min-width:100px;flex:1;" onkeydown="handleTagInput(event)" oninput="filterTagSuggestions(this.value)">
+            </div>
+            <div id="a-tag-suggestions" style="display:none;flex-wrap:wrap;gap:5px;padding:6px 0;margin-top:4px;"></div>
+            <input type="hidden" id="a-tags">
+          </div>
         </div>
 
         <div class="field"><label>Key points / brief (optional)</label><textarea id="a-notes" placeholder="Angles to cover, personal experiences, specific products, key claims to include..."></textarea></div>
@@ -377,6 +405,15 @@ sup.cite:hover { text-decoration:underline; }
         <div class="field" id="a-slug-wrap" style="display:none;">
           <label>URL slug preview</label>
           <p id="a-slug-preview" class="field-hint" style="font-family:monospace;font-size:12px;color:var(--sage);"></p>
+        </div>
+
+        <div class="field" id="pipeline-wrap">
+          <label style="display:flex;align-items:center;justify-content:space-between;">
+            <span>Content pipeline</span>
+            <span id="pipeline-count" style="font-size:11px;color:var(--muted);font-weight:400;"></span>
+          </label>
+          <div id="pipeline-list" style="display:flex;flex-direction:column;gap:6px;margin-top:6px;"></div>
+          <p id="pipeline-empty" class="field-hint" style="margin-top:6px;">No saved topics yet. Hit + next to any related topic idea to save it here.</p>
         </div>
         <div class="field">
           <label>Hero image</label>
@@ -736,6 +773,194 @@ var FORMAT_META = {
   }
 };
 
+
+/* ===== CONTENT PIPELINE ===== */
+var PIPELINE_KEY = 'pristine_pipeline';
+
+function getPipeline() {
+  try { return JSON.parse(localStorage.getItem(PIPELINE_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function savePipeline(items) {
+  localStorage.setItem(PIPELINE_KEY, JSON.stringify(items));
+}
+
+function saveTopic(btn) {
+  var topic = btn.getAttribute('data-topic');
+  if (!topic) return;
+  var items = getPipeline();
+  if (items.indexOf(topic) !== -1) {
+    btn.textContent = '✓';
+    btn.style.background = 'var(--sage)';
+    btn.style.borderColor = 'var(--sage)';
+    btn.style.color = '#fff';
+    return;
+  }
+  items.unshift(topic);
+  savePipeline(items);
+  renderPipeline();
+  btn.textContent = '✓';
+  btn.style.background = 'var(--sage)';
+  btn.style.borderColor = 'var(--sage)';
+  btn.style.color = '#fff';
+}
+
+function removePipelineTopic(idx) {
+  var items = getPipeline();
+  items.splice(idx, 1);
+  savePipeline(items);
+  renderPipeline();
+}
+
+function usePipelineTopic(topic) {
+  var topicEl = document.getElementById('a-topic');
+  if (topicEl) {
+    topicEl.value = topic;
+    topicEl.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function renderPipeline() {
+  var items = getPipeline();
+  var list = document.getElementById('pipeline-list');
+  var empty = document.getElementById('pipeline-empty');
+  var count = document.getElementById('pipeline-count');
+  if (!list) return;
+  if (!items.length) {
+    list.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    if (count) count.textContent = '';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  if (count) count.textContent = items.length + ' saved';
+  list.innerHTML = items.map(function(topic, i) {
+    var safeT = escHtml(topic);
+    return '<div class="pipeline-item">' +
+      '<span class="pipeline-topic" data-topic="' + safeT + '" onclick="usePipelineTopic(this.getAttribute(\'data-topic\'))" title="Use this topic">' + safeT + '</span>' +
+      '<button class="pipeline-remove" data-idx="' + i + '" onclick="removePipelineTopic(parseInt(this.getAttribute(\'data-idx\')))" title="Remove">&times;</button>' +
+      '</div>';
+  }).join('');
+}
+
+// Load pipeline on page init
+document.addEventListener('DOMContentLoaded', renderPipeline);
+
+
+/* ===== SMART TAG SYSTEM ===== */
+var TAGS_KEY = 'pristine_tags';
+var selectedTags = [];
+
+function getAllTags() {
+  try { return JSON.parse(localStorage.getItem(TAGS_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function saveTagToLibrary(tag) {
+  var tags = getAllTags();
+  tag = tag.toLowerCase().trim();
+  if (tag && tags.indexOf(tag) === -1) {
+    tags.unshift(tag);
+    localStorage.setItem(TAGS_KEY, JSON.stringify(tags.slice(0, 100))); // keep last 100
+  }
+}
+
+function addTag(tag) {
+  tag = tag.toLowerCase().trim();
+  if (!tag || selectedTags.indexOf(tag) !== -1) return;
+  selectedTags.push(tag);
+  saveTagToLibrary(tag);
+  renderSelectedTags();
+  syncTagsField();
+  document.getElementById('a-tag-input').value = '';
+  document.getElementById('a-tag-suggestions').style.display = 'none';
+}
+
+function removeTag(tag) {
+  selectedTags = selectedTags.filter(function(t) { return t !== tag; });
+  renderSelectedTags();
+  syncTagsField();
+}
+
+function renderSelectedTags() {
+  var wrap = document.getElementById('a-tag-selected');
+  if (!wrap) return;
+  wrap.innerHTML = selectedTags.map(function(tag) {
+    return '<span class="tag-chip">' + escHtml(tag) +
+      '<button class="tag-chip-remove" data-tag="' + escHtml(tag) + '" onclick="removeTag(this.getAttribute(\'data-tag\'))">×</button>' +
+      '</span>';
+  }).join('');
+}
+
+function syncTagsField() {
+  var hidden = document.getElementById('a-tags');
+  if (hidden) hidden.value = selectedTags.join(', ');
+}
+
+function handleTagInput(e) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    var val = e.target.value.replace(',','').trim();
+    if (val) addTag(val);
+  } else if (e.key === 'Backspace' && !e.target.value && selectedTags.length) {
+    removeTag(selectedTags[selectedTags.length - 1]);
+  }
+}
+
+function filterTagSuggestions(query) {
+  var wrap = document.getElementById('a-tag-suggestions');
+  if (!wrap) return;
+  var allTags = getAllTags();
+  query = query.toLowerCase().trim();
+  var filtered = query
+    ? allTags.filter(function(t) { return t.indexOf(query) !== -1 && selectedTags.indexOf(t) === -1; })
+    : allTags.filter(function(t) { return selectedTags.indexOf(t) === -1; }).slice(0, 12);
+  if (!filtered.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  wrap.innerHTML = filtered.slice(0, 12).map(function(t) {
+    return '<span class="tag-suggestion-chip" data-tag="' + escHtml(t) + '" onclick="addTag(this.getAttribute(\'data-tag\'))">' + escHtml(t) + '</span>';
+  }).join('');
+}
+
+function showTagSuggestions() {
+  filterTagSuggestions('');
+}
+
+function applyAiSuggestedTags(tags) {
+  // Called after article generation with AI-suggested tags
+  var wrap = document.getElementById('a-tag-suggestions');
+  if (!wrap) return;
+  // Clear current selection and apply AI suggestions
+  selectedTags = [];
+  tags.slice(0,4).forEach(function(t) {
+    var clean = t.toLowerCase().trim();
+    if (clean) { selectedTags.push(clean); saveTagToLibrary(clean); }
+  });
+  renderSelectedTags();
+  syncTagsField();
+  // Show remaining library tags as suggestions
+  wrap.style.display = 'flex';
+  var existing = getAllTags().filter(function(t) { return selectedTags.indexOf(t) === -1; }).slice(0, 8);
+  wrap.innerHTML = '<span style="font-size:11px;color:var(--sage);letter-spacing:1px;text-transform:uppercase;width:100%;display:block;margin-bottom:4px;">AI suggested</span>' +
+    tags.slice(0,4).map(function(t) {
+      return '<span class="tag-suggestion-chip ai-suggested">' + escHtml(t.toLowerCase()) + '</span>';
+    }).join('') +
+    (existing.length ? '<span style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;width:100%;display:block;margin:6px 0 4px;">From your library</span>' +
+    existing.map(function(t) {
+      return '<span class="tag-suggestion-chip" data-tag="' + escHtml(t) + '" onclick="addTag(this.getAttribute(\'data-tag\'))">' + escHtml(t) + '</span>';
+    }).join('') : '');
+}
+
+function resetTagPicker() {
+  selectedTags = [];
+  renderSelectedTags();
+  syncTagsField();
+  var input = document.getElementById('a-tag-input');
+  if (input) input.value = '';
+  var wrap = document.getElementById('a-tag-suggestions');
+  if (wrap) wrap.style.display = 'none';
+}
+
 function prefillFromRelated(btn) {
   var topic = btn.getAttribute('data-topic');
   var topicEl = document.getElementById('a-topic');
@@ -810,23 +1035,23 @@ async function generateArticle() {
   var formatPrompts = {
     'deep-dive': {
       structure: 'Write a long-form evidence-based article with 4-6 sections. Each section has a heading and 2-4 short paragraphs. Include a pull quote. Start with a hook that draws the reader in with a relatable moment before getting into the science.',
-      json: '{"title":"string","intro":"2-3 sentence hook then context","sections":[{"heading":"string","content":"paragraphs separated by double newline"}],"pullQuote":"string","closing":"string","seoTitle":"string under 60 chars","metaDesc":"string under 155 chars","socialExcerpt":"1-2 sentence Instagram/Pinterest caption","relatedTopics":["topic 1","topic 2","topic 3"]}'
+      json: '{"title":"string","intro":"2-3 sentence hook then context","sections":[{"heading":"string","content":"paragraphs separated by double newline"}],"pullQuote":"string","closing":"string","seoTitle":"string under 60 chars","metaDesc":"string under 155 chars","socialExcerpt":"1-2 sentence Instagram/Pinterest caption","relatedTopics":["topic 1","topic 2","topic 3"],"suggestedTags":["tag1","tag2","tag3","tag4"]}'
     },
     'top-list': {
       structure: 'Write a numbered list article. Short punchy intro, then numbered items each with a bold heading, 2-3 sentence explanation, and one practical takeaway or family example. No long paragraphs.',
-      json: '{"title":"string starting with a number like 7 Ways to...","intro":"string","sections":[{"heading":"1. Item name","content":"explanation paragraph"}],"pullQuote":"string","closing":"string","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2","topic 3"]}'
+      json: '{"title":"string starting with a number like 7 Ways to...","intro":"string","sections":[{"heading":"1. Item name","content":"explanation paragraph"}],"pullQuote":"string","closing":"string","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2","topic 3"],"suggestedTags":["tag1","tag2","tag3","tag4"]}'
     },
     'quick-read': {
       structure: 'Write a short focused piece on one single idea. No more than 3 sections, each just 1-2 paragraphs. Get to the point fast. End with one practical thing the reader can do today.',
-      json: '{"title":"string","intro":"string","sections":[{"heading":"string","content":"string"}],"pullQuote":"string","closing":"One thing to do today: ...","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"]}'
+      json: '{"title":"string","intro":"string","sections":[{"heading":"string","content":"string"}],"pullQuote":"string","closing":"One thing to do today: ...","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
     },
     'family-story': {
       structure: 'Write a personal narrative article. Start with a real family moment or problem. Weave the science in naturally as you tell the story. First person (we/our). Feel free to use "I noticed", "the kids", "my wife". End with what changed and what you now do differently.',
-      json: '{"title":"string","intro":"personal opening moment","sections":[{"heading":"string","content":"story-driven paragraphs"}],"pullQuote":"string","closing":"what we do now","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"]}'
+      json: '{"title":"string","intro":"personal opening moment","sections":[{"heading":"string","content":"story-driven paragraphs"}],"pullQuote":"string","closing":"what we do now","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
     },
     'product-review': {
       structure: 'Write a structured product review. Cover: what this type of product is and why it matters, what to look for when buying, how this specific product measures up, who it is best for, and a clear verdict. Be honest and specific.',
-      json: '{"title":"string","intro":"what this product is and why we reviewed it","sections":[{"heading":"What to look for","content":"string"},{"heading":"Our experience","content":"string"},{"heading":"The verdict","content":"string"}],"pullQuote":"one-line verdict","closing":"who should buy this","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"]}'
+      json: '{"title":"string","intro":"what this product is and why we reviewed it","sections":[{"heading":"What to look for","content":"string"},{"heading":"Our experience","content":"string"},{"heading":"The verdict","content":"string"}],"pullQuote":"one-line verdict","closing":"who should buy this","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
     }
   };
 
@@ -880,8 +1105,13 @@ async function generateArticle() {
     }
     if (!article) throw new Error('Could not find valid JSON in response');
     setStatus('a', 'active', 'Rendering preview...');
-    generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: tagsRaw, format: format, useCitations: useCitations };
-    renderArticlePreview(article, category, readtime, author, dateVal, tagsRaw);
+    // Apply AI-suggested tags
+    if (article.suggestedTags && article.suggestedTags.length) {
+      applyAiSuggestedTags(article.suggestedTags);
+      tagsRaw = selectedTags.join(', ');
+    }
+    generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: selectedTags.join(', '), format: format, useCitations: useCitations };
+    renderArticlePreview(article, category, readtime, author, dateVal, selectedTags.join(', '));
     setStatus('a', 'done', 'Article ready');
     // Word count from article content
     var wcText = [article.intro || '', article.closing || ''];
@@ -950,7 +1180,10 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
     if (article.relatedTopics && article.relatedTopics.length) {
       extraHTML += '<div class="ap-extra-field"><span class="ap-extra-label">Related topic ideas</span><div class="ap-related-list">';
       article.relatedTopics.forEach(function(t) {
-        extraHTML += '<span class="ap-related-tag" onclick="prefillFromRelated(this)" data-topic="' + escHtml(t) + '">' + escHtml(t) + '</span>';
+        extraHTML += '<span class="ap-related-item">' +
+          '<span class="ap-related-tag" onclick="prefillFromRelated(this)" data-topic="' + escHtml(t) + '">' + escHtml(t) + '</span>' +
+          '<button class="ap-save-topic-btn" onclick="saveTopic(this)" data-topic="' + escHtml(t) + '" title="Save for later">+</button>' +
+          '</span>';
       });
       extraHTML += '</div></div>';
     }
@@ -1902,6 +2135,7 @@ function clearArticleImage(event) {
   event.stopPropagation();
   articleImageBase64 = '';
   articleImagePath = '';
+  resetTagPicker();
   document.getElementById('a-img-preview').src = '';
   document.getElementById('a-img-preview-wrap').style.display = 'none';
   document.getElementById('a-img-placeholder').style.display = 'flex';
