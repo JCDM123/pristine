@@ -199,6 +199,10 @@ img{max-width:100%;display:block;}
 .trend-refresh-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:6px 14px;cursor:pointer;transition:all 0.2s;}
 .trend-refresh-btn:hover{border-color:var(--sage);color:var(--sage-dark);}
 
+/* ===== FORMAT PICKER ===== */
+.field-hint { font-size:12px; color:var(--muted); margin:4px 0 0; line-height:1.6; font-style:italic; }
+#a-citations-row { display:flex; align-items:center; gap:10px; }
+
 /* ===== CITATIONS & SOURCES ===== */
 .ap-sources { margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid var(--border-light); }
 .ap-sources-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; color:var(--forest); margin-bottom:1rem; }
@@ -209,6 +213,17 @@ img{max-width:100%;display:block;}
 .ap-sources-list a:hover { color:var(--sage); }
 .ap-source-pub { color:#aaa; }
 sup.cite { font-size:10px; color:var(--sage); font-weight:600; cursor:pointer; }
+sup.cite:hover { text-decoration:underline; }
+
+/* ===== EXTRAS PANEL (SEO / SOCIAL / RELATED) ===== */
+.ap-extras { margin-top:2rem; padding:1.5rem; background:rgba(138,155,110,0.07); border-radius:6px; border:1px solid rgba(138,155,110,0.2); }
+.ap-extra-field { margin-bottom:1.2rem; }
+.ap-extra-field:last-child { margin-bottom:0; }
+.ap-extra-label { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--sage); font-weight:600; display:block; margin-bottom:4px; }
+.ap-extra-val { font-size:13px; color:var(--text); line-height:1.6; padding:6px 8px; background:var(--surface); border:1px solid var(--border); border-radius:3px; min-height:32px; }
+.ap-related-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+.ap-related-tag { font-size:12px; padding:5px 12px; background:var(--surface); border:1px solid var(--border); border-radius:20px; cursor:pointer; color:var(--forest); transition:all 0.15s; }
+.ap-related-tag:hover { background:var(--sage); color:#fff; border-color:var(--sage); }
 sup.cite:hover { text-decoration:underline; }
 
 /* ===== SLIDES EDITOR ===== */
@@ -298,19 +313,44 @@ sup.cite:hover { text-decoration:underline; }
       <div class="form-card">
         <h2>New Article</h2>
         <p class="subtitle">Pristine brand voice, no AI tells</p>
+
         <div class="field"><label>Topic *</label><input type="text" id="a-topic" placeholder="e.g. The benefits of cold water immersion"></div>
+
+        <div class="field">
+          <label>Format *</label>
+          <select id="a-format" onchange="handleFormatChange()">
+            <option value="deep-dive">Deep Dive</option>
+            <option value="top-list">Top List</option>
+            <option value="quick-read">Quick Read</option>
+            <option value="family-story">Family Story</option>
+            <option value="product-review">Product Review</option>
+          </select>
+          <p id="a-format-desc" class="field-hint">Long narrative, evidence-based, full citations. Best for complex topics where you want to go deep.</p>
+        </div>
+
         <div class="field-row">
           <div class="field"><label>Category *</label>
-            <select id="a-category" onchange="handleCatChange('a')">
+            <select id="a-category">
               <option value="">Select category</option>
-              <option>Mental Wellness</option><option>Nutrition</option><option>Movement</option>
-              <option>Sleep</option><option>Ancestral Living</option><option>Water</option>
-              <option>Nature</option><option>Gut Health</option><option>Children</option><option>Mindset</option>
+              <option>Nutrition</option>
+              <option>Gut Health</option>
+              <option>Sleep</option>
+              <option>Mental Wellness</option>
+              <option>Movement</option>
+              <option>Ancestral Living</option>
+              <option>Family Health</option>
+              <option>Detox</option>
+              <option>Nature</option>
+              <option>Water</option>
+              <option>Hormones</option>
+              <option>Children</option>
+              <option>Mindset</option>
+              <option>Longevity</option>
             </select>
-            <input type="text" id="a-category-custom" placeholder="Type new category..." style="display:none;margin-top:6px;width:100%;padding:10px 12px;border:1px solid var(--border);font-family:'Jost',sans-serif;font-size:14px;border-radius:2px;" onblur="saveCustomCat('a', this.value)">
           </div>
           <div class="field"><label>Read Time</label>
             <select id="a-readtime">
+              <option value="2 min read">2 min read</option>
               <option value="4 min read">4 min read</option>
               <option value="6 min read" selected>6 min read</option>
               <option value="8 min read">8 min read</option>
@@ -318,31 +358,50 @@ sup.cite:hover { text-decoration:underline; }
             </select>
           </div>
         </div>
+
         <div class="field-row">
-          <div class="field"><label>Author</label><input type="text" id="a-author" value="Pristine Wellness"></div>
+          <div class="field" style="display:flex;align-items:center;gap:10px;padding-top:1.4rem;">
+            <input type="checkbox" id="a-citations" checked style="width:16px;height:16px;accent-color:var(--sage);cursor:pointer;">
+            <label for="a-citations" style="margin:0;cursor:pointer;font-size:13px;">Include citations and sources</label>
+          </div>
           <div class="field"><label>Publish Date</label><input type="date" id="a-date"></div>
         </div>
-        <div class="field"><label>Tags (comma-separated)</label><input type="text" id="a-tags" placeholder="e.g. cold therapy, immunity, cortisol"></div>
-        <div class="field"><label>Key points (optional)</label><textarea id="a-notes" placeholder="Any specific angles or research to include..."></textarea></div>
+
+        <div class="field-row">
+          <div class="field"><label>Author</label><input type="text" id="a-author" value="Pristine Wellness"></div>
+          <div class="field"><label>Tags (comma-separated)</label><input type="text" id="a-tags" placeholder="e.g. sleep, cortisol"></div>
+        </div>
+
+        <div class="field"><label>Key points / brief (optional)</label><textarea id="a-notes" placeholder="Angles to cover, personal experiences, specific products, key claims to include..."></textarea></div>
+
+        <div class="field" id="a-slug-wrap" style="display:none;">
+          <label>URL slug preview</label>
+          <p id="a-slug-preview" class="field-hint" style="font-family:monospace;font-size:12px;color:var(--sage);"></p>
+        </div>
         <div class="field">
           <label>Hero image</label>
-          <p style="font-size:11px;color:var(--muted);margin:-4px 0 8px;line-height:1.6;">Recommended: <strong>1200 x 630px</strong> JPG, under 200kb. Upload via Image Library tab first, then paste the path below, or upload directly here.</p>
+          <p style="font-size:11px;color:var(--muted);margin:-4px 0 8px;line-height:1.6;">Recommended: <strong>1200 x 630px</strong> JPG, under 200kb. Drag and drop or click to upload.</p>
           <div class="upload-img-panel" id="upload-img-panel" style="display:block;">
-            <div class="img-upload-zone" id="a-img-zone" onclick="document.getElementById('a-img-input').click()">
+            <div class="img-upload-zone" id="a-img-zone"
+              onclick="document.getElementById('a-img-input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--sage)'"
+              ondragleave="this.style.borderColor=''"
+              ondrop="event.preventDefault();this.style.borderColor='';handleArticleImage({target:{files:event.dataTransfer.files}})">
               <div id="a-img-preview-wrap" style="display:none;position:relative;">
-                <img id="a-img-preview" style="width:100%;height:140px;object-fit:cover;border-radius:4px;display:block;">
-                <button onclick="clearArticleImage(event)" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">x</button>
+                <img id="a-img-preview" style="width:100%;height:160px;object-fit:cover;border-radius:4px;display:block;">
+                <button onclick="clearArticleImage(event)" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">×</button>
               </div>
-              <div id="a-img-placeholder" style="display:flex;flex-direction:column;align-items:center;padding:1.5rem;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <span style="font-size:12px;color:#bbb;margin-top:6px;display:block;">Click to upload JPEG</span>
+              <div id="a-img-placeholder" style="display:flex;flex-direction:column;align-items:center;padding:1.8rem;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span style="font-size:13px;color:#bbb;margin-top:8px;display:block;">Drag and drop or click to upload</span>
+                <span id="a-img-label" style="font-size:11px;color:var(--sage);margin-top:4px;display:block;"></span>
               </div>
             </div>
             <input type="file" id="a-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleArticleImage(event)">
           </div>
         </div>
-        <div class="field body-images-section">
-          <span class="body-images-label">Body images (optional, up to 4)</span>
+        <div class="field body-images-section" id="body-images-section">
+          <span class="body-images-label" id="body-images-label">Body images (optional)</span>
           <div class="body-images-grid" id="body-images-grid">
             <div class="body-img-slot" id="bslot-0" onclick="triggerBodyImgUpload(0)" ondragover="bodyImgDragOver(event,0)" ondragleave="bodyImgDragLeave(0)" ondrop="bodyImgDrop(event,0)">
               <span class="slot-label">Image 1<br>drag or click</span>
@@ -353,9 +412,11 @@ sup.cite:hover { text-decoration:underline; }
             <div class="body-img-slot" id="bslot-2" onclick="triggerBodyImgUpload(2)" ondragover="bodyImgDragOver(event,2)" ondragleave="bodyImgDragLeave(2)" ondrop="bodyImgDrop(event,2)">
               <span class="slot-label">Image 3<br>drag or click</span>
             </div>
-            <div class="body-img-slot" id="bslot-3" onclick="triggerBodyImgUpload(3)" ondragover="bodyImgDragOver(event,3)" ondragleave="bodyImgDragLeave(3)" ondrop="bodyImgDrop(event,3)">
-              <span class="slot-label">Image 4<br>drag or click</span>
-            </div>
+          </div>
+          <div id="body-captions-wrap" style="margin-top:0.8rem;display:none;">
+            <input type="text" id="bcaption-0" class="field" placeholder="Caption for image 1 (optional)" style="margin-bottom:6px;">
+            <input type="text" id="bcaption-1" class="field" placeholder="Caption for image 2 (optional)" style="margin-bottom:6px;">
+            <input type="text" id="bcaption-2" class="field" placeholder="Caption for image 3 (optional)">
           </div>
           <input type="file" id="body-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleBodyImgUpload(event)">
         </div>
@@ -635,47 +696,164 @@ function fmtDate(dateStr) {
 
 var generatedArticleData = null;
 
+
+/* ===== FORMAT HANDLER ===== */
+var FORMAT_META = {
+  'deep-dive': {
+    desc: 'Long narrative, evidence-based, full citations. Best for complex topics where you want to go deep.',
+    citations: true,
+    readtimes: ['5 min read','6 min read','8 min read','10 min read'],
+    defaultRead: '6 min read',
+    captions: false
+  },
+  'top-list': {
+    desc: 'Numbered and scannable. Perfect for "5 reasons..." or "10 ways to..." articles. Practical and shareable.',
+    citations: true,
+    readtimes: ['3 min read','4 min read','5 min read','6 min read'],
+    defaultRead: '4 min read',
+    captions: false
+  },
+  'quick-read': {
+    desc: 'Short 2-3 minute explainer. One key idea done simply. Great for social traffic and new readers.',
+    citations: false,
+    readtimes: ['2 min read','3 min read'],
+    defaultRead: '2 min read',
+    captions: false
+  },
+  'family-story': {
+    desc: 'Personal narrative first, science second. Your family\'s real experience with a topic. No citations needed.',
+    citations: false,
+    readtimes: ['3 min read','4 min read','5 min read'],
+    defaultRead: '4 min read',
+    captions: false
+  },
+  'product-review': {
+    desc: 'Structured review with criteria, pros and cons, and a clear verdict. Supports multiple product images with captions.',
+    citations: false,
+    readtimes: ['4 min read','5 min read','6 min read'],
+    defaultRead: '5 min read',
+    captions: true
+  }
+};
+
+function prefillFromRelated(btn) {
+  var topic = btn.getAttribute('data-topic');
+  var topicEl = document.getElementById('a-topic');
+  if (topicEl && topic) {
+    topicEl.value = topic;
+    topicEl.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function handleFormatChange() {
+  var fmt = document.getElementById('a-format').value;
+  var meta = FORMAT_META[fmt] || FORMAT_META['deep-dive'];
+  // Update description
+  document.getElementById('a-format-desc').textContent = meta.desc;
+  // Update citations checkbox
+  document.getElementById('a-citations').checked = meta.citations;
+  // Update read time options
+  var rtSel = document.getElementById('a-readtime');
+  rtSel.innerHTML = '';
+  meta.readtimes.forEach(function(rt) {
+    var opt = document.createElement('option');
+    opt.value = rt;
+    opt.textContent = rt;
+    if (rt === meta.defaultRead) opt.selected = true;
+    rtSel.appendChild(opt);
+  });
+  // Show/hide captions for product review
+  var captionsWrap = document.getElementById('body-captions-wrap');
+  if (captionsWrap) captionsWrap.style.display = meta.captions ? 'block' : 'none';
+  var bodyLabel = document.getElementById('body-images-label');
+  if (bodyLabel) bodyLabel.textContent = meta.captions ? 'Product images (optional, up to 3)' : 'Body images (optional)';
+}
+
 async function generateArticle() {
   var topic = document.getElementById('a-topic').value.trim();
+  var format = document.getElementById('a-format').value;
   var category = getCategoryValue('a');
   var readtime = document.getElementById('a-readtime').value;
   var author = document.getElementById('a-author').value.trim() || 'Pristine Wellness';
   var dateVal = document.getElementById('a-date').value;
   var tagsRaw = document.getElementById('a-tags').value.trim();
   var notes = document.getElementById('a-notes').value.trim();
+  var useCitations = document.getElementById('a-citations').checked;
 
   if (!topic) { alert('Please enter a topic.'); return; }
   if (!category) { alert('Please select a category.'); return; }
 
+  // Update slug preview
+  var slug = topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,50).replace(/-$/,'');
+  var slugEl = document.getElementById('a-slug-preview');
+  var slugWrap = document.getElementById('a-slug-wrap');
+  if (slugEl) { slugEl.textContent = 'article-' + slug + '.html'; slugWrap.style.display = 'block'; }
+
   var btn = document.getElementById('a-gen-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Generating...';
-  setStatus('a', 'active', 'Claude is writing your article...');
+  setStatus('a', 'active', useCitations ? 'Searching for sources...' : 'Writing your article...');
   document.getElementById('a-preview').innerHTML = '<div class="preview-empty"><div class="spinner" style="width:32px;height:32px;border-color:rgba(138,155,110,0.3);border-top-color:var(--sage);"></div><p>Writing in Pristine brand voice...</p></div>';
 
-  var systemPrompt = [
-    'You are the content writer for Pristine Wellness, an evidence-based ancestral wellness brand from Australia.',
-    'Brand voice rules: Write like a health-obsessed Australian dad who has done serious reading but talks like a real person, not a clinician. First person plural (we/our/us). Warm, direct, occasionally conversational. Short paragraphs max 3-4 sentences. Plain language over scientific jargon. Use technical terms when accurate, then immediately follow with a plain English analogy to make it land. For example: "Your mitochondria, the tiny powerhouses inside every cell, work like the engine in your car. When they are running dirty, everything feels sluggish even if you are doing all the right things on the outside." The term stays, the analogy does the teaching. Use this pattern naturally throughout. Never preachy. Occasional italics with em tags for emphasis. NO em dashes or en dashes ever. No AI writing tells (no delve, unlock, journey, fascinating, crucial, game-changer). Ancestral wisdom grounded in modern science. Australian spelling.',
-    'CRITICAL: Use the web search tool to find 3-6 real credible sources. You MUST embed citation numbers directly inside the text strings like this: "Magnesium supports over 300 enzymatic reactions in the body.[1] Studies show it plays a key role in sleep regulation.[2]" The number in square brackets must appear at the end of the sentence it supports, inside the text string. Every claim needs a citation number.',
-    'Output ONLY valid JSON. No markdown, no preamble, no code fences. Keys:',
-    '{"title":"string","intro":"string with [1] citations inline","sections":[{"heading":"string","content":"paragraphs separated by double newline, each with [N] citation numbers at end of sentences"}],"pullQuote":"string","closing":"string","sources":[{"num":1,"title":"string","url":"https://real-url.com","publication":"string"}]}'
-  ].join(' ');
+  // Base voice rules shared across all formats
+  var baseVoice = 'You are the content writer for Pristine Wellness, an evidence-based ancestral wellness brand from Australia. ' +
+    'Brand voice: Write like a health-obsessed Australian dad who has done serious reading but talks like a real person, not a clinician. ' +
+    'First person plural (we/our/us). Warm, direct, occasionally conversational. Short paragraphs max 3 sentences. ' +
+    'Plain language always. Use technical terms when accurate, but immediately follow with a simple analogy that makes it click. ' +
+    'Example: "Your mitochondria, the tiny powerhouses inside every cell, work like the engine in your car. When they run dirty, everything feels sluggish even when you are doing all the right things." ' +
+    'Weave in real family moments naturally: "In our house...", "my kids now ask for...", "my wife noticed...", "we started doing this when...". ' +
+    'Content should work for everyone from a busy mum to someone with a PhD. If a scientist reads it they nod, if a parent reads it they get it immediately. ' +
+    'Never preachy. Occasional italics with em tags. NO em dashes or en dashes ever. No AI tells (no delve, unlock, journey, fascinating, crucial, game-changer). Australian spelling.';
 
-  var notesLine = notes ? 'Key points to cover: ' + notes : '';
-  var userPrompt = 'Search for real sources first, then write a ' + readtime + ' article about: "' + topic + '". Category: ' + category + '. ' + notesLine + ' IMPORTANT: Every factual claim must have a [N] citation number at the end of the sentence inside the JSON string. Include 3-6 sources. No em dashes or en dashes.';
+  // Format-specific prompts
+  var formatPrompts = {
+    'deep-dive': {
+      structure: 'Write a long-form evidence-based article with 4-6 sections. Each section has a heading and 2-4 short paragraphs. Include a pull quote. Start with a hook that draws the reader in with a relatable moment before getting into the science.',
+      json: '{"title":"string","intro":"2-3 sentence hook then context","sections":[{"heading":"string","content":"paragraphs separated by double newline"}],"pullQuote":"string","closing":"string","seoTitle":"string under 60 chars","metaDesc":"string under 155 chars","socialExcerpt":"1-2 sentence Instagram/Pinterest caption","relatedTopics":["topic 1","topic 2","topic 3"]}'
+    },
+    'top-list': {
+      structure: 'Write a numbered list article. Short punchy intro, then numbered items each with a bold heading, 2-3 sentence explanation, and one practical takeaway or family example. No long paragraphs.',
+      json: '{"title":"string starting with a number like 7 Ways to...","intro":"string","sections":[{"heading":"1. Item name","content":"explanation paragraph"}],"pullQuote":"string","closing":"string","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2","topic 3"]}'
+    },
+    'quick-read': {
+      structure: 'Write a short focused piece on one single idea. No more than 3 sections, each just 1-2 paragraphs. Get to the point fast. End with one practical thing the reader can do today.',
+      json: '{"title":"string","intro":"string","sections":[{"heading":"string","content":"string"}],"pullQuote":"string","closing":"One thing to do today: ...","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"]}'
+    },
+    'family-story': {
+      structure: 'Write a personal narrative article. Start with a real family moment or problem. Weave the science in naturally as you tell the story. First person (we/our). Feel free to use "I noticed", "the kids", "my wife". End with what changed and what you now do differently.',
+      json: '{"title":"string","intro":"personal opening moment","sections":[{"heading":"string","content":"story-driven paragraphs"}],"pullQuote":"string","closing":"what we do now","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"]}'
+    },
+    'product-review': {
+      structure: 'Write a structured product review. Cover: what this type of product is and why it matters, what to look for when buying, how this specific product measures up, who it is best for, and a clear verdict. Be honest and specific.',
+      json: '{"title":"string","intro":"what this product is and why we reviewed it","sections":[{"heading":"What to look for","content":"string"},{"heading":"Our experience","content":"string"},{"heading":"The verdict","content":"string"}],"pullQuote":"one-line verdict","closing":"who should buy this","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"]}'
+    }
+  };
+
+  var fp = formatPrompts[format] || formatPrompts['deep-dive'];
+
+  var citationInstructions = useCitations
+    ? 'Use the web search tool to find 3-5 real credible sources (PubMed, peer-reviewed journals, reputable health sites). Embed citation numbers [1] [2] etc at the end of sentences they support inside the JSON strings. Add a sources array: ,"sources":[{"num":1,"title":"string","url":"https://real-url.com","publication":"string"}]'
+    : 'No citations needed for this format. Do not add a sources array.';
+
+  var systemPrompt = baseVoice + ' ' + fp.structure + ' ' + citationInstructions +
+    ' Output ONLY valid JSON. No markdown, no preamble, no code fences. JSON structure: ' + fp.json;
+
+  var notesLine = notes ? ' Brief/key points: ' + notes : '';
+  var userPrompt = 'Write a ' + readtime + ' ' + format.replace('-',' ') + ' for Pristine Wellness about: "' + topic + '". Category: ' + category + '.' + notesLine + ' No em dashes or en dashes anywhere.';
 
   try {
-    setStatus('a', 'active', 'Searching for sources...');
+    var apiBody = {
+      model: 'claude-sonnet-4-6',
+      max_tokens: 8000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    };
+    if (useCitations) apiBody.tools = [{ type: 'web_search_20250305', name: 'web_search' }];
     var response = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 8000,
-        system: systemPrompt,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: userPrompt }]
-      })
+      body: JSON.stringify(apiBody)
     });
     var data = await response.json();
     if (!response.ok || data.error || !data.content) {
@@ -683,12 +861,10 @@ async function generateArticle() {
       throw new Error(msg);
     }
     // Extract the final text block (after tool use)
-    // With web search, response may have tool_use blocks followed by final text
-    // Get all text blocks and find the one containing JSON
+    // Extract JSON from response - handles both web search (multiple blocks) and plain responses
     var textBlocks = data.content.filter(function(i) { return i.type === 'text' && i.text; });
     var rawText = '';
     var article = null;
-    // Try each text block from last to first - the JSON is usually in the last text block
     for (var bi = textBlocks.length - 1; bi >= 0; bi--) {
       var block = textBlocks[bi].text;
       var jsonStart = block.indexOf('{');
@@ -703,12 +879,16 @@ async function generateArticle() {
       }
     }
     if (!article) throw new Error('Could not find valid JSON in response');
-    setStatus('a', 'active', 'Writing article...');
-    generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: tagsRaw };
+    setStatus('a', 'active', 'Rendering preview...');
+    generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: tagsRaw, format: format, useCitations: useCitations };
     renderArticlePreview(article, category, readtime, author, dateVal, tagsRaw);
     setStatus('a', 'done', 'Article ready');
+    // Word count from article content
+    var wcText = [article.intro || '', article.closing || ''];
+    (article.sections || []).forEach(function(s) { wcText.push(s.heading || '', s.content || ''); });
+    var wcCount = wcText.join(' ').replace(/<[^>]+>/g,'').split(/\s+/).filter(Boolean).length;
     var wc = document.getElementById('a-wc');
-    wc.textContent = rawText.split(/\s+/).length + ' words';
+    wc.textContent = wcCount + ' words';
     wc.style.display = 'inline-block';
     document.getElementById('a-dl-btn').style.display = 'inline-block';
     document.getElementById('a-copy-btn').style.display = 'inline-block';
@@ -759,6 +939,23 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
     });
     sourcesHTML += '</ol></div>';
   }
+
+  // SEO, social and related topics panel
+  var extraHTML = '';
+  if (article.seoTitle || article.metaDesc || article.socialExcerpt || (article.relatedTopics && article.relatedTopics.length)) {
+    extraHTML += '<div class="ap-extras">';
+    if (article.seoTitle) extraHTML += '<div class="ap-extra-field"><span class="ap-extra-label">SEO Title</span><p contenteditable="true" data-field="seoTitle" onblur="syncPreviewEdit(this)" class="ap-extra-val">' + escHtml(article.seoTitle) + '</p></div>';
+    if (article.metaDesc) extraHTML += '<div class="ap-extra-field"><span class="ap-extra-label">Meta Description</span><p contenteditable="true" data-field="metaDesc" onblur="syncPreviewEdit(this)" class="ap-extra-val">' + escHtml(article.metaDesc) + '</p></div>';
+    if (article.socialExcerpt) extraHTML += '<div class="ap-extra-field"><span class="ap-extra-label">Social Caption (Instagram / Pinterest)</span><p contenteditable="true" data-field="socialExcerpt" onblur="syncPreviewEdit(this)" class="ap-extra-val">' + escHtml(article.socialExcerpt) + '</p></div>';
+    if (article.relatedTopics && article.relatedTopics.length) {
+      extraHTML += '<div class="ap-extra-field"><span class="ap-extra-label">Related topic ideas</span><div class="ap-related-list">';
+      article.relatedTopics.forEach(function(t) {
+        extraHTML += '<span class="ap-related-tag" onclick="prefillFromRelated(this)" data-topic="' + escHtml(t) + '">' + escHtml(t) + '</span>';
+      });
+      extraHTML += '</div></div>';
+    }
+    extraHTML += '</div>';
+  }
   document.getElementById('a-preview').innerHTML =
     '<p class="edit-hint">Click any text to edit</p>' +
     '<div class="ap-hero"><div class="ap-cat">' + category + '</div>' +
@@ -770,7 +967,7 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
     '<p contenteditable="true" data-field="closing" onblur="syncPreviewEdit(this)">' + renderCitations(article.closing || '') + '</p>' +
     tagsHTML +
     '<div class="ap-author"><div class="ap-author-avatar">' + initial + '</div><div class="ap-author-info"><div class="name">' + author + '</div><div class="role">Pristine Wellness</div></div></div>' +
-    sourcesHTML + '</div>';
+    sourcesHTML + extraHTML + '</div>';
 }
 
 function syncPreviewEdit(el) {
@@ -855,9 +1052,11 @@ async function downloadArticle() {
 
   var pageTitle = '<title>' + article.title + ' \u2014 Pristine Wellness</title>';
   var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle);
-  var bgStyle = articleImageBase64
-    ? ' style="background-image:url(' + articleImageBase64 + ')"'
-    : ' style="background:var(--forest)"';
+  var bgStyle = articleImagePath
+    ? ' style="background-image:url(' + articleImagePath + ')"'
+    : articleImageBase64
+      ? ' style="background-image:url(' + articleImageBase64 + ')"'
+      : ' style="background:var(--forest)"';
   var heroShell = TMPL_HERO
     .replace('ARTICLE_CAT', d.category)
     .replace('ARTICLE_DATE', date)
@@ -1070,9 +1269,7 @@ function saveCustomCat(prefix, val) {
 
 function getCategoryValue(prefix) {
   var sel = document.getElementById(prefix + '-category');
-  var custom = document.getElementById(prefix + '-category-custom');
-  if (sel.value === '__other__') return custom.value.trim();
-  return sel.value;
+  return sel ? sel.value : '';
 }
 
 
@@ -1177,8 +1374,10 @@ async function publishArticle() {
       });
     }
     var tags = d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
-    var pageTitle = '<title>' + article.title + ' \u2014 Pristine Wellness</title>';
-    var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle);
+    var seoTitleText = (article.seoTitle || article.title) + ' — Pristine Wellness';
+    var pageTitle = '<title>' + seoTitleText + '</title>';
+    var metaDescTag = article.metaDesc ? '<meta name="description" content="' + article.metaDesc.replace(/"/g,'&quot;') + '">' : '';
+    var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle + '\n' + metaDescTag);
     var bgStyle = articleImagePath
       ? ' style="background-image:url(' + articleImagePath + ')"'
       : articleImageBase64
@@ -1254,8 +1453,8 @@ async function publishArticle() {
       '\n        </div>\n      </div>' : '';
 
     // Build new featured section
-    var newFeatBg = articleImageBase64 ? articleImageBase64 : 'var(--forest)';
-    var newFeatBgStyle = articleImageBase64 ? "background-image:url('" + newFeatBg + "')" : "background:var(--forest)";
+    var newFeatBg = articleImagePath ? articleImagePath : (articleImageBase64 ? articleImageBase64 : 'var(--forest)');
+    var newFeatBgStyle = newFeatBg !== 'var(--forest)' ? "background-image:url('" + newFeatBg + "')" : "background:var(--forest)";
     var tagPillsHTML = tags.slice(0,3).map(function(t){ return '<span class="tag-pill">' + t + '</span>'; }).join('');
     var newFeatured = '<div class="featured">\n      <div class="feat-img" style="' + newFeatBgStyle + ';">\n        <div class="feat-img-overlay"></div>\n        <div class="feat-label">\n          <span class="feat-badge">Latest post</span>\n          <div class="feat-img-title">' + article.title + '</div>\n        </div>\n      </div>\n      <div class="feat-body">\n        <span class="feat-cat">' + d.category + '</span>\n        <h2 class="feat-title">' + article.title + '</h2>\n        <p class="feat-excerpt">' + article.intro.slice(0,200) + '</p>\n        <div class="tag-pills">' + tagPillsHTML + '</div>\n        <div class="feat-meta">' + date + ' &nbsp;·&nbsp; ' + d.readtime + '</div>\n        <a class="read-link" href="' + filename + '">Read article <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>\n      </div>\n    </div>';
 
@@ -1273,6 +1472,7 @@ async function publishArticle() {
       if (insertPos === -1) throw new Error('Could not find article grid in the-source.html');
     }
     var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertLen) + oldCard + newCard + sourceWithNewFeat.slice(insertPos + insertLen);
+    updatedSource = rebuildFilterPills(updatedSource);
 
     // 6. Push updated the-source.html
     var sourceContent = btoa(unescape(encodeURIComponent(updatedSource)));
@@ -1942,6 +2142,30 @@ async function saveKitchenChanges() {
     setManageStatus('kit', 'Error: ' + e.message, false);
   }
   if (btn) btn.disabled = false;
+}
+
+
+function rebuildFilterPills(sourceHTML) {
+  // Collect all unique categories from article cards
+  var catMatches = sourceHTML.match(/data-cat="([^"]+)"/g) || [];
+  var cats = [];
+  catMatches.forEach(function(m) {
+    var cat = m.replace('data-cat="','').replace('"','');
+    if (cat && cats.indexOf(cat) === -1) cats.push(cat);
+  });
+  if (!cats.length) return sourceHTML;
+
+  // Build new pills HTML
+  var pillsHTML = '  <button class="filter-pill active" onclick="filterCards(this,\'All\')">All</button>\n';
+  cats.forEach(function(cat) {
+    pillsHTML += '  <button class="filter-pill" onclick="filterCards(this,\'' + cat + '\')">' + cat + '</button>\n';
+  });
+
+  // Replace existing pills - find the filter-pills div and replace its contents
+  var pillsStart = sourceHTML.indexOf('<div class="filter-pills">');
+  var pillsEnd = sourceHTML.indexOf('</div>', pillsStart);
+  if (pillsStart === -1 || pillsEnd === -1) return sourceHTML;
+  return sourceHTML.slice(0, pillsStart + 26) + '\n' + pillsHTML + sourceHTML.slice(pillsEnd);
 }
 
 function rebuildSourceGrid(html) {
