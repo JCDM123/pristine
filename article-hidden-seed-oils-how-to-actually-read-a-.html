@@ -483,13 +483,13 @@ body{
 .lightbox-close svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;}
 #progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--sage);z-index:300;width:0%;transition:width 0.1s linear;border-radius:0 2px 2px 0;}
 .article-hero{width:100%;height:65vh;background-size:cover;background-position:center;position:relative;display:flex;align-items:flex-end;margin-top:0;}
-.article-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,5,0.05) 0%,rgba(5,15,5,0.5) 60%,rgba(5,15,5,0.9) 100%);}
+.article-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,5,0.18) 0%,rgba(5,15,5,0.62) 60%,rgba(5,15,5,0.93) 100%);}
 .article-hero-content{position:relative;z-index:2;padding:0 10% 4rem;width:100%;}
 .article-cat{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--sage);background:rgba(255,255,255,0.12);padding:5px 14px;border-radius:20px;border:0.5px solid rgba(138,155,110,0.5);font-weight:500;}
 .article-meta-row{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;flex-wrap:wrap;}
 .article-date,.article-rt{font-size:13px;color:rgba(255,255,255,0.65);font-weight:300;}
 .sep{color:rgba(255,255,255,0.3);}
-.article-hero h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(36px,5vw,68px);font-weight:400;color:#fff;line-height:1.1;letter-spacing:-1px;max-width:900px;}
+.article-hero h1{text-shadow:0 2px 18px rgba(0,0,0,0.45);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(36px,5vw,68px);font-weight:400;color:#fff;line-height:1.1;letter-spacing:-1px;max-width:900px;}
 .share-bar{display:flex;align-items:center;gap:12px;padding:1.5rem 10%;border-bottom:0.5px solid var(--border);flex-wrap:wrap;}
 .share-label{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#bbb;font-weight:400;}
 .share-btn{display:flex;align-items:center;gap:6px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:9px 18px;border-radius:30px;border:0.5px solid var(--border);color:#666;font-family:'Jost',sans-serif;font-weight:500;transition:all 0.2s;cursor:pointer;background:#fff;}
@@ -793,14 +793,9 @@ html { scrollbar-gutter: stable; }
   <a href="experiment.html">The Experiment</a>
   <a href="about.html">About</a>
   <a href="social-feed.html">Social Feed</a>
-  <div class="mobile-drawer-legal">
-    <button class="mobile-drawer-legal-toggle" id="legal-toggle">Legal <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="14" height="14"><polyline points="6 9 12 15 18 9" fill="none"/></svg></button>
-    <div class="mobile-drawer-subnav" id="legal-subnav">
-      <a href="terms.html">Terms</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="disclaimer.html">Disclaimer</a>
-    </div>
-  </div>
+  <a href="terms.html" style="font-size:14px;color:#999;">Terms</a>
+  <a href="privacy.html" style="font-size:14px;color:#999;">Privacy</a>
+  <a href="disclaimer.html" style="font-size:14px;color:#999;">Disclaimer</a>
   <div class="mobile-drawer-socials">
     <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="22" height="22" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg>
     <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="22" height="22" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg>
