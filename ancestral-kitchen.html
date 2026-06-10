@@ -1193,19 +1193,26 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
 
 <div class="inner">
 
-<!-- FEATURED_PLACEHOLDER -->
+<div class="featured" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'" style="cursor:pointer">
+      <div class="feat-img" style="background-image:url('images/no-sugar-bannana-choc-chip-muf-hero.jpg');background-size:cover;background-position:center;">
+        <div class="feat-img-overlay"></div>
+        <div class="feat-label">
+          <span class="feat-badge">Latest recipe</span>
+          <div class="feat-img-title">No Sugar Banana Choc Chip Muffins</div>
+        </div>
+      </div>
+      <div class="feat-body">
+        <span class="feat-cat">Snacks</span>
+        <h2 class="feat-title">No Sugar Banana Choc Chip Muffins</h2>
+        <p class="feat-excerpt">These nourishing banana muffins are a staple in our kitchen. Made with organic spelt flour, naturally sweetened with rip...</p>
+        <div class="feat-meta">20m prep &nbsp;&#183;&nbsp; 40 min total</div>
+        <a class="read-link" href="recipe-no-sugar-banana-choc-chip-muffins.html">View recipe <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+    </div>
 
 <div class="recipe-grid" id="recipe-grid">
 <!-- RECIPE_CARDS_PLACEHOLDER -->
-    <div class="card" data-cat="Snacks" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'">
-  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge">Snacks</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">No Sugar Banana Choc Chip Muffins</h3>
-    <p class="card-excerpt">These nourishing banana muffins are a staple in our kitchen. Made with organic spelt flour, naturally sweetened with rip...</p>
-    <div class="card-footer"><span class="card-date">20m prep</span><span class="card-time"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 40 min</span></div>
-  </div>
-</div>
+    
 </div>
 
 
@@ -1673,7 +1680,7 @@ var currentFilter = 'All';
 function getFilteredCards() {
   var grid = document.querySelector('.article-grid, .recipe-grid');
   if (!grid) return [];
-  var cards = Array.prototype.slice.call(grid.querySelectorAll('.article-card, .recipe-card'));
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.article-card, .recipe-card, .card'));
   if (currentFilter === 'All') return cards;
   return cards.filter(function(card) {
     var cardCat = card.getAttribute('data-cat') || '';
