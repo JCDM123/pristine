@@ -1984,8 +1984,26 @@ async function publishArticle() {
 
     // 5. Move current featured article to grid, set new article as featured
     var featStart = sourceHTML.indexOf('<div class="featured">');
-    var featEnd = sourceHTML.indexOf('</div>\n    </div>', featStart) + 17;
-    var currentFeat = sourceHTML.slice(featStart, featEnd);
+    var featEnd = -1;
+    var currentFeat = '';
+    if (featStart !== -1) {
+      var fDepth = 0;
+      for (var fi = featStart; fi < sourceHTML.length; fi++) {
+        if (sourceHTML.substr(fi, 4) === '<div') fDepth++;
+        else if (sourceHTML.substr(fi, 6) === '</div>') {
+          fDepth--;
+          if (fDepth === 0) { featEnd = fi + 6; break; }
+        }
+      }
+      if (featEnd === -1) throw new Error('Featured section malformed in the-source.html - aborting to prevent file corruption');
+      currentFeat = sourceHTML.slice(featStart, featEnd);
+    } else {
+      var featPh = sourceHTML.indexOf('<!-- FEATURED_PLACEHOLDER -->');
+      if (featPh === -1) throw new Error('No featured section or placeholder in the-source.html');
+      featStart = featPh;
+      featEnd = featPh + 29;
+      currentFeat = '';
+    }
     
     // Extract current featured info to make a grid card from it
     var oldHrefMatch = currentFeat.match(/href="([^"]+\.html)"/);
@@ -2002,6 +2020,10 @@ async function publishArticle() {
     // Get the bg image from feat-img style
     var oldBgMatch = currentFeat.match(/background-image:url\('([^']+)'\)/);
     var oldBg = oldBgMatch ? oldBgMatch[1] : '';
+    // Skip if this article already has a grid card (prevents duplicates)
+    if (oldHref && sourceHTML.indexOf("window.location='" + oldHref + "'") !== -1) {
+      oldHref = '';
+    }
     
     var oldCard = oldHref ? '\n      <div class="article-card" data-cat="' + oldCat + '" onclick="window.location=\'' + oldHref + '\'" style="cursor:pointer">' +
       '\n        <div class="card-img"><div class="card-img-inner" style="background-image:url(\'' + oldBg + '\')"></div>' +
@@ -2031,7 +2053,9 @@ async function publishArticle() {
       insertLen = 0; // insert before the placeholder, replacing it
       if (insertPos === -1) throw new Error('Could not find article grid in the-source.html');
     }
-    var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertLen) + oldCard + newCard + sourceWithNewFeat.slice(insertPos + insertLen);
+    // Only the OLD featured rotates into the grid. The new article lives in the featured slot only,
+    // and will get its grid card when the next article pushes it down.
+    var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertLen) + oldCard + sourceWithNewFeat.slice(insertPos + insertLen);
     updatedSource = rebuildFilterPills(updatedSource);
 
     // 6. Push updated the-source.html
@@ -2209,6 +2233,7 @@ async function publishRecipe() {
     }
     if (kInsertPos === -1) throw new Error('Could not find recipe grid in ancestral-kitchen.html');
     var updatedKitchen = kitchenHTML.slice(0, kInsertPos + kInsertLen) + newCard + kitchenHTML.slice(kInsertPos + kInsertLen);
+    updatedKitchen = rebuildFilterPills(updatedKitchen);
 
     // 5. Push updated ancestral-kitchen.html
     var kitchenContent = btoa(unescape(encodeURIComponent(updatedKitchen)));
@@ -2532,36 +2557,56 @@ async function loadKitchenForManage() {
   }
 }
 
-function parseSourceArticles(html) {
-  // Parse article-grid cards
-  var articles = [];
-  var gridStart = html.indexOf('<div class="article-grid">');
-  var gridEnd = html.indexOf('<!-- ESSENTIAL READING');
-  if (gridStart === -1 || gridEnd === -1) return [];
-  var gridHtml = html.slice(gridStart, gridEnd);
+function findDivEndJS(html, start) {
+  var depth = 0;
+  for (var i = start; i < html.length; i++) {
+    if (html.substr(i, 4) === '<div') depth++;
+    else if (html.substr(i, 6) === '</div>') {
+      depth--;
+      if (depth === 0) return i + 6;
+    }
+  }
+  return -1;
+}
 
-  var cardRe = /<div class="article-card"([^>]*)>([\s\S]*?)<\/div>\s*<\/div>/g;
-  var match;
-  while ((match = cardRe.exec(gridHtml)) !== null) {
-    var attrs = match[1];
-    var inner = match[2];
-    var cat = (attrs.match(/data-cat="([^"]*)"/) || ['',''])[1];
-    var onclick = (attrs.match(/onclick="window\.location='([^']+)'/) || ['',''])[1];
-    var titleM = inner.match(/<h3 class="card-title">([^<]+)<\/h3>/);
-    var title = titleM ? titleM[1] : '';
-    var dateM = inner.match(/<span class="card-date">([^<]+)<\/span>/);
-    var date = dateM ? dateM[1] : '';
-    if (title) articles.push({ title: title, cat: cat, date: date, url: onclick, rawCard: match[0], pinned: false });
+function parseSourceArticles(html) {
+  var articles = [];
+
+  // 1. Parse the FEATURED article (it has no grid card by design)
+  var featStart = html.indexOf('<div class="featured">');
+  if (featStart !== -1) {
+    var featEnd = findDivEndJS(html, featStart);
+    if (featEnd !== -1) {
+      var featHtml = html.slice(featStart, featEnd);
+      var fTitle = (featHtml.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
+      var fCat = (featHtml.match(/feat-cat[^>]*>([^<]+)</) || ['',''])[1];
+      var fHref = (featHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
+      var fMeta = (featHtml.match(/feat-meta[^>]*>([^&<]+)/) || ['',''])[1];
+      if (fTitle) articles.push({ title: fTitle, cat: fCat, date: (fMeta||'').trim(), url: fHref, rawCard: '', pinned: false, featured: true });
+    }
   }
 
-  // Parse essential reading to mark pinned articles
-  var erStart = html.indexOf('id="essential-reading"');
-  var erEnd = html.indexOf('</div>', html.indexOf('</div>', html.lastIndexOf('grid-template-columns:repeat(3', erStart)) + 1);
-  if (erStart !== -1) {
-    var erHtml = html.slice(erStart, erStart + 5000);
-    articles.forEach(function(a) {
-      if (erHtml.indexOf(a.title) !== -1) a.pinned = true;
-    });
+  // 2. Parse grid cards by div counting (no marker dependence)
+  var gridStart = html.indexOf('<div class="article-grid">');
+  if (gridStart === -1) return articles;
+  var gridEnd = findDivEndJS(html, gridStart);
+  if (gridEnd === -1) return articles;
+  var gridHtml = html.slice(gridStart, gridEnd);
+
+  var pos = 0;
+  while (true) {
+    var cardStart = gridHtml.indexOf('<div class="article-card"', pos);
+    if (cardStart === -1) break;
+    var cardEnd = findDivEndJS(gridHtml, cardStart);
+    if (cardEnd === -1) break;
+    var card = gridHtml.slice(cardStart, cardEnd);
+    var cat = (card.match(/data-cat="([^"]*)"/) || ['',''])[1];
+    var url = (card.match(/window\.location='([^']+)'/) || ['',''])[1];
+    var title = (card.match(/<h3 class="card-title">([^<]+)<\/h3>/) || ['',''])[1];
+    var date = (card.match(/<span class="card-date">([^<]+)<\/span>/) || ['',''])[1];
+    if (!date) date = (card.match(/<div class="card-meta">([^&<]+)/) || ['',''])[1];
+    if (title) articles.push({ title: title, cat: cat, date: (date||'').trim(), url: url, rawCard: card, pinned: false, featured: false });
+    pos = cardEnd;
   }
   return articles;
 }
@@ -2569,33 +2614,27 @@ function parseSourceArticles(html) {
 function parseKitchenRecipes(html) {
   var recipes = [];
   var gridStart = html.indexOf('id="recipe-grid"');
-  if (gridStart === -1) return [];
-  var gridHtml = html.slice(gridStart, gridStart + 60000);
-  // Stop at pinned section
-  var pinnedIdx = gridHtml.indexOf('id="pinned-section"');
-  if (pinnedIdx !== -1) gridHtml = gridHtml.slice(0, pinnedIdx);
+  if (gridStart === -1) return recipes;
+  gridStart = html.lastIndexOf('<div', gridStart);
+  var gridEnd = findDivEndJS(html, gridStart);
+  if (gridEnd === -1) return recipes;
+  var gridHtml = html.slice(gridStart, gridEnd);
 
-  // Each recipe card: <div class="card ..."> ... </div>
-  var cardRe = /<div class="card[^"]*">([\s\S]*?)<\/div>\s*<\/div>/g;
-  var match;
-  while ((match = cardRe.exec(gridHtml)) !== null) {
-    var inner = match[1];
-    var titleM = inner.match(/<h3 class="card-title">([^<]+)<\/h3>/);
-    var title = titleM ? titleM[1] : '';
-    var badgeM = inner.match(/<span class="card-badge">([^<]+)<\/span>/);
-    var cat = badgeM ? badgeM[1] : '';
-    var dateM = inner.match(/<span class="card-date">([^<]+)<\/span>/);
-    var date = dateM ? dateM[1] : '';
-    if (title) recipes.push({ title: title, cat: cat, date: date, rawCard: match[0], pinned: false });
-  }
-
-  // Check pinned section
-  var pinStart = html.indexOf('id="pinned-section"');
-  if (pinStart !== -1) {
-    var pinHtml = html.slice(pinStart, pinStart + 10000);
-    recipes.forEach(function(r) {
-      if (pinHtml.indexOf(r.title) !== -1) r.pinned = true;
-    });
+  var pos = 0;
+  while (true) {
+    var cardStart = gridHtml.indexOf('<div class="card', pos);
+    if (cardStart === -1) break;
+    var cardEnd = findDivEndJS(gridHtml, cardStart);
+    if (cardEnd === -1) break;
+    var card = gridHtml.slice(cardStart, cardEnd);
+    var title = (card.match(/<h3 class="card-title">([^<]+)<\/h3>/) || ['',''])[1];
+    var cat = (card.match(/<span class="card-badge">([^<]+)<\/span>/) || ['',''])[1];
+    if (!cat) cat = (card.match(/data-cat="([^"]*)"/) || ['',''])[1];
+    var date = (card.match(/<span class="card-date">([^<]+)<\/span>/) || ['',''])[1];
+    var url = (card.match(/window\.location='([^']+)'/) || ['',''])[1];
+    if (!url) url = (card.match(/href="([^"]+\.html)"/) || ['',''])[1];
+    if (title) recipes.push({ title: title, cat: cat, date: (date||'').trim(), url: url, rawCard: card, pinned: false });
+    pos = cardEnd;
   }
   return recipes;
 }
@@ -2609,7 +2648,7 @@ function renderSourceList() {
   var html = '';
   manageSourceData.forEach(function(a, i) {
     html += '<div class="manage-row" id="src-row-' + i + '">' +
-      '<div class="manage-row-title">' + escHtml(a.title) + '</div>' +
+      '<div class="manage-row-title">' + (a.featured ? '<span style="background:#C9A96E;color:#fff;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:3px;margin-right:8px;vertical-align:middle;">FEATURED</span>' : '') + escHtml(a.title) + '</div>' +
       '<span class="manage-row-cat">' + escHtml(a.cat || 'Uncategorised') + '</span>' +
       '<span class="manage-row-meta">' + escHtml(a.date) + '</span>' +
       '<button class="manage-pin-btn' + (a.pinned ? ' pinned' : '') + '" onclick="toggleSourcePin(' + i + ')" title="Toggle Essential Reading">' +
@@ -2662,16 +2701,77 @@ function toggleKitchenPin(i) {
   }
 }
 
-function deleteSourceArticle(i) {
-  if (!confirm('Remove "' + manageSourceData[i].title + '" from The Source grid?')) return;
-  manageSourceData.splice(i, 1);
-  renderSourceList();
+async function deleteSourceArticle(i) {
+  var a = manageSourceData[i];
+  var msg = 'Delete "' + a.title + '"?\n\nThis removes it from the page AND deletes the article file from GitHub. This cannot be undone.';
+  if (!confirm(msg)) return;
+  setManageStatus('src', 'Deleting...', true);
+  try {
+    // 1. Delete the article file from GitHub (if it has one)
+    if (a.url) {
+      try {
+        var sha = await getFileSHA(a.url);
+        if (sha) {
+          await githubRequest(a.url, 'DELETE', { message: 'Delete article: ' + a.title, sha: sha, branch: GITHUB_BRANCH });
+        }
+      } catch(fileErr) {
+        // File may already be gone - continue with card removal
+        console.warn('File delete skipped:', fileErr.message);
+      }
+    }
+    // 2. Remove from list and push the updated page
+    manageSourceData.splice(i, 1);
+    renderSourceList();
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html?cb=' + Date.now());
+    var html = await r.text();
+    html = rebuildSourceGrid(html);
+    var pageSha = await getFileSHA('the-source.html');
+    await githubRequest('the-source.html', 'PUT', {
+      message: 'Studio: delete article - ' + a.title,
+      content: btoa(unescape(encodeURIComponent(html))),
+      sha: pageSha,
+      branch: GITHUB_BRANCH
+    });
+    setManageStatus('src', 'Deleted. Live in 1-2 min.', false);
+    setTimeout(function() { setManageStatus('src', 'Ready', false); }, 4000);
+  } catch(e) {
+    setManageStatus('src', 'Error: ' + e.message, false);
+  }
 }
 
-function deleteKitchenRecipe(i) {
-  if (!confirm('Remove "' + manageKitchenData[i].title + '" from Ancestral Kitchen?')) return;
-  manageKitchenData.splice(i, 1);
-  renderKitchenList();
+async function deleteKitchenRecipe(i) {
+  var rec = manageKitchenData[i];
+  var msg = 'Delete "' + rec.title + '"?\n\nThis removes it from the page AND deletes the recipe file from GitHub. This cannot be undone.';
+  if (!confirm(msg)) return;
+  setManageStatus('kit', 'Deleting...', true);
+  try {
+    if (rec.url) {
+      try {
+        var sha = await getFileSHA(rec.url);
+        if (sha) {
+          await githubRequest(rec.url, 'DELETE', { message: 'Delete recipe: ' + rec.title, sha: sha, branch: GITHUB_BRANCH });
+        }
+      } catch(fileErr) {
+        console.warn('File delete skipped:', fileErr.message);
+      }
+    }
+    manageKitchenData.splice(i, 1);
+    renderKitchenList();
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html?cb=' + Date.now());
+    var html = await r.text();
+    html = rebuildKitchenGrid(html);
+    var pageSha = await getFileSHA('ancestral-kitchen.html');
+    await githubRequest('ancestral-kitchen.html', 'PUT', {
+      message: 'Studio: delete recipe - ' + rec.title,
+      content: btoa(unescape(encodeURIComponent(html))),
+      sha: pageSha,
+      branch: GITHUB_BRANCH
+    });
+    setManageStatus('kit', 'Deleted. Live in 1-2 min.', false);
+    setTimeout(function() { setManageStatus('kit', 'Ready', false); }, 4000);
+  } catch(e) {
+    setManageStatus('kit', 'Error: ' + e.message, false);
+  }
 }
 
 function setManageStatus(page, msg, busy) {
@@ -2754,89 +2854,50 @@ function rebuildFilterPills(sourceHTML) {
 }
 
 function rebuildSourceGrid(html) {
-  // Replace article-grid contents
-  var gridStart = html.indexOf('<div class="article-grid">');
-  var afterGrid = html.indexOf('<!-- ESSENTIAL READING');
-  if (gridStart === -1 || afterGrid === -1) return html;
-
-  var newGrid = '<div class="article-grid">\n';
-  manageSourceData.forEach(function(a) { newGrid += a.rawCard + '\n\n'; });
-  newGrid += '    </div>\n    \n    ';
-
-  // Rebuild essential reading cards from pinned articles
-  var erStart = html.indexOf('id="essential-reading"');
-  var erSectionClose = html.indexOf('</div>\n\n  \n\n    <div style="border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin:0 0 3rem');
-  if (erStart === -1 || erSectionClose === -1) {
-    return html.slice(0, gridStart) + newGrid + html.slice(afterGrid);
+  // 1. Handle featured: if the featured article was deleted from the list, restore the placeholder
+  var featStart = html.indexOf('<div class="featured">');
+  if (featStart !== -1) {
+    var featEnd = findDivEndJS(html, featStart);
+    if (featEnd !== -1) {
+      var featHtml = html.slice(featStart, featEnd);
+      var fHref = (featHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
+      var stillExists = manageSourceData.some(function(a) { return a.featured && a.url === fHref; });
+      if (!stillExists) {
+        html = html.slice(0, featStart) + '<!-- FEATURED_PLACEHOLDER -->' + html.slice(featEnd);
+      }
+    }
   }
 
-  var erBefore = html.slice(erStart, html.indexOf('<div style="display:grid;grid-template-columns:repeat(3,1fr)', erStart));
-  var erAfter = html.slice(erSectionClose);
+  // 2. Rebuild the grid from non-featured items by div counting
+  var gridStart = html.indexOf('<div class="article-grid">');
+  if (gridStart === -1) return html;
+  var gridEnd = findDivEndJS(html, gridStart);
+  if (gridEnd === -1) return html;
 
-  var pinnedArticles = manageSourceData.filter(function(a) { return a.pinned; });
-  var erGrid = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-bottom:2.5rem;">\n';
-  pinnedArticles.forEach(function(a) {
-    erGrid += '        <div style="display:flex;flex-direction:column;border-radius:12px;overflow:hidden;border:0.5px solid var(--border);background:#fff;cursor:pointer;transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform=\'translateY(-4px)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,0.08)\'" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'\'">\n' +
-      '          <div style="padding:1.5rem;flex:1;display:flex;flex-direction:column;">\n' +
-      '            <h3 style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:22px;font-weight:400;color:#111;line-height:1.3;margin-bottom:8px;flex:1;">' + escHtml(a.title) + '</h3>\n' +
-      '            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:0.5px solid var(--border-light);"><span style="font-size:11px;color:#888;">' + escHtml(a.date) + '</span></div>\n' +
-      '          </div>\n        </div>\n';
+  var newGrid = '<div class="article-grid">\n';
+  manageSourceData.filter(function(a) { return !a.featured && a.rawCard; }).forEach(function(a) {
+    newGrid += a.rawCard + '\n\n';
   });
-  erGrid += '      </div>\n';
+  newGrid += '    </div>';
 
-  var newEr = '<div id="essential-reading">\n' + html.slice(erStart + 'id="essential-reading">'.length + 1, html.indexOf('<div style="display:grid;grid-template-columns:repeat(3,1fr)', erStart)) + erGrid + '    </div>';
-
-  return html.slice(0, gridStart) + newGrid + html.slice(afterGrid, erStart) + newEr + erAfter;
+  html = html.slice(0, gridStart) + newGrid + html.slice(gridEnd);
+  return rebuildFilterPills(html);
 }
 
 function rebuildKitchenGrid(html) {
-  var gridStart = html.indexOf('id="recipe-grid"');
-  if (gridStart === -1) return html;
-  var openTag = html.lastIndexOf('<', gridStart);
-  var gridClose = html.indexOf('</div>', gridStart);
-  // Find the actual end of the grid (after all cards)
-  // Count divs
-  var pos = html.indexOf('>', gridStart) + 1;
-  var depth = 1;
-  while (pos < html.length && depth > 0) {
-    var nextOpen = html.indexOf('<div', pos);
-    var nextClose = html.indexOf('</div>', pos);
-    if (nextClose === -1) break;
-    if (nextOpen !== -1 && nextOpen < nextClose) { depth++; pos = nextOpen + 1; }
-    else { depth--; pos = nextClose + 6; if (depth === 0) gridClose = nextClose + 6; }
-  }
+  var gridIdx = html.indexOf('id="recipe-grid"');
+  if (gridIdx === -1) return html;
+  var gridStart = html.lastIndexOf('<div', gridIdx);
+  var gridEnd = findDivEndJS(html, gridStart);
+  if (gridEnd === -1) return html;
 
-  var gridTag = html.slice(openTag, html.indexOf('>', gridStart) + 1);
-  var newGrid = gridTag + '\n';
-  manageKitchenData.filter(function(r){ return !r.pinned; }).forEach(function(r) {
-    newGrid += r.rawCard + '\n';
+  var newGrid = '<div class="recipe-grid" id="recipe-grid">\n<!-- RECIPE_CARDS_PLACEHOLDER -->\n';
+  manageKitchenData.forEach(function(r) {
+    if (r.rawCard) newGrid += r.rawCard + '\n';
   });
   newGrid += '</div>';
 
-  var pinned = manageKitchenData.filter(function(r){ return r.pinned; });
-  var pinStart = html.indexOf('id="pinned-section"');
-  var pinSectionOpen = pinStart !== -1 ? html.lastIndexOf('<div', pinStart) : -1;
-
-  if (pinned.length > 0 && pinStart !== -1) {
-    // Rebuild pinned section
-    var pinOpenTag = html.slice(pinSectionOpen, html.indexOf('>', pinStart) + 1);
-    var pinInnerStart = html.indexOf('>', html.indexOf('id="pinned-section"')) + 1;
-    var pinGridStart = html.indexOf('<div style="display:grid', pinInnerStart);
-    var pinBefore = html.slice(pinInnerStart, pinGridStart);
-    var pinGridClose = html.indexOf('</div>', html.indexOf('</div>', pinGridStart) + 6) + 6;
-    var pinAfter = html.slice(pinGridClose);
-
-    var pinGrid = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-bottom:2.5rem;">\n';
-    pinned.forEach(function(r) {
-      pinGrid += r.rawCard + '\n';
-    });
-    pinGrid += '</div>';
-
-    var newPinSection = html.slice(pinSectionOpen, pinInnerStart) + pinBefore + pinGrid + pinAfter.slice(0, pinAfter.indexOf('</div>') + 6);
-    return html.slice(0, openTag) + newGrid + '\n' + newPinSection + html.slice(pinStart + 1000);
-  }
-
-  return html.slice(0, openTag) + newGrid + html.slice(gridClose);
+  return html.slice(0, gridStart) + newGrid + html.slice(gridEnd);
 }
 
 /* ===== HOMEPAGE SLIDES EDITOR ===== */
