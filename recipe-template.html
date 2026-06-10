@@ -590,7 +590,7 @@ body{
 .timer-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.6);display:block;margin-bottom:6px;font-weight:400;}
 .timer-display{font-size:42px;font-weight:600;font-family:'Jost',sans-serif;color:#fff;}
 .timer-close{position:absolute;top:12px;right:14px;font-size:18px;color:rgba(255,255,255,0.5);cursor:pointer;background:none;border:none;color:rgba(255,255,255,0.6);}
-/* ── FONT CONSISTENCY FIX — match The Source exactly ── */
+/* ── FONT CONSISTENCY FIX - match The Source exactly ── */
 body, p, li, span, div {
   -webkit-font-smoothing: antialiased;
 }
@@ -655,7 +655,7 @@ body, p, li, span, div {
 .sb-cat-name { color: #444 !important; font-weight: 400 !important; }
 
 
-/* ── NAV CONSISTENCY — matches The Source exactly ── */
+/* ── NAV CONSISTENCY - matches The Source exactly ── */
 
 .nav.scrolled{min-height:64px;padding:0.6rem 2.5rem;box-shadow:0 1px 0 var(--border);}
 
@@ -803,6 +803,13 @@ html { scrollbar-gutter: stable; }
 .recipe-about{font-size:15px;color:#666;line-height:1.9;font-style:italic;margin:0 0 1.5rem;padding:1rem 1.4rem;border-left:3px solid var(--sage);background:rgba(138,155,110,0.05);}
 .recipe-dietary{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 1.5rem;}
 .dietary-tag{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;background:rgba(138,155,110,0.1);border:1px solid rgba(138,155,110,0.3);border-radius:20px;color:var(--sage);font-family:'Jost',sans-serif;font-weight:500;}
+
+.author-bio{margin:3rem 0 1rem;padding:2rem;border:0.5px solid var(--border);border-radius:12px;display:flex;gap:1.5rem;align-items:flex-start;}
+.author-avatar{width:72px;height:72px;border-radius:50%;flex-shrink:0;overflow:hidden;border:2px solid var(--border);}
+.author-avatar img{width:100%;height:100%;object-fit:cover;}
+.author-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:4px;}
+.author-role{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:10px;display:block;font-weight:500;}
+.author-bio-text{font-size:15px;color:var(--muted);line-height:1.75;font-weight:300;}
 </style>
 </head>
 <body>
@@ -891,7 +898,7 @@ html { scrollbar-gutter: stable; }
 </div>
 <div class="lightbox" id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt=""/><div class="lightbox-close" onclick="closeLightbox()"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></div></div>
 <script>
-/* PRISTINE WELLNESS — RECIPE PAGE JS */
+/* PRISTINE WELLNESS - RECIPE PAGE JS */
 
 
 // ── NAV SCROLL ──
