@@ -483,7 +483,7 @@ body{
 .lightbox-close svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;}
 #progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--sage);z-index:300;width:0%;transition:width 0.1s linear;border-radius:0 2px 2px 0;}
 .recipe-hero{width:100%;height:60vh;background-size:cover;background-position:center;position:relative;display:flex;align-items:flex-end;}
-.recipe-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,5,0.18) 0%,rgba(5,15,5,0.62) 60%,rgba(5,15,5,0.93) 100%);}
+.recipe-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,5,0) 0%,rgba(5,15,5,0) 50%,rgba(5,15,5,0.35) 72%,rgba(5,15,5,0.88) 100%);}
 .recipe-hero-content{position:relative;z-index:2;padding:0 10% 3.5rem;width:100%;}
 .recipe-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;}
 .recipe-cat-badge{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#fff;background:rgba(138,155,110,0.92);padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);font-weight:600;}
@@ -501,7 +501,7 @@ body{
 .recipe-wrap{display:grid;grid-template-columns:320px 1fr;gap:3.5rem;padding:3.5rem 10%;max-width:1400px;margin:0 auto;}
 .ingredients-panel{position:sticky;top:80px;height:fit-content;}
 .panel-card{border:0.5px solid var(--border);border-radius:16px;overflow:hidden;}
-.calc-header{background:var(--forest);padding:1.8rem;}
+.calc-header{background:var(--sage);padding:1.8rem;}
 .calc-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.7);font-weight:400;display:block;margin-bottom:1rem;}
 .calc-row{display:flex;align-items:center;justify-content:space-between;}
 .calc-label{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#fff;font-weight:400;}
@@ -796,12 +796,13 @@ html { scrollbar-gutter: stable; }
   .recipe-hero h1{font-size:clamp(28px,8vw,44px)!important;}
   .recipe-hero-content{padding:0 5% 2.5rem!important;}
   .recipe-quick-stats{gap:0.8rem!important;flex-wrap:wrap!important;}
-  .method-step{grid-template-columns:36px 1fr!important;gap:0.8rem!important;}
+  .method-step{grid-template-columns:40px 1fr!important;gap:1rem!important;}.step-num{width:40px!important;height:40px!important;}.step-num span{font-size:14px!important;}
   .nutrition-grid{grid-template-columns:repeat(3,1fr)!important;}
   .ingredients-panel{position:static!important;top:auto!important;}
 }
 
-.recipe-about{font-size:15px;color:#666;line-height:1.9;font-style:italic;margin:0 0 1.5rem;padding:1rem 1.4rem;border-left:3px solid var(--sage);background:rgba(138,155,110,0.05);}
+.recipe-about{font-size:16px;color:#555;line-height:1.95;margin:0 0 1.8rem;font-weight:300;}
+.recipe-about p{margin:0 0 1.1rem;}
 .recipe-dietary{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 1.5rem;}
 .dietary-tag{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;background:rgba(138,155,110,0.1);border:1px solid rgba(138,155,110,0.3);border-radius:20px;color:var(--sage);font-family:'Jost',sans-serif;font-weight:500;}
 
@@ -811,6 +812,10 @@ html { scrollbar-gutter: stable; }
 .author-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:4px;}
 .author-role{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:10px;display:block;font-weight:500;}
 .author-bio-text{font-size:15px;color:var(--muted);line-height:1.75;font-weight:300;}
+
+/* Serve-with as plain text, not a box */
+.chef-tip[style*="--sage"]{background:none !important;border-left:none !important;padding:0.4rem 0 0 !important;margin:0 0 1.2rem !important;}
+.chef-tip[style*="--sage"] .chef-tip-label{color:var(--sage);}
 </style>
 </head>
 <body>
@@ -910,7 +915,6 @@ html { scrollbar-gutter: stable; }
     <div class="recipe-about">
       <p>Soaked, fermented, wholefood school-morning fuel no refined sugar needed</p>
     </div>
-    <p class="recipe-intro">School mornings are chaos, and this recipe is our answer to that. We soak our oats overnight in an acidic medium, which breaks down phytic acid and makes all those vitamins and minerals far easier for little bodies to absorb. No refined sugar, no shortcuts, just real wholefood fuel that keeps kids going until lunch.</p>
     <div class="chef-tip">
       <span class="chef-tip-label">Chef's note</span>
       <p>If your family is new to fermented grains, start with just one tablespoon of apple cider vinegar and build up over a few days. You can prep four individual jars on Sunday night and refrigerate after the overnight soak and rinse, then add toppings fresh each morning. Oats keep well in the fridge for up to three days once drained.</p>
