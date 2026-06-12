@@ -3,7 +3,8 @@
     "email": "jc@josephcasni.com",
     "date": "2026-06-11",
     "source": "the-source",
-    "status": "active",
-    "_idx": 0
+    "status": "unsubscribed",
+    "_idx": 0,
+    "unsubscribed": "2026-06-12"
   }
 ]
