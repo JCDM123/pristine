@@ -4,6 +4,8 @@
     "subject": "Pristine Wellness test flight",
     "date": "2026-06-12T12:34",
     "recipients": 1,
-    "opens": {}
+    "opens": {
+      "86eb16411a3949c2": "2026-06-12T12:35"
+    }
   }
 ]
