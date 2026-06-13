@@ -4767,29 +4767,39 @@ async function refreshRising(btn) {
   });
 
   var queries = [
-    { id: 'rising-general', q: 'emerging health wellness trends gaining momentum 2026 early research', label: 'health' },
-    { id: 'rising-food', q: 'emerging functional foods ingredients ancestral diet gaining popularity 2026', label: 'food' },
-    { id: 'rising-niche', q: 'rising interest structured water gut health ancestral living natural health 2026', label: 'niche' }
+    { id: 'rising-general', label: 'health', q: 'emerging health wellness trends gaining momentum 2026' },
+    { id: 'rising-food',    label: 'food',   q: 'emerging functional foods ingredients ancestral diet 2026' },
+    { id: 'rising-niche',   label: 'niche',  q: 'rising interest structured water gut microbiome ancestral living 2026' }
   ];
+
+  async function doRisingQuery(q) {
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: 'You are a health content researcher for Pristine Wellness Australia. Search the web then output ONLY a valid JSON array of 5 objects with keys: title (topic max 8 words), why (one sentence why gaining traction now), angle (Pristine Wellness article angle max 12 words). No em dashes. Australian spelling. Output the raw JSON array only, nothing else.',
+        messages: [{ role: 'user', content: 'Search for emerging ' + q.label + ' topics: ' + q.q + '\nOutput JSON array of 5 items.' }]
+      })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    if (data.error) throw new Error((data.error && data.error.message) || 'API error');
+    var text = (data.content || []).filter(function(b){ return b.type === 'text' && b.text && b.text.length > 5; }).map(function(b){ return b.text; }).join('');
+    if (!text) throw new Error('Empty response');
+    var m = text.match(/\[[\s\S]*\]/);
+    if (!m) throw new Error('No JSON array in response');
+    return JSON.parse(m[0]);
+  }
 
   for (var qi = 0; qi < queries.length; qi++) {
     var q = queries[qi];
+    var el = document.getElementById(q.id);
+    if (qi > 0) await new Promise(function(r){ setTimeout(r, 5000); });
     try {
-      var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 600,
-          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          system: 'You find emerging health topics that are just starting to gain traction — not yet mainstream but building momentum. Reply with ONLY a JSON array of 5 objects: [{title, why, angle}]. title = the emerging topic (max 8 words). why = one sentence on why it is gaining traction. angle = a content angle for a Pristine Wellness article (max 12 words). No em dashes. Australian spelling. JSON only, no markdown.',
-          messages: [{ role: 'user', content: 'Find 5 emerging ' + q.label + ' topics that are just starting to gain traction in 2026 — not trending yet but building. Search: ' + q.q }]
-        })
-      });
-      var data = await resp.json();
-      var text = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('');
-      var items = JSON.parse(text.replace(/```json|```/g,'').trim());
-      var el = document.getElementById(q.id);
+      var items = await doRisingQuery(q);
       if (el) {
         el.innerHTML = items.map(function(t) {
           return '<div class="trend-item" onclick="prefillFromTrend(\'' + escHtml(t.title).replace(/'/g,"\\'") + '\',\'' + escHtml(t.angle).replace(/'/g,"\\'") + '\')">' +
@@ -4800,8 +4810,10 @@ async function refreshRising(btn) {
         }).join('');
       }
     } catch(e) {
-      var el2 = document.getElementById(q.id);
-      if (el2) el2.innerHTML = '<div style="color:#bbb;font-size:13px;">Could not load. Try again.</div>';
+      var msg = String(e.message || 'Unknown error');
+      if (/rate.?limit|529|overload/i.test(msg)) msg = 'Rate limit hit. Wait 60 seconds and try again.';
+      else if (/402|credit|balance/i.test(msg)) msg = 'API credits needed. Top up at console.anthropic.com.';
+      if (el) el.innerHTML = '<div style="color:#c0392b;font-size:13px;">' + escHtml(msg) + '</div>';
     }
   }
   btn.disabled = false;
