@@ -2242,8 +2242,8 @@ async function publishArticle() {
 
     await updateSearchIndex({
       title: article.title,
-      cat: d.category || 'Articles',
-      excerpt: String(article.intro || article.sections && article.sections[0] && article.sections[0].content || '').slice(0, 140),
+      cat: (generatedArticleData && generatedArticleData.category) || 'Articles',
+      excerpt: String(article.intro || (article.sections && article.sections[0] && article.sections[0].content) || '').slice(0, 140),
       url: filename
     });
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
