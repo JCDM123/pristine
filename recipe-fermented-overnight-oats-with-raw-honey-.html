@@ -816,6 +816,12 @@ html { scrollbar-gutter: stable; }
 /* Serve-with as plain text, not a box */
 .chef-tip[style*="--sage"]{background:none !important;border-left:none !important;padding:0.4rem 0 0 !important;margin:0 0 1.2rem !important;}
 .chef-tip[style*="--sage"] .chef-tip-label{color:var(--sage);}
+
+/* Mobile drawer search results */
+.mobile-drawer-results{margin:-0.5rem 0 0.8rem;max-height:40vh;overflow-y:auto;}
+.mobile-drawer-results .mdr-item{display:block;padding:10px 4px;border-bottom:0.5px solid rgba(0,0,0,0.06);font-size:14px !important;color:#333;text-decoration:none;letter-spacing:0 !important;text-transform:none !important;font-weight:400 !important;}
+.mobile-drawer-results .mdr-cat{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8A9B6E;margin-bottom:2px;}
+.mobile-drawer-results .mdr-none{padding:10px 4px;font-size:13px;color:#aaa;font-weight:300;}
 </style>
 </head>
 <body>
@@ -837,9 +843,10 @@ html { scrollbar-gutter: stable; }
 <div class="mobile-drawer" id="mobile-drawer">
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">&#x2715;</button>
   <div class="mobile-drawer-search">
-    <input type="text" class="mobile-drawer-search-input" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/>
+    <input type="text" class="mobile-drawer-search-input" placeholder="Search..." oninput="doDrawerSearch(this.value)" autocomplete="off"/>
     <svg class="mobile-drawer-search-icon" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="16" height="16"><circle cx="11" cy="11" r="8" fill="none"/><path d="m21 21-4.35-4.35" fill="none"/></svg>
   </div>
+  <div class="mobile-drawer-results" id="mobile-drawer-results"></div>
   <a href="index.html">Home</a>
   <a href="the-source.html">The Source</a>
   <a href="ancestral-kitchen.html" class="active">Ancestral Kitchen</a>
@@ -1133,29 +1140,10 @@ function doSearch(q) {
 }
 
 function buildSearchIndex() {
-  searchDocs = [
-    { title: 'The Ancient Power of Forest Bathing', cat: 'Mental Wellness', excerpt: 'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.', url: 'article-forest-bathing.html' },
-    { title: 'What Robert Gourlay Taught Us About Water', cat: 'Hydration', excerpt: 'The structured water science that may explain everything about human health and longevity.', url: 'article-forest-bathing.html' },
-    { title: 'The Six Pillars of Pristine Living', cat: 'Foundations', excerpt: 'Pure water, nutrient dense food, grounding, nature immersion, restorative sleep and intentional living.', url: 'the-source.html' },
-    { title: 'Chickpea & Green Bean Curry', cat: 'Recipes · Mains', excerpt: 'A warming plant-based curry loaded with anti-inflammatory turmeric, cumin and coconut milk.', url: 'recipe-chickpea-curry.html' },
-    
-    
-    { title: 'About Pristine Wellness', cat: 'About', excerpt: 'A family on a mission to share what we know, rooted in ancestral wisdom.', url: 'about.html' },
-    { title: 'Robert Gourlay, Water Quality Scientist', cat: 'About', excerpt: 'Founder of Phion, inventor of the MEA device, and our family\'s guiding mentor.', url: 'about.html' },
-    { title: 'The Industrial Revolution That Disconnected Us', cat: 'Wellness', excerpt: 'Rubber soles, concrete floors, processed food, how modernity quietly stripped our health away.', url: 'the-source.html' },
-    { title: 'Anti-Inflammatory Foods: Building Your Daily Plate', cat: 'Nutrition', excerpt: 'Simple evidence-backed choices that calm the body from the inside out.', url: 'the-source.html' },
-  ];
-  if (typeof lunr !== 'undefined') {
-    searchIndex = lunr(function() {
-      this.field('title', { boost: 10 });
-      this.field('cat', { boost: 5 });
-      this.field('excerpt');
-      this.ref('url');
-      searchDocs.forEach(function(doc, i) {
-        this.add({ url: doc.url + '_' + i, title: doc.title, cat: doc.cat, excerpt: doc.excerpt });
-      }, this);
-    });
-  }
+  fetch('data/search-index.json?cb=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (Array.isArray(d) && d.length) searchDocs = d; })
+    .catch(function() {});
 }
 
 function openContactModal() {
@@ -1418,6 +1406,26 @@ document.addEventListener('DOMContentLoaded', function() {
   initUnitToggle();
   buildSearchIndex();
 });
+
+/* Drawer search: results render inside the menu */
+function doDrawerSearch(q) {
+  var box = document.getElementById('mobile-drawer-results');
+  if (!box) return;
+  if (!q || q.length < 2) { box.innerHTML = ''; return; }
+  var ql = q.toLowerCase();
+  var matches = (typeof searchDocs !== 'undefined' ? searchDocs : []).filter(function(d) {
+    return d.title.toLowerCase().indexOf(ql) > -1 ||
+           d.excerpt.toLowerCase().indexOf(ql) > -1 ||
+           d.cat.toLowerCase().indexOf(ql) > -1;
+  }).slice(0, 6);
+  if (!matches.length) {
+    box.innerHTML = '<div class="mdr-none">No results for "' + q.replace(/</g,'&lt;') + '"</div>';
+    return;
+  }
+  box.innerHTML = matches.map(function(d) {
+    return '<a class="mdr-item" href="' + d.url + '"><span class="mdr-cat">' + d.cat + '</span>' + d.title + '</a>';
+  }).join('');
+}
 </script>
 </body>
 </html>

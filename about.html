@@ -718,6 +718,12 @@ html { scrollbar-gutter: stable; }
 .mobile-drawer-subnav{display:none!important;flex-direction:column!important;padding-left:1rem!important;padding-bottom:0.5rem!important;gap:0!important;}
 .mobile-drawer-subnav.open{display:flex!important;}
 .mobile-drawer-subnav a{padding:0.8rem 0!important;font-size:12px!important;letter-spacing:1.5px!important;color:#888!important;border-bottom:none!important;}
+
+/* Mobile drawer search results */
+.mobile-drawer-results{margin:-0.5rem 0 0.8rem;max-height:40vh;overflow-y:auto;}
+.mobile-drawer-results .mdr-item{display:block;padding:10px 4px;border-bottom:0.5px solid rgba(0,0,0,0.06);font-size:14px !important;color:#333;text-decoration:none;letter-spacing:0 !important;text-transform:none !important;font-weight:400 !important;}
+.mobile-drawer-results .mdr-cat{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8A9B6E;margin-bottom:2px;}
+.mobile-drawer-results .mdr-none{padding:10px 4px;font-size:13px;color:#aaa;font-weight:300;}
 </style>
 </head>
 <body>
@@ -738,9 +744,10 @@ html { scrollbar-gutter: stable; }
 <div class="mobile-drawer" id="mobile-drawer">
   <button class="mobile-drawer-close" onclick="closeMobileMenu()">&#x2715;</button>
   <div class="mobile-drawer-search">
-    <input type="text" class="mobile-drawer-search-input" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/>
+    <input type="text" class="mobile-drawer-search-input" placeholder="Search..." oninput="doDrawerSearch(this.value)" autocomplete="off"/>
     <svg class="mobile-drawer-search-icon" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="16" height="16"><circle cx="11" cy="11" r="8" fill="none"/><path d="m21 21-4.35-4.35" fill="none"/></svg>
   </div>
+  <div class="mobile-drawer-results" id="mobile-drawer-results"></div>
   <a href="index.html">Home</a>
   <a href="the-source.html">The Source</a>
   <a href="ancestral-kitchen.html">Ancestral Kitchen</a>
@@ -1093,6 +1100,36 @@ function openContactModal(){document.getElementById('contact-modal').classList.a
 function closeContactModal(){document.getElementById('contact-modal').classList.remove('open');document.body.style.overflow='';}
 function handleModalClick(e){if(e.target===document.getElementById('contact-modal'))closeContactModal();}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeContactModal();});
+
+/* Drawer search: results render inside the menu */
+function doDrawerSearch(q) {
+  var box = document.getElementById('mobile-drawer-results');
+  if (!box) return;
+  if (!q || q.length < 2) { box.innerHTML = ''; return; }
+  var ql = q.toLowerCase();
+  var matches = (typeof searchDocs !== 'undefined' ? searchDocs : []).filter(function(d) {
+    return d.title.toLowerCase().indexOf(ql) > -1 ||
+           d.excerpt.toLowerCase().indexOf(ql) > -1 ||
+           d.cat.toLowerCase().indexOf(ql) > -1;
+  }).slice(0, 6);
+  if (!matches.length) {
+    box.innerHTML = '<div class="mdr-none">No results for "' + q.replace(/</g,'&lt;') + '"</div>';
+    return;
+  }
+  box.innerHTML = matches.map(function(d) {
+    return '<a class="mdr-item" href="' + d.url + '"><span class="mdr-cat">' + d.cat + '</span>' + d.title + '</a>';
+  }).join('');
+}
+
+/* Real search index: loads from data/search-index.json (studio keeps it current) */
+function buildSearchIndex() {
+  fetch('data/search-index.json?cb=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (Array.isArray(d) && d.length) searchDocs = d; })
+    .catch(function() { /* keep whatever static fallback exists */ });
+}
+if (typeof initFilters === 'undefined') { window.initFilters = function() {}; }
+buildSearchIndex();
 </script>
 </body>
 </html>
