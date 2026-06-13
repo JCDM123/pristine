@@ -1355,12 +1355,6 @@ async function generateArticle() {
     article = JSON.parse(JSON.stringify(article).replace(/\u2014/g, ', ').replace(/\u2013/g, '-').replace(/ ,/g, ',').replace(/,  +/g, ', '));
     generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: selectedTags.join(', '), format: format, useCitations: useCitations };
     renderArticlePreview(article, category, readtime, author, dateVal, selectedTags.join(', '));
-    await updateSearchIndex({
-      title: generatedArticleData.article.title,
-      cat: generatedArticleData.category || 'Articles',
-      excerpt: String(generatedArticleData.article.intro || '').slice(0, 140),
-      url: filename
-    });
     setStatus('a', 'done', 'Article ready');
     // Word count from article content
     var wcText = [article.intro || '', article.closing || ''];
