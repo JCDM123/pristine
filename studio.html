@@ -3807,11 +3807,11 @@ async function loadSlidesTab() {
   if (!token) { setSlideStatus('No GitHub token set.', false); return; }
   setSlideStatus('Loading...', null);
   try {
-    var data = await githubRequest('index.html', 'GET');
+    var data = await githubRequest('home.html', 'GET');
     var html = atob(data.content.replace(/\n/g,''));
     slidesData = parseSlidesFromHTML(html);
     renderSlidesEditor();
-    setSlideStatus('Loaded ' + slidesData.length + ' slide(s).', true);
+    setSlideStatus('Loaded ' + slidesData.length + ' slide(s) from home.html.', true);
   } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
   }
@@ -3999,7 +3999,7 @@ async function publishSlides() {
   if (!token) { setSlideStatus('No GitHub token.', false); return; }
   if (!slidesData.length) { setSlideStatus('No slides to publish.', false); return; }
   collectSlideTextFields();
-  setSlideStatus('Fetching index.html...', null);
+  setSlideStatus('Fetching home.html...', null);
   try {
     var data = await githubRequest('home.html', 'GET');
     var html = atob(data.content.replace(/\n/g,''));
