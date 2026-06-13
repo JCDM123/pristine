@@ -1146,7 +1146,7 @@ p, li, .card-excerpt, .feat-excerpt,
 
 .mobile-menu-btn{display:none;}
 @media(max-width:900px){.nav-links{display:none !important;}.mobile-menu-btn{display:flex !important;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}.nav-right > svg:first-child{display:none !important;}}
-html { scrollbar-gutter: stable; }
+html { scrollbar-gutter: stable; overflow-y: scroll; }
 
 /* Newsletter text override | must beat global p rule */
 div[style*="z-index:1"] p { color: #ffffff !important; }
@@ -1164,7 +1164,21 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
   div[style*="max-width:440px"][style*="display:flex"] input[type="email"]{width:100% !important;box-sizing:border-box;}
   div[style*="max-width:440px"][style*="display:flex"] button{width:100% !important;padding:16px !important;}
 }
+
+/* ── CANONICAL NAV CSS (master, overrides all) ── */
+.nav{padding:0.8rem 2.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border);background:#fff;position:sticky;top:0;z-index:100;min-height:90px;overflow:visible;transition:min-height 0.4s ease,padding 0.4s ease;}
+.nav.scrolled{min-height:64px !important;padding:0.6rem 2.5rem !important;box-shadow:0 1px 0 var(--border) !important;}
+.logo-img{width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer;filter:drop-shadow(0 6px 20px rgba(0,0,0,0.2));position:relative;z-index:10;margin-bottom:-36px;transition:width 0.4s ease,height 0.4s ease,margin-bottom 0.4s ease,filter 0.4s ease;}
+.nav.scrolled .logo-img{width:72px !important;height:72px !important;margin-bottom:-20px !important;}
+.nav-links{display:flex;gap:2.5rem;align-items:center;}
+.nav-links a{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:500;transition:color 0.2s;}
+.nav-links a.active{color:var(--text);border-bottom:1.5px solid var(--sage);padding-bottom:2px;}
+.nav-links a:hover{color:var(--sage);}
+.nav-right{display:flex;align-items:center;gap:16px;}
 </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="site-wrap">
