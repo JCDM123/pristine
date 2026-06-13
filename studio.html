@@ -1356,9 +1356,9 @@ async function generateArticle() {
     generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: selectedTags.join(', '), format: format, useCitations: useCitations };
     renderArticlePreview(article, category, readtime, author, dateVal, selectedTags.join(', '));
     await updateSearchIndex({
-      title: d.article.title,
-      cat: d.category || 'Articles',
-      excerpt: String(d.article.intro || '').slice(0, 140),
+      title: generatedArticleData.article.title,
+      cat: generatedArticleData.category || 'Articles',
+      excerpt: String(generatedArticleData.article.intro || '').slice(0, 140),
       url: filename
     });
     setStatus('a', 'done', 'Article ready');
@@ -2689,7 +2689,7 @@ async function publishRecipe() {
     await updateSearchIndex({
       title: recipe.title,
       cat: 'Recipes \u00b7 ' + (getCategoryValue('r-category') || 'Recipe'),
-      excerpt: String(recipe.intro || d.about || '').slice(0, 140),
+      excerpt: String(recipe.intro || (generatedRecipeData && generatedRecipeData.about) || '').slice(0, 140),
       url: filename
     });
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
