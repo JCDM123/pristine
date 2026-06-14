@@ -3,9 +3,9 @@
     "email": "jc@josephcasni.com",
     "date": "2026-06-12",
     "source": "the-source",
-    "status": "active",
+    "status": "unsubscribed",
     "_idx": 0,
-    "unsubscribed": "2026-06-12"
+    "unsubscribed": "2026-06-14"
   },
   {
     "email": "accounts@josephcasni.com",
