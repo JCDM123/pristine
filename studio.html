@@ -5808,6 +5808,7 @@ function getStoryPhotosHTML() {
   html += '</div>';
   return html;
 }
+
 </script>
 
 
@@ -6007,51 +6008,5 @@ function getStoryPhotosHTML() {
     </div>
   </div>
 </div>
-<!-- ===== IMAGE PICKER MODAL ===== -->
->\n</html>';
-  var slug = (d.recipe.title||d.name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
-  downloadFile('recipe-' + slug + '.html', content);
-}
-
-function copyRecipeHTML() {
-  if (!generatedRecipeData) return;
-  downloadRecipe();
-}
-
-function downloadFile(filename, content) {
-  var blob = new Blob([content], {type: 'text/html'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-// Custom category management
-function loadSavedCats() {
-  var aCats = JSON.parse(localStorage.getItem('pristine_a_cats') || '[]');
-  var rCats = JSON.parse(localStorage.getItem('pristine_r_cats') || '[]');
-  var aSel = document.getElementById('a-category');
-  var rSel = document.getElementById('r-category');
-  if (aSel) {
-    aCats.forEach(function(cat) {
-      if (!Array.from(aSel.options).some(function(o){ return o.value === cat; })) {
-        var opt = document.createElement('option');
-        opt.value = cat; opt.textContent = cat;
-        aSel.insertBefore(opt, aSel.lastElementChild);
-      }
-    });
-    // Add Other option at bottom
-    if (!Array.from(aSel.options).some(function(o){ return o.value === '__other__'; })) {
-      var other = document.createElement('option');
-      other.value = '__other__'; other.textContent = 'Other...';
-      aSel.appendChild(other);
-    }
-  }
-  if (rSel) {
-    rCats.forEach(function(cat) {
-      if (!Array.from(rSel.options).some(function(o){ return o.value === cat; })) {
-        var opt = document.createElement('option');
-        opt.value = cat; opt.tex
-</body>
+<!-- ===== IMAGE PICKER MODAL ===== --></body>
 </html>
