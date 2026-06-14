@@ -3881,7 +3881,7 @@ function parseSlidesFromHTML(html) {
     if (tagEnd === -1) { pos = idx + 10; continue; }
     var tagContent = html.substring(idx, tagEnd);
     // Extract the background-image URL
-    var urlMatch = tagContent.match(/background-image:url\('([^']+)'/);
+    var urlMatch = tagContent.match(/background-image:url\(\\'([^\\']+)\\'/) || tagContent.match(/background-image:url\('([^']+)'/);
     if (urlMatch) {
       slides.push({ image: urlMatch[1], bgpos: '' });
     }
@@ -4069,7 +4069,7 @@ function rebuildSlidesInHTML(html) {
   }).join('\n');
 
   // Replace all existing slide divs block
-  html = html.replace(/<div class="slide[^"]*"\s+style="background-image:url[^>]+><\/div>\s*/g, '');
+  html = html.replace(/<div class="slide(?:\s+active)?"\s+style="background-image:url[\s\S]*?><\/div>/g, '');
   // Insert new slides before slide-overlay
   html = html.replace('<div class="slide-overlay">', newSlideDivs + '\n  <div class="slide-overlay">');
 
