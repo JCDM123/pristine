@@ -554,9 +554,9 @@ body{
 .form-note{font-size:13px;color:#bbb;font-weight:300;margin-bottom:1rem;}
 .form-submit{padding:14px 30px;background:var(--sage);border:none;color:#fff;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;font-weight:500;border-radius:4px;transition:background 0.2s;}
 .form-submit:hover{background:var(--sage-dark);}
-.related-section{padding:3rem 2.5rem;border-top:0.5px solid var(--border);}
+.related-section{max-width:1400px;margin:0 auto;padding:3rem 10%;border-top:0.5px solid var(--border);box-sizing:border-box;}.related-inner{display:grid;grid-template-columns:1fr 260px;gap:4rem;}.related-inner > .related-main{min-width:0;}
 .related-heading{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:40px;font-weight:400;color:var(--text);margin-bottom:2rem;}
-.related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
 .related-card{border-radius:10px;overflow:hidden;border:0.5px solid var(--border);transition:transform 0.3s,box-shadow 0.3s;cursor:pointer;}
 .related-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.08);}
 .related-img{height:160px;background-size:cover;background-position:center;position:relative;}
@@ -876,9 +876,14 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
   </aside>
 </div>
       <div class="related-section" id="related-section" style="display:none;">
-        <h2 class="related-heading">Keep Reading</h2>
-        <div class="related-grid" id="related-grid">
-          RELATED_CARDS_PLACEHOLDER
+        <div class="related-inner">
+          <div class="related-main">
+            <h2 class="related-heading">Keep Reading</h2>
+            <div class="related-grid" id="related-grid">
+              RELATED_CARDS_PLACEHOLDER
+            </div>
+          </div>
+          <div></div>
         </div>
       </div>
 
