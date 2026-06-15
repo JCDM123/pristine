@@ -1,9 +1,9 @@
 [
   {
     "email": "jc@josephcasni.com",
-    "date": "2026-06-12",
+    "date": "2026-06-15",
     "source": "the-source",
-    "status": "unsubscribed",
+    "status": "active",
     "_idx": 0,
     "unsubscribed": "2026-06-14"
   },
