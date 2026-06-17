@@ -206,7 +206,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 
 /* Ã¢ÂÂÃ¢ÂÂ ESSENTIAL READING Ã¢ÂÂÃ¢ÂÂ */
 .pinned-section{ background:transparent; padding:0; margin:0; position:relative; }
-.pinned-section::before{ content:none; }
+.pinned-section::before{content:none;}
 .pinned-header{
   display:flex;align-items:center;gap:1rem;
   margin-bottom:2rem;position:relative;z-index:1;
@@ -307,7 +307,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
   margin:1.5rem 0 0 0;
   position:relative;overflow:hidden;
 }
-.pinned-section::before{ content:none; }
+.pinned-section::before{content:none;}
 .pinned-asymmetric{
   display:grid;
   grid-template-columns:1.4fr 1fr;
@@ -1365,32 +1365,6 @@ document.addEventListener('keydown', function(e) {
 });
 
 // INIT
-document.addEventListener('DOMContentLoaded', function() {
-  // Init filter pills
-  document.querySelectorAll('.filter-pill').forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterCards(pill.textContent.trim());
-    });
-  });
-  // Apply category filter from URL (?cat=Nutrition) if present
-  try {
-    var params = new URLSearchParams(window.location.search);
-    var urlCat = params.get('cat');
-    if (urlCat) {
-      var matched = false;
-      document.querySelectorAll('.filter-pill').forEach(function(pill) {
-        if (pill.textContent.trim().toLowerCase() === urlCat.toLowerCase()) {
-          filterCards(pill.textContent.trim());
-          matched = true;
-        }
-      });
-      if (matched) {
-        var grid = document.querySelector('.article-grid');
-        if (grid && grid.scrollIntoView) grid.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
-    }
-  } catch(e) {}
-});
 
 
 /* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
@@ -1503,11 +1477,6 @@ document.addEventListener('keydown', function(e) {
 });
 
 // INIT ALL
-document.addEventListener('DOMContentLoaded', function() {
-  initFilters();
-  initServings();
-  initUnitToggle();
-});
 
 
 /* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
@@ -1549,9 +1518,6 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Ã¢ÂÂÃ¢ÂÂ INIT Ã¢ÂÂÃ¢ÂÂ
-document.addEventListener('DOMContentLoaded', function() {
-  buildSearchIndex();
-});
 
 
 
@@ -1636,11 +1602,6 @@ function toggleStepTimer(stepId, seconds) {
 
 
 // Ã¢ÂÂÃ¢ÂÂ INIT ALL Ã¢ÂÂÃ¢ÂÂ
-document.addEventListener('DOMContentLoaded', function() {
-  initFilters();
-  initServings();
-  initUnitToggle();
-});
 
 /* ===== CLIENT-SIDE PAGINATION ===== */
 var PAGE_SIZE = 9;
@@ -1739,8 +1700,6 @@ function filterCards(btn, cat) {
   renderPage();
 }
 
-document.addEventListener('DOMContentLoaded', function() { renderPage(); });
-
 /* ===== NEWSLETTER SUBSCRIBE ===== */
 async function pwSubscribe(btn) {
   var wrap = btn.closest('div[style*="z-index:1"]') || document;
@@ -1802,6 +1761,12 @@ function buildSearchIndex() {
 }
 if (typeof initFilters === 'undefined') { window.initFilters = function() {}; }
 buildSearchIndex();
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderPage();
+  buildSearchIndex();
+  initServings();
+});
 </script>
 <div class="search-overlay" id="search-overlay">
   <button class="search-close" onclick="closeSearch()">ÃÂ</button>
