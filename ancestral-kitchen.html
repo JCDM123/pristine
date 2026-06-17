@@ -207,8 +207,19 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 }
 
 /* ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ ESSENTIAL READING ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ */
-.pinned-section{ background:transparent; padding:0; margin:0; position:relative; }
-.pinned-section::before{ content:none; }
+.pinned-section{
+  background:var(--forest);
+  padding:3rem 2.5rem;
+  margin:0 0 0 0;
+  position:relative;
+  overflow:hidden;
+}
+.pinned-section::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(74,94,56,0.4) 0%,transparent 60%);
+  pointer-events:none;
+}
 .pinned-header{
   display:flex;align-items:center;gap:1rem;
   margin-bottom:2rem;position:relative;z-index:1;
@@ -220,7 +231,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 }
 .pinned-title{
   font-family:'Cormorant Garamond',serif;font-style:italic;
-  font-size:32px;font-weight:400;color:#1a1a1a;
+  font-size:32px;font-weight:400;color:#fff;
   margin-left:auto;
 }
 .pinned-line{
@@ -304,12 +315,16 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
   font-size:44px;font-weight:400;color:#111;
 }
 .pinned-section{
-  background:transparent;
+  background:var(--forest);
   padding:2.5rem 2.5rem;
   margin:1.5rem 0 0 0;
   position:relative;overflow:hidden;
 }
-.pinned-section::before{ content:none; }
+.pinned-section::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(74,94,56,0.4) 0%,transparent 60%);
+  pointer-events:none;
+}
 .pinned-asymmetric{
   display:grid;
   grid-template-columns:1.4fr 1fr;
@@ -364,8 +379,14 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
   display:flex;align-items:center;gap:6px;
 }
 .pinned-hero-meta svg{width:12px;height:12px;stroke:rgba(255,255,255,0.4);fill:none;stroke-width:1.5;}
-.pinned-small{ border-radius:12px;overflow:hidden; border:0.5px solid var(--border); background:#fff; cursor:pointer;display:flex;flex-direction:column;transition:box-shadow 0.2s; }
-.pinned-small:hover{ box-shadow:0 4px 20px rgba(0,0,0,0.06); transform:translateY(-2px); }
+.pinned-small{
+  border-radius:12px;overflow:hidden;
+  border:0.5px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.05);
+  cursor:pointer;display:flex;flex-direction:column;
+  transition:transform 0.3s ease,background 0.3s ease;
+}
+.pinned-small:hover{transform:translateY(-4px);background:rgba(255,255,255,0.1);}
 .pinned-small-img{
   height:140px;position:relative;overflow:hidden;flex-shrink:0;
 }
@@ -382,10 +403,21 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
   font-family:'Jost',sans-serif;font-weight:500;
 }
 .pinned-small-body{padding:1.2rem;flex:1;display:flex;flex-direction:column;}
-.pinned-small-cat{ font-size:10px;letter-spacing:2px;text-transform:uppercase; color:var(--sage);margin-bottom:6px; display:block;font-weight:500; }
-.pinned-small-title{ font-family:'Cormorant Garamond',serif;font-style:italic; font-size:18px;font-weight:500;color:#1a1a1a; line-height:1.3;margin-bottom:6px; }
-.pinned-small:hover .pinned-small-title{ color:#1a1a1a; }
-.pinned-small-meta{ font-size:11px;color:var(--muted);font-weight:400; display:flex;align-items:center;gap:6px;margin-top:auto; }
+.pinned-small-cat{
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(168,187,138,0.9);margin-bottom:6px;
+  display:block;font-weight:500;font-family:'Jost',sans-serif;
+}
+.pinned-small-title{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:18px;font-weight:400;color:#fff;
+  line-height:1.3;margin-bottom:6px;transition:color 0.2s;flex:1;
+}
+.pinned-small:hover .pinned-small-title{color:rgba(168,187,138,1);}
+.pinned-small-meta{
+  font-size:11px;color:#fff;font-weight:300;
+  display:flex;align-items:center;gap:6px;margin-top:auto;
+}
 .pinned-small-meta svg{width:12px;height:12px;stroke:rgba(255,255,255,0.4);fill:none;stroke-width:1.5;}
 @media(max-width:1100px){
   .pinned-asymmetric{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
@@ -1244,8 +1276,9 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
 <div id="pinned-recipes">
 <div class="pinned-intro"><span class="pinned-intro-eyebrow">Curated by us</span><div class="pinned-intro-title">Essential Recipes</div></div>
 <div class="pinned-section"><div class="pinned-grid">
-<div class="pinned-small" onclick="window.location='recipe-fermented-overnight-oats-with-raw-honey-.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/fermented-overnight-oats-with--hero.jpg')"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Breakfast</span><div class="pinned-small-title">Fermented Overnight Oats with Raw Honey and Seasonal Fruit</div><div class="pinned-small-meta">prep · 45 min total</div></div></div>
-<div class="pinned-small" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/no-sugar-bannana-choc-chip-muf-hero.jpg')"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Snacks</span><div class="pinned-small-title">No Sugar Banana Choc Chip Muffins</div><div class="pinned-small-meta">20m prep · 40 min total</div></div></div>
+<div class="pinned-small" onclick="window.location='recipe-fermented-overnight-oats-with-raw-honey-.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/fermented-overnight-oats-with--hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Breakfast</span><div class="pinned-small-title">Fermented Overnight Oats with Raw Honey and Seasonal Fruit</div><div class="pinned-small-meta">prep · 45 min total</div></div></div>
+<div class="pinned-small" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/no-sugar-bannana-choc-chip-muf-hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Snacks</span><div class="pinned-small-title">No Sugar Banana Choc Chip Muffins</div><div class="pinned-small-meta">20m prep · 40 min total</div></div></div>
+<div class="pinned-small" onclick="window.location='recipe-organic-micro-salad.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/organic-micro-salad-hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Sides</span><div class="pinned-small-title">Organic Micro Salad</div><div class="pinned-small-meta">15 min total</div></div></div>
 </div></div>
 </div>
 
