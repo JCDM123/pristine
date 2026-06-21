@@ -6622,12 +6622,14 @@ async function updateAllRecipes() {
   if (!token) { alert('Enter your GitHub token first.'); return; }
   var btn = document.getElementById('update-all-recipes-btn');
   var status = document.getElementById('update-all-status');
-  var urls = (manageKitchenData || []).map(function(r) { return r.url; }).filter(Boolean);
+  var recipeUrls = (manageKitchenData || []).map(function(r) { return r.url; }).filter(Boolean);
+  var articleUrls = (manageSourceData || []).map(function(a) { return a.url; }).filter(Boolean);
+  var urls = recipeUrls.concat(articleUrls);
   if (!urls.length) {
     if (status) status.textContent = 'Open Manage Content tab first to load recipes.';
     return;
   }
-  if (!confirm('Update share buttons on all ' + urls.length + ' recipe(s)? This pushes to GitHub.')) return;
+  if (!confirm('Update share buttons on all ' + urls.length + ' file(s) (recipes + articles)? This pushes to GitHub.')) return;
   if (btn) { btn.disabled = true; btn.textContent = 'Updating...'; }
   var ok = 0; var fail = 0;
   for (var i = 0; i < urls.length; i++) {
@@ -6640,7 +6642,7 @@ async function updateAllRecipes() {
       html = fixShareBar(html);
       var sha = await getFileSHA(url);
       await githubRequest(url, 'PUT', {
-        message: 'Studio: fix share buttons on ' + url,
+        message: 'Studio: update share buttons: ' + url,
         content: btoa(unescape(encodeURIComponent(html))),
         sha: sha, branch: GITHUB_BRANCH
       });
