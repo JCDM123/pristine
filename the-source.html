@@ -1653,6 +1653,17 @@ function renderPage() {
   if (currentPage > totalPages) currentPage = totalPages;
 
   // Hide all, show only current page of filtered
+  // Show/hide featured card based on filter
+  var featEl = document.querySelector('.featured');
+  if (featEl) {
+    if (currentFilter === 'All') {
+      featEl.style.display = '';
+    } else {
+      var fc = featEl.querySelector('.feat-cat');
+      var featCat = fc ? fc.textContent.trim() : '';
+      featEl.style.display = (featCat === currentFilter) ? '' : 'none';
+    }
+  }
   allCards.forEach(function(c) { c.style.display = 'none'; });
   var start = (currentPage - 1) * PAGE_SIZE;
   filtered.slice(start, start + PAGE_SIZE).forEach(function(c) { c.style.display = ''; });
@@ -1772,7 +1783,26 @@ if (typeof initFilters === 'undefined') { window.initFilters = function() {}; }
 buildSearchIndex();
 
 document.addEventListener('DOMContentLoaded', function() {
-  renderPage();
+  // Read category from URL (?cat=Sleep) and apply filter
+    try {
+      var urlCat = new URLSearchParams(window.location.search).get('cat');
+      if (urlCat) {
+        var decoded = decodeURIComponent(urlCat);
+        var pillBtns = document.querySelectorAll('.filter-pill');
+        var matched = false;
+        pillBtns.forEach(function(p) {
+          if (p.textContent.trim().toLowerCase() === decoded.toLowerCase()) {
+            currentFilter = p.textContent.trim();
+            p.classList.add('active');
+            matched = true;
+          } else {
+            p.classList.remove('active');
+          }
+        });
+        if (!matched) { currentFilter = decoded; }  // filter by URL cat even without a pill
+      }
+    } catch(e) {}
+    renderPage();
   buildSearchIndex();
   initServings();
 });

@@ -1630,7 +1630,18 @@ document.addEventListener('keydown', function(e) {
 
     // Show/hide all cards
     var allCards = document.querySelectorAll('.card-grid .card');
-    allCards.forEach(function(c) { c.style.display = 'none'; });
+    // Show/hide featured card based on filter
+  var featEl = document.querySelector('.featured');
+  if (featEl) {
+    if (currentFilter === 'All') {
+      featEl.style.display = '';
+    } else {
+      var fc = featEl.querySelector('.feat-cat');
+      var featCat = fc ? fc.textContent.trim() : '';
+      featEl.style.display = (featCat === currentFilter) ? '' : 'none';
+    }
+  }
+  allCards.forEach(function(c) { c.style.display = 'none'; });
     visible.forEach(function(c, i) {
       c.style.display = (i >= start && i < end) ? '' : 'none';
     });
@@ -1894,7 +1905,26 @@ if (typeof initFilters === 'undefined') { window.initFilters = function() {}; }
 buildSearchIndex();
 
 document.addEventListener('DOMContentLoaded', function() {
-  renderPage();
+  // Read category from URL (?cat=Desserts) and apply filter
+    try {
+      var urlCat = new URLSearchParams(window.location.search).get('cat');
+      if (urlCat) {
+        var decoded = decodeURIComponent(urlCat);
+        var pillBtns = document.querySelectorAll('.filter-pill');
+        var matched = false;
+        pillBtns.forEach(function(p) {
+          if (p.textContent.trim().toLowerCase() === decoded.toLowerCase()) {
+            currentFilter = p.textContent.trim();
+            p.classList.add('active');
+            matched = true;
+          } else {
+            p.classList.remove('active');
+          }
+        });
+        if (!matched) { currentFilter = decoded; }
+      }
+    } catch(e) {}
+    renderPage();
   buildSearchIndex();
   initServings();
 });
