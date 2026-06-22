@@ -422,7 +422,10 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 
 /* PAGE SPECIFIC */
 #recipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-bottom:2.5rem;}
-#recipe-grid .card{display:flex;flex-direction:column;}
+#recipe-grid .card {
+  display:flex;flex-direction:column;
+  min-width:0;overflow:hidden;
+}
 #recipe-grid .card-img{height:200px;position:relative;overflow:hidden;flex-shrink:0;}
 #recipe-grid .card-img-inner{position:absolute;inset:0;background-size:cover;background-position:center;}
 .time-badge{position:absolute;bottom:12px;right:12px;z-index:2;font-size:11px;background:rgba(0,0,0,0.55);color:#fff;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;}
@@ -1251,7 +1254,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
     <div class="card-tags"></div>
     <h3 class="card-title">Creamy Cauliflower Soup</h3>
     <p class="card-excerpt">This is the kind of soup we return to again and again through the cooler months, simple enough for a weeknight but nourishing enough to feel like real care on a plate. Cauliflower is rich in sulforaph</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;Â·&nbsp; 45 min total</span></div>
+    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
   </div>
 </div>
 
@@ -1261,7 +1264,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
     <div class="card-tags"></div>
     <h3 class="card-title">Wild Fermented Beetroot and Goat's Cheese Salad</h3>
     <p class="card-excerpt">This salad came about because we wanted something that could hold its own as a proper main, not just a side thought, and the lacto-fermented beetroot we had sitting quietly in the pantry turned out to</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;ÃÂ·&nbsp; 45 min total</span></div>
+    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
   </div>
 </div>
 
@@ -1271,7 +1274,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
     <div class="card-tags"></div>
     <h3 class="card-title">Slow-Cooked Beef Bone Broth Ramen</h3>
     <p class="card-excerpt">This bowl came together out of a desire to give our family something deeply nourishing on a school night without spending the whole weekend in the kitchen. We start with pasture-raised beef bones, let</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;ÃÂÃÂ·&nbsp; 45 min total</span></div>
+    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
   </div>
 </div>
 
@@ -1281,7 +1284,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
     <div class="card-tags"></div>
     <h3 class="card-title">Wheat-Free Chocolate Mud Cake</h3>
     <p class="card-excerpt">This is the cake we make when we want something genuinely indulgent that still fits with how we feed our family. Built on almond flour and sweetened with monk fruit, it delivers that dense, fudgy mud </p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;ÃÂÃÂÃÂÃÂ·&nbsp; 45 min total</span></div>
+    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
   </div>
 </div>
 
@@ -1291,7 +1294,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
     <div class="card-tags"></div>
     <h3 class="card-title">No Wheat Chocolate Mud Cake</h3>
     <p class="card-excerpt">This is our birthday cake, full stop. Every time someone in our house turns another year older, this is what they ask for, and we are always happy to oblige because it is genuinely one of those rare r</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·&nbsp; 45 min total</span></div>
+    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
   </div>
 </div>
 
@@ -1301,7 +1304,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
     <div class="card-tags"></div>
     <h3 class="card-title">Fermented Overnight Oats with Raw Honey and Seasonal Fruit</h3>
     <p class="card-excerpt">School mornings are chaos, and this recipe is our answer to that. We soak our oats overnight in an acidic medium, which breaks down phytic acid and makes all those vitamins and minerals far easier for</p>
-    <div class="card-footer"><span class="card-date">prep ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ· 45 min total</span></div>
+    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
   </div>
 </div>
 <div class="card" data-cat="Snacks" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'">
@@ -1310,15 +1313,15 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
     <div class="card-tags"></div>
     <h3 class="card-title">No Sugar Banana Choc Chip Muffins</h3>
     <p class="card-excerpt">These nourishing banana muffins are a staple in our kitchen. Made with organic spelt flour, naturally sweetened with rip...</p>
-    <div class="card-footer"><span class="card-date">20m prep ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ· 40 min total</span></div>
+    <div class="card-footer"><span class="card-date">20m prep &nbsp;&middot;&nbsp; 40 min total</span></div>
   </div>
 </div>
 </div>
 <div id="pinned-recipes">
 <div class="pinned-intro"><span class="pinned-intro-eyebrow">Curated by us</span><div class="pinned-intro-title">Essential Recipes</div></div>
 <div class="pinned-section"><div class="pinned-grid">
-<div class="pinned-small" onclick="window.location='recipe-fermented-overnight-oats-with-raw-honey-.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/fermented-overnight-oats-with--hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Breakfast</span><div class="pinned-small-title">Fermented Overnight Oats with Raw Honey and Seasonal Fruit</div><div class="pinned-small-meta">prep ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ· 45 min total</div></div></div>
-<div class="pinned-small" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/no-sugar-bannana-choc-chip-muf-hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Snacks</span><div class="pinned-small-title">No Sugar Banana Choc Chip Muffins</div><div class="pinned-small-meta">20m prep ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ· 40 min total</div></div></div>
+<div class="pinned-small" onclick="window.location='recipe-fermented-overnight-oats-with-raw-honey-.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/fermented-overnight-oats-with--hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Breakfast</span><div class="pinned-small-title">Fermented Overnight Oats with Raw Honey and Seasonal Fruit</div><div class="pinned-small-meta">prep ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃ&middot; 45 min total</div></div></div>
+<div class="pinned-small" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/no-sugar-bannana-choc-chip-muf-hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Snacks</span><div class="pinned-small-title">No Sugar Banana Choc Chip Muffins</div><div class="pinned-small-meta">20m prep ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃ&middot; 40 min total</div></div></div>
 <div class="pinned-small" onclick="window.location='recipe-organic-micro-salad.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/organic-micro-salad-hero.jpg');background-size:cover;background-position:center;"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Sides</span><div class="pinned-small-title">Organic Micro Salad</div><div class="pinned-small-meta">15 min total</div></div></div>
 </div></div>
 </div>

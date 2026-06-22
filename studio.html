@@ -3206,7 +3206,7 @@ async function publishRecipe() {
       if (kOldHref && kRest.indexOf("window.location='" + kOldHref + "'") !== -1) kOldHref = '';
       if (kOldHref) {
         var kOldTitle = (kCurrentFeat.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
-        var kOldCat = (kCurrentFeat.match(/feat-cat[^>]*>([^<]+)</) || ['',''])[1];
+        var kOldCat = (kCurrentFeat.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
         var kOldBg = (kCurrentFeat.match(/background(?:-image)?:(url\('[^']+'\)|var\(--forest\))/) || ['','var(--forest)'])[1];
         var kOldExcerpt = (kCurrentFeat.match(/feat-excerpt[^>]*>([^<]+)</) || ['',''])[1];
         var kOldMeta = (kCurrentFeat.match(/feat-meta[^>]*>([\s\S]*?)<\/div>/) || ['',''])[1];
@@ -3230,7 +3230,7 @@ async function publishRecipe() {
       '      <div class="feat-body">\n        <span class="feat-cat">' + getCategoryValue('r-category') + '</span>\n' +
       '        <h2 class="feat-title">' + recipe.title + '</h2>\n' +
       '        <p class="feat-excerpt">' + (recipe.intro || '').slice(0, 200) + '</p>\n' +
-      '        <div class="feat-meta">' + (d.prep || '') + ' prep &nbsp;\u00b7&nbsp; ' + (totalTime || 45) + ' min total</div>\n' +
+      '        <div class="feat-meta">' + (d.prep || '') + ' prep &nbsp;&middot;&nbsp; ' + (totalTime || 45) + ' min total</div>\n' +
       '        <a class="read-link" href="' + filename + '">View recipe <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>\n' +
       '      </div>\n    </div>';
 
@@ -3820,7 +3820,7 @@ function parseSourceArticles(html) {
     if (featEnd !== -1) {
       var featHtml = html.slice(featStart, featEnd);
       var fTitle = (featHtml.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
-      var fCat = (featHtml.match(/feat-cat[^>]*>([^<]+)</) || ['',''])[1];
+      var fCat = (featHtml.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
       var fHref = (featHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
       var fMeta = (featHtml.match(/feat-meta[^>]*>([^&<]+)/) || ['',''])[1];
       if (fTitle) articles.push({ title: fTitle, cat: fCat, date: (fMeta||'').trim(), url: fHref, rawCard: '', pinned: false, featured: true });
@@ -3876,7 +3876,7 @@ function parseKitchenRecipes(html) {
     if (kfEnd !== -1) {
       var kfHtml = html.slice(kfStart, kfEnd);
       var kfTitle = (kfHtml.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
-      var kfCat = (kfHtml.match(/feat-cat[^>]*>([^<]+)</) || ['',''])[1];
+      var kfCat = (kfHtml.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
       var kfHref = (kfHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
       var kfMeta = (kfHtml.match(/feat-meta[^>]*>([^&<]+)/) || ['',''])[1];
       var kfImg = (kfHtml.match(/background-image:url\('([^']+)'\)/) || ['',''])[1];
