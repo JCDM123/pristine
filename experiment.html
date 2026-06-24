@@ -832,12 +832,12 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
 @media(max-width:760px){.exp-hero{grid-template-columns:1fr;gap:2rem;}.exp-hero-line{font-size:2rem;}.exp-hero-img{height:300px;}}
 
 /* Full-width before/after: images left, text right */
-.ba-card{display:grid;grid-template-columns:1.3fr 1fr;align-items:stretch;}
+.ba-card{display:grid;grid-template-columns:1.3fr 1fr;align-items:start;}
 .ba-card .ba-pair{height:100%;}
-.ba-card .ba-half img{height:100%;min-height:280px;object-fit:cover;width:100%;display:block;}
+.ba-card .ba-half img{height:320px;object-fit:cover;width:100%;display:block;}
 .ba-card .ba-body{display:flex;flex-direction:column;justify-content:center;padding:2rem 2.2rem;}
 .ba-card .ba-title{font-size:24px;margin:0 0 0.85rem;}
-@media(max-width:760px){.ba-card{grid-template-columns:1fr;}.ba-card .ba-half img{min-height:200px;}.ba-card .ba-body{padding:1.5rem 1.6rem;}}
+@media(max-width:760px){.ba-card{grid-template-columns:1fr;}.ba-card .ba-half img{height:240px;}.ba-card .ba-body{padding:1.5rem 1.6rem;}}
 
 .exp-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);border:none;width:48px;height:48px;border-radius:50%;font-size:28px;line-height:1;color:#2C4A2E;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:5;}
 .exp-lightbox-nav:hover{background:#fff;}
@@ -845,6 +845,10 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
 .exp-lightbox-next{right:2vw;}
 .exp-lightbox-inner{position:relative;}
 @media(max-width:700px){.exp-lightbox-nav{width:38px;height:38px;font-size:22px;}.exp-lightbox-prev{left:1vw;}.exp-lightbox-next{right:1vw;}}
+
+/* FIX: tagline matches The Source/Ancestral/About */
+.page-tagline{font-family:'Cormorant Garamond',serif !important;font-style:italic !important;font-size:16px !important;color:#aaa !important;font-weight:400 !important;line-height:1.6 !important;max-width:260px !important;padding-left:2rem !important;border-left:0.5px solid var(--border) !important;text-align:left !important;}
+@media(max-width:700px){.page-tagline{padding-left:0 !important;border-left:none !important;max-width:none !important;font-size:15px !important;}}
 </style>  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -925,8 +929,6 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
       <!-- DIVIDER -->
       <div style="border-top:0.5px solid var(--border);margin:3rem 0;"></div>
       <!-- BEFORE & AFTER: original experiment + home experiments -->
-<!-- DIVIDER -->
-  <div style="border-top:0.5px solid var(--border);margin:3rem 0;"></div>
 
   <!-- BEFORE & AFTER -->
   <div id="ba-section-wrapper">
@@ -971,7 +973,7 @@ Images by Alexandra Brewster, IFMCP (US) MHS (UNE Aust)</p><span class="ba-date"
 
 
 
-    </div>
+    
 <div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg></div></div></div>
 </div></div><div class="exp-lightbox" id="exp-lightbox" onclick="closeLightbox()"><div class="exp-lightbox-inner" onclick="event.stopPropagation()"><button class="exp-lightbox-close" onclick="closeLightbox()">&#x2715;</button><button class="exp-lightbox-nav exp-lightbox-prev" onclick="lightboxStep(-1)" aria-label="Previous">&#x2039;</button><img class="exp-lightbox-img" id="exp-lightbox-img" src="" alt="Experiment photo" style="max-width:90vw;max-height:82vh;object-fit:contain;border-radius:4px;display:block;"/><button class="exp-lightbox-nav exp-lightbox-next" onclick="lightboxStep(1)" aria-label="Next">&#x203A;</button><div class="exp-lightbox-caption"><span class="exp-lightbox-caption-date" id="exp-lightbox-date"></span><span class="exp-lightbox-caption-note" id="exp-lightbox-note"></span></div></div></div><div class="search-overlay" id="search-overlay"><button class="search-close" onclick="closeSearch()">&#x2715;</button><div class="search-input-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input class="search-input" id="search-input" type="text" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/></div><div class="search-results" id="search-results"></div></div><div class="modal-overlay" id="contact-modal" style="display:none;" onclick="handleModalClick(event)" style="display:none;"><div class="modal"><button class="modal-close" onclick="closeContactModal()">&#x2715;</button><h3>Get in touch</h3><div class="mfg"><input class="mi" type="text" placeholder="Your name"/></div><div class="mfg"><input class="mi" type="email" placeholder="Your email"/></div><div class="mfg"><textarea class="mt" placeholder="Your message..."></textarea></div><button class="ms" onclick="closeContactModal()">Send message</button></div></div><button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button><script>
 /* ════════════════════════════════════════════════
@@ -1376,23 +1378,39 @@ document.addEventListener("keydown", function(e) {
 
 /* ===== EXPERIMENT LOG ===== */
 function openLightboxSrc(src) {
-  // Build the gallery from all photo-log thumbnails on the page
-  window._expGallery = [];
-  var thumbs = document.querySelectorAll('#exp-log-grid .exp-thumb');
-  thumbs.forEach(function(t) {
+  // Try photo log first
+  var photoThumbs = Array.from(document.querySelectorAll('#exp-log-grid .exp-thumb'));
+  var photoGallery = [];
+  photoThumbs.forEach(function(t) {
     var img = t.querySelector('img');
     if (!img) return;
     var dateEl = t.querySelector('.exp-thumb-date');
     var noteEl = t.querySelector('.exp-thumb-week');
-    window._expGallery.push({
-      src: img.getAttribute('src'),
-      date: dateEl ? dateEl.textContent : '',
-      note: noteEl ? noteEl.textContent : ''
-    });
+    photoGallery.push({ src: img.getAttribute('src'), date: dateEl ? dateEl.textContent : '', note: noteEl ? noteEl.textContent : '' });
   });
-  // Find the index of the clicked image
-  var idx = window._expGallery.findIndex(function(g) { return g.src === src; });
-  if (idx < 0) idx = 0;
+  var idx = photoGallery.findIndex(function(g) { return g.src === src; });
+  if (idx >= 0) {
+    // It is a photo-log image: navigate the whole photo log
+    window._expGallery = photoGallery;
+  } else {
+    // It is a before/after image: build a gallery from its own card (before + after)
+    var clickedImg = Array.from(document.querySelectorAll('.ba-half img')).find(function(im){ return im.getAttribute('src') === src; });
+    window._expGallery = [];
+    if (clickedImg) {
+      var card = clickedImg.closest('.ba-card');
+      var title = card ? (card.querySelector('.ba-title') ? card.querySelector('.ba-title').textContent : '') : '';
+      var halves = card ? Array.from(card.querySelectorAll('.ba-half img')) : [clickedImg];
+      halves.forEach(function(im) {
+        var tagEl = im.parentElement.querySelector('.ba-tag');
+        window._expGallery.push({ src: im.getAttribute('src'), date: title, note: tagEl ? tagEl.textContent : '' });
+      });
+      idx = window._expGallery.findIndex(function(g){ return g.src === src; });
+      if (idx < 0) idx = 0;
+    } else {
+      window._expGallery = [{ src: src, date: '', note: '' }];
+      idx = 0;
+    }
+  }
   window._expLightboxIndex = idx;
   showLightboxAt(idx);
   var lb = document.getElementById("exp-lightbox");
