@@ -461,13 +461,14 @@ sup.cite:hover { text-decoration:underline; }
   </div>
 </div>
 <div class="field" id="gallery-images-field" style="display:none;">
-  <label>Gallery images (template 2 only) — up to 3 image paths</label>
+  <label>Gallery images (template 2 only) , up to 3 image paths</label>
   <input type="text" id="em-gallery-1" placeholder="images/recipe-1-hero.jpg">
   <input type="text" id="em-gallery-2" placeholder="images/recipe-2-hero.jpg" style="margin-top:6px;">
   <input type="text" id="em-gallery-3" placeholder="images/recipe-3-hero.jpg" style="margin-top:6px;">
 </div>
 <div class="field"><label>Subject *</label><input type="text" id="em-subject" placeholder="e.g. Three recipes your kids will actually eat"></div>
-        <div class="field"><label>Image URL (optional)</label><input type="text" id="em-image" placeholder="e.g. images/no-sugar-bannana-choc-chip-muf-hero.jpg"></div>
+        <div class="field"><label>Image URL (optional)</label><input type="text" id="em-image" placeholder="e.g. images/no-sugar-bannana-choc-chip-muf-hero.jpg">
+        <button type="button" onclick="openEmailImagePicker('em-image')" style="margin-top:6px;background:var(--sage);color:#fff;border:none;padding:6px 12px;border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:0.5px;">Choose from Image Library</button></div>
         <div class="field"><label>Heading *</label><input type="text" id="em-heading" placeholder="e.g. Fresh from the kitchen"></div>
         <div class="field"><label>Blurb *</label><textarea id="em-blurb" rows="6" placeholder="A few short paragraphs. Blank line for a new paragraph."></textarea></div>
         <div class="field"><label>Button text</label><input type="text" id="em-btn-text" placeholder="Read the recipe" value="Read more"></div>
@@ -508,7 +509,9 @@ sup.cite:hover { text-decoration:underline; }
         <h2 style="margin-top:2.5rem;">Add before &amp; after</h2>
         <p class="subtitle">Small comparisons - revived kale, plant growth, anything with MEA as the only variable.</p>
         <div class="field"><label>Title *</label><input type="text" id="ba-title" placeholder="e.g. Limp kale revived"></div>
-        <div class="field"><label>Caption *</label><textarea id="ba-caption" rows="3" placeholder="e.g. Two day old kale, soaked for four hours in MEA structured water."></textarea></div>
+        <div class="field"><label>Caption *</label><textarea id="ba-caption" rows="6" placeholder="Write in short paragraphs. Leave a blank line between paragraphs to space them out.
+
+e.g. Two day old kale, soaked for four hours in MEA structured water."></textarea></div>
         <div style="display:flex;gap:1rem;">
           <div class="field" style="flex:1;">
             <label>Before photo *</label>
@@ -666,7 +669,7 @@ sup.cite:hover { text-decoration:underline; }
           </div>
         </div>
         <div class="field body-images-section" id="body-images-section">
-  <span class="body-images-label" id="body-images-label">Body images — up to 6 (drag to reorder, leave blank to skip)</span>
+  <span class="body-images-label" id="body-images-label">Body images , up to 6 (drag to reorder, leave blank to skip)</span>
   <div class="body-images-grid" id="body-images-grid">
     <div class="body-img-slot" id="bslot-0" draggable="true"
       onclick="triggerBodyImgUpload(0)"
@@ -775,7 +778,7 @@ sup.cite:hover { text-decoration:underline; }
 
         <div class="field">
           <label>About this recipe</label>
-          <textarea id="r-about" placeholder="Tell us about this dish — where it comes from, why your family loves it, what makes your version special. e.g. This is a family staple we cook at least once a fortnight in big batches..." style="min-height:80px;"></textarea>
+          <textarea id="r-about" placeholder="Tell us about this dish , where it comes from, why your family loves it, what makes your version special. e.g. This is a family staple we cook at least once a fortnight in big batches..." style="min-height:80px;"></textarea>
           <p class="field-hint">This appears above the recipe as a personal intro. Write it in your own words.</p>
         </div>
 
@@ -876,7 +879,7 @@ sup.cite:hover { text-decoration:underline; }
         </div>
 
         <div class="field body-images-section" id="recipe-body-images-section">
-  <span class="body-images-label">Body images — up to 6 (drag to reorder, leave blank to skip)</span>
+  <span class="body-images-label">Body images , up to 6 (drag to reorder, leave blank to skip)</span>
   <div class="body-images-grid" id="recipe-body-images-grid">
     <div class="body-img-slot" id="rslot-0" draggable="true"
       onclick="triggerRecipeBodyImgUpload(0)"
@@ -1050,7 +1053,7 @@ sup.cite:hover { text-decoration:underline; }
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">Explore Panels</h2>
-          <p class="manage-section-sub">The two panels below the hero — The Source and Ancestral Kitchen. Each fades between 2 images. Upload images then paste their paths below.</p>
+          <p class="manage-section-sub">The two panels below the hero , The Source and Ancestral Kitchen. Each fades between 2 images. Upload images then paste their paths below.</p>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem;">
@@ -1924,7 +1927,7 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
     article.sources.forEach(function(s) {
       sourcesHTML += '<li id="source-' + s.num + '"><span class="ap-source-num">' + s.num + '.</span> ';
       sourcesHTML += '<a href="' + escHtml(s.url) + '" target="_blank" rel="noopener">' + escHtml(s.title) + '</a>';
-      if (s.publication) sourcesHTML += ' <span class="ap-source-pub">— ' + escHtml(s.publication) + '</span>';
+      if (s.publication) sourcesHTML += ' <span class="ap-source-pub">, ' + escHtml(s.publication) + '</span>';
       sourcesHTML += '</li>';
     });
     sourcesHTML += '</ol></div>';
@@ -3227,7 +3230,7 @@ async function publishRecipe() {
       '      <div class="feat-img" style="' + kFeatBg + '">\n        <div class="feat-img-overlay"></div>\n' +
       '        <div class="feat-label">\n          <span class="feat-badge">Latest recipe</span>\n' +
       '          <div class="feat-img-title">' + recipe.title + '</div>\n        </div>\n      </div>\n' +
-      '      <div class="feat-body">\n        <span class="feat-cat">' + getCategoryValue('r-category') + '</span>\n' +
+      '      <div class="feat-body">\n        <span class="feat-cat">' + getCategoryValue('r') + '</span>\n' +
       '        <h2 class="feat-title">' + recipe.title + '</h2>\n' +
       '        <p class="feat-excerpt">' + (recipe.intro || '').slice(0, 200) + '</p>\n' +
       '        <div class="feat-meta">' + (d.prep || '') + ' prep &nbsp;&middot;&nbsp; ' + (totalTime || 45) + ' min total</div>\n' +
@@ -3253,7 +3256,7 @@ async function publishRecipe() {
 
     await updateSearchIndex({
       title: recipe.title,
-      cat: 'Recipes \u00b7 ' + (getCategoryValue('r-category') || 'Recipe'),
+      cat: 'Recipes \u00b7 ' + (getCategoryValue('r') || 'Recipe'),
       excerpt: String(recipe.intro || (generatedRecipeData && generatedRecipeData.about) || '').slice(0, 140),
       url: filename
     });
@@ -3776,7 +3779,7 @@ async function loadSourceForManage() {
   try {
     var token = localStorage.getItem('gh_token') || '';
     var headers = token ? { 'Authorization': 'token ' + token } : {};
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html');
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html?cb=' + Date.now());
     var html = await r.text();
     manageSourceData = parseSourceArticles(html);
     renderSourceList();
@@ -3789,7 +3792,7 @@ async function loadKitchenForManage() {
   var el = document.getElementById('manage-kitchen-list');
   el.innerHTML = '<div class="manage-loading">Loading from GitHub...</div>';
   try {
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html');
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html?cb=' + Date.now());
     var html = await r.text();
     manageKitchenData = parseKitchenRecipes(html);
     renderKitchenList();
@@ -3847,7 +3850,7 @@ function parseSourceArticles(html) {
     var date = (card.match(/<span class="card-date">([^<]+)<\/span>/) || ['',''])[1];
     if (!date) date = (card.match(/<div class="card-meta">([^&<]+)/) || ['',''])[1];
     var img = (card.match(/background-image:url\('([^']+)'\)/) || ['',''])[1];
-    if (title) articles.push({ title: title, cat: cat, date: (date||'').trim(), url: url, img: img, rawCard: card, pinned: false, featured: false });
+    if (title) articles.push({ title: title, cat: cat, date: (date||'').trim(), url: url, img: img, excerpt: (card.match(/<p class="card-excerpt">([^<]+)<\/p>/) || ['',''])[1].trim(), rawCard: card, pinned: false, featured: false });
     pos = cardEnd;
   }
 
@@ -4077,7 +4080,7 @@ async function saveSourceChanges() {
   if (btn) btn.disabled = true;
   setManageStatus('src', 'Saving...', true);
   try {
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html');
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html?cb=' + Date.now());
     var html = await r.text();
     html = rebuildSourceGrid(html);
     var sha = await getFileSHA('the-source.html');
@@ -4102,7 +4105,7 @@ async function saveKitchenChanges() {
   if (btn) btn.disabled = true;
   setManageStatus('kit', 'Saving...', true);
   try {
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html');
+    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html?cb=' + Date.now());
     var html = await r.text();
     html = rebuildKitchenGrid(html);
     var sha = await getFileSHA('ancestral-kitchen.html');
@@ -4615,7 +4618,7 @@ async function uploadToImageLibrary(input) {
       if (existing) {
         var replace = confirm(imgPath + ' already exists in your image library.\n\nReplace it with this new version?');
         if (!replace) {
-          statusEl.textContent = 'Skipped — ' + imgPath + ' already exists.';
+          statusEl.textContent = 'Skipped , ' + imgPath + ' already exists.';
           setImgLibStatus('Upload skipped (duplicate).', null);
           return;
         }
@@ -4831,16 +4834,35 @@ function buildEmailHTML(tplNum) {
     '<img src="https://pristinewellness.com.au/images/pw-logo-email.png" alt="Pristine Wellness" width="80" height="80" style="border-radius:50%;display:block;" onerror="this.style.display=\'none\'">' +
     '</td></tr>';
 
+    // Logo floats over hero image (email-safe). Falls back to white logo header if no image.
+    var _emLogoImg = '<img src="https://pristinewellness.com.au/images/pw-logo-email.png" alt="Pristine Wellness" width="64" height="64" style="border-radius:50%;display:block;border:2px solid #ffffff;" onerror="this.style.display=\'none\'">';
+    var heroWithLogo;
+    if (imgUrl) {
+      heroWithLogo = '<tr><td background="' + imgUrl + '" valign="top" style="background-image:url(\'' + imgUrl + '\');background-size:cover;background-position:center;height:240px;">'
+        + '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="padding:20px 0 0 28px;">'
+        + _emLogoImg
+        + '</td></tr></table>'
+        + '</td></tr>';
+    } else {
+      heroWithLogo = '<tr><td style="padding:28px 40px 20px;background:#ffffff;border-bottom:0.5px solid #e8e4dc;">'
+        + '<img src="https://pristinewellness.com.au/images/pw-logo-email.png" alt="Pristine Wellness" width="80" height="80" style="border-radius:50%;display:block;" onerror="this.style.display=\'none\'">'
+        + '</td></tr>';
+    }
+
+
   // ── SOCIAL FOOTER ──
   var socialFooter =
     '<tr><td style="padding:18px 40px;background:#2C4A2E;text-align:center;">' +
     '<p style="margin:0 0 12px;font-size:12px;color:#a8bb8a;font-family:Arial,Helvetica,sans-serif;letter-spacing:1px;">FOLLOW ALONG</p>' +
     '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 16px;"><tr>' +
-    '<td style="padding:0 10px;"><a href="https://www.instagram.com/pristinewellness" style="text-decoration:none;">' +
+    '<td style="padding:0 10px;"><a href="https://x.com/getpristinewell" style="text-decoration:none;">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#a8bb8a"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>' +
+    '</a></td>' +
+    '<td style="padding:0 10px;"><a href="https://instagram.com/getpristinewell" style="text-decoration:none;">' +
     '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a8bb8a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5" stroke-width="2.5"/></svg>' +
     '</a></td>' +
-    '<td style="padding:0 10px;"><a href="https://www.facebook.com/pristinewellness" style="text-decoration:none;">' +
-    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#a8bb8a"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>' +
+    '<td style="padding:0 10px;"><a href="https://pinterest.com/getpristinewell" style="text-decoration:none;">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#a8bb8a"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.237 2.636 7.855 6.356 9.312-.088-.791-.167-2.005.035-2.868.182-.78 1.172-4.97 1.172-4.97s-.299-.6-.299-1.486c0-1.39.806-2.428 1.81-2.428.852 0 1.264.64 1.264 1.408 0 .858-.546 2.14-.828 3.33-.236.995.5 1.807 1.48 1.807 1.778 0 3.144-1.874 3.144-4.58 0-2.393-1.72-4.068-4.177-4.068-2.845 0-4.515 2.135-4.515 4.34 0 .859.331 1.781.745 2.281a.3.3 0 01.069.288l-.278 1.133c-.044.183-.145.223-.335.134-1.249-.581-2.03-2.407-2.03-3.874 0-3.154 2.292-6.052 6.608-6.052 3.469 0 6.165 2.473 6.165 5.776 0 3.447-2.173 6.22-5.19 6.22-1.013 0-1.966-.527-2.292-1.148l-.623 2.378c-.226.869-.835 1.958-1.244 2.621.937.29 1.931.446 2.962.446 5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>' +
     '</a></td>' +
     '</tr></table>' +
     '<p style="margin:0 0 6px;font-size:12px;color:#a8bb8a;font-family:Arial,Helvetica,sans-serif;">Pristine Wellness &middot; Wholefood wisdom for real families &middot; Australia</p>' +
@@ -4855,7 +4877,7 @@ function buildEmailHTML(tplNum) {
   // ── TEMPLATE 1: Hero + Body (default) ──
   if (tpl === 1) {
     var heroRow = imgUrl ? '<tr><td style="padding:0;line-height:0;"><img src="' + imgUrl + '" alt="' + escHtml(heading) + '" width="600" style="width:100%;max-width:600px;height:auto;display:block;"></td></tr>' : '';
-    return baseOpen + logoHeader + heroRow +
+    return baseOpen + heroWithLogo +
       '<tr><td style="padding:36px 40px 10px;"><h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:30px;font-weight:400;font-style:italic;color:#111111;line-height:1.25;">' + escHtml(heading) + '</h1>' + paras + '</td></tr>' +
       (btnLink && btnText ? '<tr><td style="padding:10px 40px 36px;"><a href="' + btnLink + '" style="background:#8A9B6E;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:14px 30px;border-radius:4px;display:inline-block;">' + escHtml(btnText.toUpperCase()) + '</a></td></tr>' : '<tr><td style="padding:0 40px 36px;"></td></tr>') +
       socialFooter + baseClose;
@@ -4871,10 +4893,10 @@ function buildEmailHTML(tplNum) {
     var galleryImgs = [g1, g2, g3].filter(Boolean);
     var colW = galleryImgs.length === 1 ? 520 : galleryImgs.length === 2 ? 250 : 160;
     var galleryRow = galleryImgs.length ? '<tr><td style="padding:4px 40px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>' +
-      galleryImgs.map(function(u){ return '<td style="padding:0 4px;"><img src="' + u + '" width="' + colW + '" style="width:100%;height:auto;display:block;border-radius:3px;"></td>'; }).join('') +
+      galleryImgs.map(function(u){ return '<td style="padding:0 4px;"><img src="' + u + '" width="' + colW + '" height="140" style="width:100%;height:140px;object-fit:cover;display:block;border-radius:3px;"></td>'; }).join('') +
       '</tr></table></td></tr>' : '';
     var heroRow2 = imgUrl ? '<tr><td style="padding:0;line-height:0;"><img src="' + imgUrl + '" alt="" width="600" style="width:100%;max-width:600px;height:auto;display:block;"></td></tr>' : '';
-    return baseOpen + logoHeader + heroRow2 +
+    return baseOpen + heroWithLogo +
       '<tr><td style="padding:36px 40px 10px;"><h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:30px;font-weight:400;font-style:italic;color:#111111;line-height:1.25;">' + escHtml(heading) + '</h1>' + paras + '</td></tr>' +
       galleryRow +
       (btnLink && btnText ? '<tr><td style="padding:0 40px 30px;"><a href="' + btnLink + '" style="background:#8A9B6E;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:14px 30px;border-radius:4px;display:inline-block;">' + escHtml(btnText.toUpperCase()) + '</a></td></tr>' : '<tr><td style="padding:0 40px 30px;"></td></tr>') +
@@ -4883,7 +4905,7 @@ function buildEmailHTML(tplNum) {
 
   // ── TEMPLATE 3: Editorial (no hero) ──
   if (tpl === 3) {
-    return baseOpen + logoHeader +
+    return baseOpen + heroWithLogo +
       '<tr><td style="padding:36px 40px 10px;">' +
       '<p style="margin:0 0 6px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8A9B6E;font-family:Arial,sans-serif;">Pristine Wellness</p>' +
       '<h1 style="margin:0 0 24px;font-family:Georgia,serif;font-size:28px;font-weight:400;font-style:italic;color:#111111;line-height:1.3;">' + escHtml(heading) + '</h1>' +
@@ -4896,12 +4918,64 @@ function buildEmailHTML(tplNum) {
   return null;
 }
 
+
+function openEmailImagePicker(targetFieldId) {
+  var token = (typeof getToken === 'function' ? getToken() : (localStorage.getItem('gh_token') || ''));
+  if (!token) { alert('Enter your GitHub token in the token bar first.'); return; }
+  var existing = document.getElementById('email-img-picker-modal');
+  if (existing) existing.remove();
+  var modal = document.createElement('div');
+  modal.id = 'email-img-picker-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:2rem;';
+  modal.innerHTML = '<div style="background:#fff;border-radius:10px;max-width:760px;width:100%;max-height:80vh;overflow:auto;padding:1.5rem;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">' +
+    '<h3 style="margin:0;font-size:16px;">Choose an image</h3>' +
+    '<button onclick="document.getElementById(\'email-img-picker-modal\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;">&times;</button>' +
+    '</div>' +
+    '<div id="email-img-picker-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;"><p style="grid-column:1/-1;color:#888;font-size:13px;">Loading images...</p></div>' +
+    '</div>';
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+  fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/images?cb=' + Date.now(), {
+    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+  }).then(function(r) { return r.json(); }).then(function(files) {
+    var grid = document.getElementById('email-img-picker-grid');
+    if (!grid) return;
+    var images = (files || []).filter(function(f) { return /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name); });
+    if (!images.length) { grid.innerHTML = '<p style="grid-column:1/-1;color:#888;font-size:13px;">No images in the library yet.</p>'; return; }
+    grid.innerHTML = images.map(function(f) {
+      var path = 'images/' + f.name;
+      var rawUrl = 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + path;
+      return '<div onclick="selectEmailImage(\'' + targetFieldId + '\',\'' + path + '\')" style="cursor:pointer;border:1px solid #eee;border-radius:6px;overflow:hidden;" title="' + f.name + '">' +
+        '<img src="' + rawUrl + '" style="width:100%;height:90px;object-fit:cover;display:block;"/>' +
+        '<div style="font-size:9px;padding:4px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + f.name + '</div></div>';
+    }).join('');
+  }).catch(function() {
+    var grid = document.getElementById('email-img-picker-grid');
+    if (grid) grid.innerHTML = '<p style="grid-column:1/-1;color:#c0392b;font-size:13px;">Could not load images. Check your token.</p>';
+  });
+}
+function selectEmailImage(targetFieldId, path) {
+  var field = document.getElementById(targetFieldId);
+  if (field) field.value = path;
+  var modal = document.getElementById('email-img-picker-modal');
+  if (modal) modal.remove();
+  if (typeof previewEmail === 'function') { try { previewEmail(); } catch(e) {} }
+}
+
 function previewEmail() {
   var html = buildEmailHTML(window._emailTemplate || 1);
   var status = document.getElementById('em-status');
   if (!html) { status.textContent = 'Subject, heading and blurb are required.'; return; }
   var frame = document.getElementById('em-preview');
   frame.srcdoc = html.replace(/UNSUB_URL/g, '#');
+    frame.onload = function() {
+      try {
+        var doc = frame.contentDocument || frame.contentWindow.document;
+        var h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+        if (h > 0) frame.style.height = (h + 20) + 'px';
+      } catch(e) { /* keep default height if cross-origin */ }
+    };
   document.getElementById('em-send-btn').style.display = 'inline-block';
   status.textContent = 'Preview ready. Check it, then send.';
 }
@@ -5102,7 +5176,7 @@ async function publishBAEntry() {
       '<div class="ba-half"><img src="' + baImgPaths.after + '" alt="After" loading="lazy" onclick="openLightboxSrc(\'' + baImgPaths.after + '\')"><span class="ba-tag after">After</span></div>' +
       '</div>' +
       '<div class="ba-body"><h3 class="ba-title">' + escHtml(title) + '</h3>' +
-      '<p class="ba-caption">' + escHtml(caption) + '</p>' +
+      '<div class="ba-caption">' + caption.split(/\n\s*\n|\n/).filter(function(p){return p.trim();}).map(function(p){return '<p>' + escHtml(p.trim()) + '</p>';}).join('') + '</div>' +
       '<span class="ba-date">' + fmtExpDate(today) + '</span></div>' +
       '</div>\n<!-- /BA_ENTRY:' + id + ' -->';
     html = html.replace(marker, card);
@@ -5237,7 +5311,7 @@ async function applyCorrections(kind) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: 'You are an editor for Pristine Wellness. Apply ONLY the requested corrections. When changing a word or phrase, read the full surrounding sentence and rewrite it so the change flows naturally with what comes before and after — never insert words in isolation. Keep everything not mentioned absolutely identical, word for word. Keep the exact same JSON structure and keys. Australian spelling. NEVER use em dashes or en dashes anywhere. Reply with ONLY the corrected JSON, no markdown fences, no commentary.',
+        system: 'You are an editor for Pristine Wellness. Apply ONLY the requested corrections. When changing a word or phrase, read the full surrounding sentence and rewrite it so the change flows naturally with what comes before and after , never insert words in isolation. Keep everything not mentioned absolutely identical, word for word. Keep the exact same JSON structure and keys. Australian spelling. NEVER use em dashes or en dashes anywhere. Reply with ONLY the corrected JSON, no markdown fences, no commentary.',
         messages: [{ role: 'user', content: 'Corrections requested: ' + ask + '\n\nContent JSON:\n' + JSON.stringify(content) }]
       })
     });
@@ -5344,7 +5418,7 @@ async function uploadBodyImg(file, idx, kind) {
     else recipeBodyImages[idx] = path;
     renderBodyImgSlot(idx, kind, compressed.dataUrl, path);
   } catch(e) {
-    slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Failed — try again</span>';
+    slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Failed , try again</span>';
   }
 }
 
@@ -5842,7 +5916,7 @@ function openSocialFromManage(kind, item) {
   if (!modal) return;
   if (subtitle) subtitle.textContent = item.title;
   if (statusEl) { statusEl.style.display = 'none'; }
-  if (loadingEl) { loadingEl.style.display = 'none'; }
+  if (loadingEl) { loadingEl.style.display = 'block'; }
   if (contentEl) { contentEl.style.display = 'none'; contentEl.innerHTML = ''; }
   
   modal.style.display = 'flex';
@@ -5881,7 +5955,7 @@ async function generateSocialContent(type, data) {
   var systemPrompt = 'You are a social media content writer for Pristine Wellness, an evidence-based ancestral health platform for Australian families. ' +
     'Brand voice: accessible but technically grounded, confident, no fluff, short paragraphs. ' +
     'Rules: Australian spelling, no em dashes, no hashtag spam, no exclamation marks unless truly warranted, no AI writing tells. ' +
-    'You will output a JSON object only — no markdown, no explanation, just raw JSON.';
+    'You will output a JSON object only , no markdown, no explanation, just raw JSON.';
 
   var userPrompt = 'Create social media content for this ' + type + ':\n\n' + contentSummary + '\n\n' +
     'Output ONLY a valid JSON object with this exact structure:\n' +
@@ -5904,7 +5978,7 @@ async function generateSocialContent(type, data) {
     '}\n\n' +
     'DIRECTION STYLES:\n' +
     'Editorial: clean magazine feel, text-heavy, Cormorant Garamond vibes, lots of white space, sophisticated. Copy is considered and precise.\n' +
-    'Bold Statement: high contrast, one powerful stat or quote, big typography, stops the scroll. Copy is short and punchy — one sentence max.\n' +
+    'Bold Statement: high contrast, one powerful stat or quote, big typography, stops the scroll. Copy is short and punchy , one sentence max.\n' +
     'Lifestyle: warm, organic, human, photo-led. Copy feels personal, like a friend sharing something real.\n\n' +
     'For each DESIGN BRIEF: write a specific brief for a graphic designer using Photoshop/Illustrator/InDesign. Include: dimensions, background, typography direction, imagery description, colour palette from brand colours (Sage #8A9B6E, Forest #2C4A2E, Cream #F5F0E8, Gold #C9A96E). Be specific enough that a designer can execute without asking questions.\n\n' +
     'X posts: 280 chars max. No hashtags.\n' +
@@ -6613,7 +6687,7 @@ async function aiFixAllRecipe() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: 'You are a senior editor for Pristine Wellness, an ancestral health platform for Australian families. Review this recipe and fix EVERYTHING that needs fixing: grammar, spelling (Australian), flow, sentence structure, consistency between title and ingredients and steps, unclear instructions, awkward phrasing, repetition, and brand voice. Brand voice: warm, grounded, real — like a health-conscious parent talking to another parent. No em dashes, no en dashes, no AI writing tells (no "delve", "unlock", "journey", "fascinating", "crucial", "game-changer"). Fix the intro so it flows naturally. Fix any step that is unclear or out of order. Fix ingredient names for consistency with the steps. Keep the exact same JSON structure and keys. Return ONLY valid JSON, no markdown, no commentary.',
+        system: 'You are a senior editor for Pristine Wellness, an ancestral health platform for Australian families. Review this recipe and fix EVERYTHING that needs fixing: grammar, spelling (Australian), flow, sentence structure, consistency between title and ingredients and steps, unclear instructions, awkward phrasing, repetition, and brand voice. Brand voice: warm, grounded, real , like a health-conscious parent talking to another parent. No em dashes, no en dashes, no AI writing tells (no "delve", "unlock", "journey", "fascinating", "crucial", "game-changer"). Fix the intro so it flows naturally. Fix any step that is unclear or out of order. Fix ingredient names for consistency with the steps. Keep the exact same JSON structure and keys. Return ONLY valid JSON, no markdown, no commentary.',
         messages: [{ role: 'user', content: 'Please review and fix everything in this recipe:\n\n' + JSON.stringify(data.recipe) }]
       })
     });
@@ -6705,7 +6779,7 @@ async function updateAllRecipes() {
     } catch(e) { console.error(url, e); fail++; }
     await new Promise(function(res) { setTimeout(res, 500); });
   }
-  if (status) status.textContent = 'Done. ' + ok + ' updated' + (fail ? ', ' + fail + ' failed — check console.' : '. All good!');
+  if (status) status.textContent = 'Done. ' + ok + ' updated' + (fail ? ', ' + fail + ' failed , check console.' : '. All good!');
   if (btn) { btn.disabled = false; btn.textContent = 'Update All Recipes'; }
 }
 

@@ -819,7 +819,7 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
 .page-header{display:flex !important;flex-direction:row !important;align-items:flex-end !important;justify-content:space-between !important;flex-wrap:wrap !important;gap:1.5rem !important;padding:2.8rem 2.5rem 2rem !important;}
 .page-header-left{display:flex !important;flex-direction:row !important;align-items:center !important;gap:2rem !important;flex-wrap:wrap !important;}
 .page-title{font-family:'Cormorant Garamond',serif !important;font-style:italic !important;font-size:clamp(38px,4.2vw,52px) !important;font-weight:400 !important;color:#111 !important;line-height:1 !important;text-align:left !important;}
-.page-tagline{font-family:'Cormorant Garamond',serif !important;font-style:italic !important;font-size:16px !important;color:#aaa !important;font-weight:400 !important;line-height:1.6 !important;max-width:260px !important;padding-left:2rem !important;border-left:0.5px solid var(--border) !important;text-align:left !important;}
+
 @media(max-width:700px){.page-header{flex-direction:column !important;align-items:flex-start !important;gap:1rem !important;}.page-header-left{flex-direction:column !important;align-items:flex-start !important;gap:0.5rem !important;}.page-title{font-size:34px !important;}.page-tagline{padding-left:0 !important;border-left:none !important;max-width:none !important;}}
 
 .exp-hero{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin:2.5rem 0 0;padding:1rem 0;}
@@ -832,12 +832,12 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
 @media(max-width:760px){.exp-hero{grid-template-columns:1fr;gap:2rem;}.exp-hero-line{font-size:2rem;}.exp-hero-img{height:300px;}}
 
 /* Full-width before/after: images left, text right */
-.ba-card{display:grid;grid-template-columns:1.3fr 1fr;align-items:start;}
+.ba-card{display:block;}
 .ba-card .ba-pair{height:100%;}
-.ba-card .ba-half img{height:320px;object-fit:cover;width:100%;display:block;}
-.ba-card .ba-body{display:flex;flex-direction:column;justify-content:center;padding:2rem 2.2rem;}
+.ba-card .ba-half img{height:300px;object-fit:cover;width:100%;display:block;}
+.ba-card .ba-body{padding:1.6rem 1.8rem 1.8rem;}
 .ba-card .ba-title{font-size:24px;margin:0 0 0.85rem;}
-@media(max-width:760px){.ba-card{grid-template-columns:1fr;}.ba-card .ba-half img{height:240px;}.ba-card .ba-body{padding:1.5rem 1.6rem;}}
+@media(max-width:760px){.ba-card{grid-template-columns:1fr;}.ba-card .ba-half img{height:220px;}.ba-card .ba-body{padding:1.5rem 1.6rem;}}
 
 .exp-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);border:none;width:48px;height:48px;border-radius:50%;font-size:28px;line-height:1;color:#2C4A2E;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:5;}
 .exp-lightbox-nav:hover{background:#fff;}
@@ -846,8 +846,9 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
 .exp-lightbox-inner{position:relative;}
 @media(max-width:700px){.exp-lightbox-nav{width:38px;height:38px;font-size:22px;}.exp-lightbox-prev{left:1vw;}.exp-lightbox-next{right:1vw;}}
 
-/* FIX: tagline matches The Source/Ancestral/About */
-.page-tagline{font-family:'Cormorant Garamond',serif !important;font-style:italic !important;font-size:16px !important;color:#aaa !important;font-weight:400 !important;line-height:1.6 !important;max-width:260px !important;padding-left:2rem !important;border-left:0.5px solid var(--border) !important;text-align:left !important;}
+
+/* Tagline matches The Source and Ancestral Kitchen exactly */
+.page-tagline{font-family:'Jost',sans-serif !important;font-style:normal !important;font-size:17px !important;color:#444 !important;font-weight:400 !important;line-height:1.6 !important;max-width:260px !important;padding-left:2rem !important;border-left:0.5px solid var(--border) !important;text-align:left !important;}
 @media(max-width:700px){.page-tagline{padding-left:0 !important;border-left:none !important;max-width:none !important;font-size:15px !important;}}
 </style>  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
