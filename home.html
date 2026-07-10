@@ -125,9 +125,9 @@ p, li, .card-excerpt, .feat-excerpt,
   transition: min-height 0.4s ease, padding 0.4s ease;
 }
 .nav.scrolled { min-height: 64px; padding: 0.6rem 2.5rem; box-shadow: 0 1px 0 var(--border); }
-.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-links { display: flex; gap: 2.5rem; align-items: center; }
 .nav-links a {
-  font-size: 11px !important; letter-spacing: 2px;
+  font-size: 12px !important; letter-spacing: 2px;
   text-transform: uppercase; color: var(--muted) !important;
   font-weight: 500 !important; transition: color 0.2s; text-decoration: none;
 }
@@ -409,7 +409,7 @@ p, li, .card-excerpt, .feat-excerpt,
 .home-nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0.8rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:transparent;transition:background 0.4s ease,box-shadow 0.4s ease,min-height 0.4s ease,padding 0.4s ease;min-height:90px;overflow:visible;max-width:1280px;margin:0 auto;}
 .home-nav.scrolled{background:#fff;box-shadow:0 1px 0 rgba(232,232,228,0.8);min-height:64px;padding:0.6rem 2.5rem;}
 .home-nav .logo-img{width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer;filter:drop-shadow(0 6px 20px rgba(0,0,0,0.2));position:relative;z-index:10;margin-bottom:0;transition:width 0.4s ease,height 0.4s ease,margin-bottom 0.4s ease,filter 0.4s ease;}
-.home-nav.scrolled .logo-img{width:52px;height:52px;margin-bottom:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.1));}
+.home-nav.scrolled .logo-img{width:72px;height:72px;margin-bottom:-20px;filter:none;}
 .home-nav .nav-links a{color:rgba(255,255,255,0.88);}
 .home-nav.scrolled .nav-links a{color:var(--muted);}
 .home-nav .nav-right svg{stroke:rgba(255,255,255,0.7);}
@@ -769,8 +769,10 @@ p, li, .card-excerpt, .feat-excerpt,
 .featured:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.1) !important; }
 
 
-/* Fix logo drop on homepage */
-.home-nav .logo-img { margin-bottom: 0 !important; }
+/* Fix logo drop on homepage: no overhang while transparent over the hero,
+   but restore the sitewide overhang once the nav turns solid on scroll. */
+.home-nav:not(.scrolled) .logo-img { margin-bottom: 0 !important; }
+.home-nav.scrolled .logo-img { margin-bottom: -20px !important; }
 
 /* Homepage hero fixes */
 .home-nav .nav-links a { color: rgba(255,255,255,0.92) !important; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
