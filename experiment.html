@@ -806,13 +806,21 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
 .exp-hero-img{width:100%;display:block;height:420px;object-fit:cover;}
 @media(max-width:760px){.exp-hero{grid-template-columns:1fr;gap:2rem;}.exp-hero-line{font-size:2rem;}.exp-hero-img{height:300px;}}
 
-/* Full-width before/after: images left, text right */
-.ba-card{display:block;}
+/* Before & after: images left, text right */
+.ba-card{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:stretch;}
 .ba-card .ba-pair{height:100%;}
-.ba-card .ba-half img{height:300px;object-fit:cover;width:100%;display:block;}
-.ba-card .ba-body{padding:1.6rem 1.8rem 1.8rem;}
-.ba-card .ba-title{font-size:24px;margin:0 0 0.85rem;}
-@media(max-width:760px){.ba-card{grid-template-columns:1fr;}.ba-card .ba-half img{height:220px;}.ba-card .ba-body{padding:1.5rem 1.6rem;}}
+.ba-card .ba-half{position:relative;overflow:hidden;}
+.ba-card .ba-half img{width:100%;height:100%;min-height:300px;aspect-ratio:auto;object-fit:cover;display:block;cursor:pointer;}
+.ba-card .ba-body{padding:1.7rem 1.9rem 1.8rem;display:flex;flex-direction:column;justify-content:center;}
+.ba-card .ba-title{font-size:23px;margin:0 0 0.75rem;line-height:1.25;}
+.ba-card .ba-caption{font-size:15px;line-height:1.85;color:#555;margin:0;}
+@media(max-width:900px){
+.ba-card{grid-template-columns:1fr;}
+.ba-card .ba-pair{height:auto;}
+.ba-card .ba-half img{width:100%;height:220px;min-height:0;aspect-ratio:auto;object-fit:cover;}
+.ba-card .ba-body{padding:1.4rem 1.5rem 1.6rem;justify-content:flex-start;}
+.ba-card .ba-title{font-size:21px;}
+}
 
 .exp-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);border:none;width:48px;height:48px;border-radius:50%;font-size:28px;line-height:1;color:#2C4A2E;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:5;}
 .exp-lightbox-nav:hover{background:#fff;}
@@ -925,11 +933,7 @@ The blueberries used in this experiment were bottled on 25 January 2024. The fir
 Despite the extended period, the blueberries preserved in the structured water environment continue to show remarkable stability, providing a clear visual demonstration of the water's unique properties. The images allow you to compare the condition of the berries over time and observe the long-term effects for yourself.</p><span class="ba-date">23 Jun 2026</span></div></div>
 <!-- /BA_ENTRY:ba1782225949077 -->
 <!-- BA_ENTRY:ba1781324183298 -->
-<div class="ba-card"><div class="ba-pair"><div class="ba-half"><img src="images/ba-before-1781323991736.jpg" alt="Before" loading="lazy" onclick="openLightboxSrc('images/ba-before-1781323991736.jpg')"><span class="ba-tag before">Before</span></div><div class="ba-half"><img src="images/ba-after-1781323995379.jpg" alt="After" loading="lazy" onclick="openLightboxSrc('images/ba-after-1781323995379.jpg')"><span class="ba-tag after">After</span></div></div><div class="ba-body"><h3 class="ba-title">Regular town water vs MEA structured water</h3><p class="ba-caption">This is what 
-      <!-- DIVIDER -->
-      <div style="border-top:0.5px solid var(--border);margin:3rem 0;"></div>
-      <!-- THE SCIENCE: trimmed -->
-structured water ice crystals look like after passing through a MEA Apollo Gold Bottle Top Device. We know which one we want to drink, bathe and garden with! A picture tells a thousand words!
+<div class="ba-card"><div class="ba-pair"><div class="ba-half"><img src="images/ba-before-1781323991736.jpg" alt="Before" loading="lazy" onclick="openLightboxSrc('images/ba-before-1781323991736.jpg')"><span class="ba-tag before">Before</span></div><div class="ba-half"><img src="images/ba-after-1781323995379.jpg" alt="After" loading="lazy" onclick="openLightboxSrc('images/ba-after-1781323995379.jpg')"><span class="ba-tag after">After</span></div></div><div class="ba-body"><h3 class="ba-title">Regular town water vs MEA structured water</h3><p class="ba-caption">This is what structured water ice crystals look like after passing through a MEA Apollo Gold Bottle Top Device. We know which one we want to drink, bathe and garden with! A picture tells a thousand words!
 
  Images by Dipl.-Ing. MSc Rasmus Gaupp-Berghausen, HADO LIFE Water Laboratory, Austria. Founded by Masaru Emoto and Rasmus Gaupp-Berghausen.</p><span class="ba-date">13 Jun 2026</span></div></div>
 <!-- /BA_ENTRY:ba1781324183298 -->
