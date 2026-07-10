@@ -19,7 +19,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --sage:#8A9B6E;--sage-dark:#4a5e38;--forest:#2C4A2E;
+  --sage:#8F9574;--sage-dark:#4a5e38;--forest:#2C4A2E;
   --cream:#F5F0E8;--gold:#C9A96E;--text:#1a1a1a;
   --muted:#666;--border:#e8e8e4;--border-light:#f0f0ec;
 }
@@ -86,7 +86,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 }
 .feat-img{
   position:relative;background-size:cover;background-position:center;
-  background-color:var(--forest);display:flex;align-items:flex-end;
+  background-color:#8F9574;display:flex;align-items:flex-end;
   min-height:480px;
 }
 .feat-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(10,20,10,0.30) 75%,rgba(10,20,10,0.78) 100%);z-index:1;}
@@ -1218,8 +1218,11 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
   </div>
   <div class="filter-pills">
   <button class="filter-pill active" onclick="filterCards(this,'All')">All</button>
-  <button class="filter-pill" onclick="filterCards(this,'Breakfast')">Breakfast</button>
-  <button class="filter-pill" onclick="filterCards(this,'Snacks')">Snacks</button>
+ <button class="filter-pill" onclick="filterCards(this,'Mains')">Mains</button>
+ <button class="filter-pill" onclick="filterCards(this,'Sides')">Sides</button>
+ <button class="filter-pill" onclick="filterCards(this,'Desserts')">Desserts</button>
+ <button class="filter-pill" onclick="filterCards(this,'Breakfast')">Breakfast</button>
+ <button class="filter-pill" onclick="filterCards(this,'Snacks')">Snacks</button>
 </div>
 </div>
 
@@ -1230,7 +1233,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
 <div class="inner">
 
 <div class="featured" onclick="window.location='recipe-soaked-slow-cooked-lentil-dal-with-ghee-.html'" style="cursor:pointer">
-      <div class="feat-img" style="background:var(--forest);">
+      <div class="feat-img" style="background:#8F9574;">
         <div class="feat-img-overlay"></div>
         <div class="feat-label">
           <span class="feat-badge">Latest recipe</span>
@@ -1238,7 +1241,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
         </div>
       </div>
       <div class="feat-body">
-        <span class="feat-cat"></span>
+        <span class="feat-cat">Mains</span>
         <h2 class="feat-title">Soaked & Slow-Cooked Lentil Dal with Ghee Tarka</h2>
         <p class="feat-excerpt">Dal has been feeding families across generations not because it is simple, but because it is wise: soaking the lentils overnight breaks down the anti-nutrients that make legumes hard on digestion, and</p>
         <div class="feat-meta">15 prep &nbsp;·&nbsp; 15 min total</div>
@@ -1248,48 +1251,21 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
 
 <div class="recipe-grid" id="recipe-grid">
 <!-- RECIPE_CARDS_PLACEHOLDER -->
-<div class="card" data-cat="" onclick="window.location='recipe-creamy-cauliflower-soup.html'">
-  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge"></span></div>
+<div class="card" data-cat="Sides" onclick="window.location='recipe-organic-micro-salad.html'">
+  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/organic-micro-salad-hero.jpg');"></div><span class="card-badge">Sides</span></div>
   <div class="card-body">
     <div class="card-tags"></div>
-    <h3 class="card-title">Creamy Cauliflower Soup</h3>
-    <p class="card-excerpt">This is the kind of soup we return to again and again through the cooler months, simple enough for a weeknight but nourishing enough to feel like real care on a plate. Cauliflower is rich in sulforaph</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
+    <h3 class="card-title">Organic Micro Garden Salad</h3>
+    <p class="card-excerpt">A finely chopped wholefood salad the whole family loves. Every ingredient cut small so each mouthful delivers the perfect balance of flavour, crunch a...</p>
+    <div class="card-footer"><span class="card-date">1 hour prep &nbsp;&middot;&nbsp; Serves 6</span></div>
   </div>
 </div>
-<div class="card" data-cat="" onclick="window.location='recipe-wild-fermented-beetroot-and-goat-s-chees.html'">
-  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge"></span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Wild Fermented Beetroot and Goat's Cheese Salad</h3>
-    <p class="card-excerpt">This salad came about because we wanted something that could hold its own as a proper main, not just a side thought, and the lacto-fermented beetroot we had sitting quietly in the pantry turned out to</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="" onclick="window.location='recipe-slow-cooked-beef-bone-broth-ramen.html'">
-  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge"></span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Slow-Cooked Beef Bone Broth Ramen</h3>
-    <p class="card-excerpt">This bowl came together out of a desire to give our family something deeply nourishing on a school night without spending the whole weekend in the kitchen. We start with pasture-raised beef bones, let</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="" onclick="window.location='recipe-wheat-free-chocolate-mud-cake.html'">
+<div class="card" data-cat="Desserts" onclick="window.location='recipe-wheat-free-chocolate-mud-cake.html'">
   <div class="card-img"><div class="card-img-inner" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg');"></div><span class="card-badge"></span></div>
   <div class="card-body">
     <div class="card-tags"></div>
     <h3 class="card-title">Wheat-Free Chocolate Mud Cake</h3>
     <p class="card-excerpt">This is the cake we make when we want something genuinely indulgent that still fits with how we feed our family. Built on almond flour and sweetened with monk fruit, it delivers that dense, fudgy mud </p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="" onclick="window.location='recipe-no-wheat-chocolate-mud-cake.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg');"></div><span class="card-badge"></span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">No Wheat Chocolate Mud Cake</h3>
-    <p class="card-excerpt">This is our birthday cake, full stop. Every time someone in our house turns another year older, this is what they ask for, and we are always happy to oblige because it is genuinely one of those rare r</p>
     <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
   </div>
 </div>
@@ -1951,5 +1927,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8d1cf8805fc34424a2c1aafb7dcbaceb"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
