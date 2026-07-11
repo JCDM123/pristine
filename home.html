@@ -769,9 +769,9 @@ p, li, .card-excerpt, .feat-excerpt,
 .featured:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.1) !important; }
 
 
-/* Fix logo drop on homepage: no overhang while transparent over the hero,
-   but restore the sitewide overhang once the nav turns solid on scroll. */
-.home-nav:not(.scrolled) .logo-img { margin-bottom: 0 !important; }
+/* Logo overhang matches the rest of the site so the nav height and menu
+   position are identical on every page. */
+.home-nav:not(.scrolled) .logo-img { margin-bottom: -36px !important; }
 .home-nav.scrolled .logo-img { margin-bottom: -20px !important; }
 
 /* Homepage hero fixes */
@@ -799,6 +799,10 @@ body { overflow-y: auto !important; overflow-x: hidden; }
 .mobile-drawer.open{right:0;}
 .mobile-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.35s;}
 .mobile-drawer-overlay.open{opacity:1;pointer-events:all;}
+
+/* Reserve the scrollbar gutter so the fixed nav centres on the same column
+   as the sticky navs on every other page (removes a half-scrollbar shift). */
+html { scrollbar-gutter: stable; }
 </style>
 </head>
 <body>
