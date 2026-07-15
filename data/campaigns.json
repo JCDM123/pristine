@@ -53,6 +53,8 @@
     "subject": "Pristine Wellness test flight",
     "date": "2026-07-15T12:32",
     "recipients": 2,
-    "opens": {}
+    "opens": {
+      "ef162d6a3c0ca9cd": "2026-07-15T12:34"
+    }
   }
 ]
