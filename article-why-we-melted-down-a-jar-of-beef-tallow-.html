@@ -158,7 +158,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 
 /* ── NEWSLETTER ── */
 .newsletter{border:0.5px solid var(--border);border-radius:12px;padding:4rem 3rem;text-align:center;margin-bottom:3rem;background:#fafaf8;position:relative;overflow:hidden;}
-.newsletter::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(138,155,110,0.06);pointer-events:none;}
+.newsletter::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(143,149,116,0.06);pointer-events:none;}
 .newsletter-inner{position:relative;z-index:1;}
 .nl-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--sage);display:block;margin-bottom:12px;font-weight:500;}
 .newsletter h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:44px;color:var(--text);margin-bottom:10px;font-weight:400;}
@@ -497,7 +497,7 @@ body{
 .article-hero{width:100%;height:65vh;background-size:cover;background-position:center;position:relative;display:flex;align-items:flex-end;margin-top:0;}
 .article-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,5,0) 0%,rgba(5,15,5,0) 50%,rgba(5,15,5,0.35) 72%,rgba(5,15,5,0.88) 100%);}
 .article-hero-content{position:relative;z-index:2;padding:0 10% 4rem;width:100%;}
-.article-cat{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#fff;background:rgba(138,155,110,0.75);padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);font-weight:600;}
+.article-cat{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#fff;background:rgba(143,149,116,0.75);padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);font-weight:600;}
 .article-meta-row{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;flex-wrap:wrap;}
 .article-date,.article-rt{font-size:13px;color:rgba(255,255,255,0.92);font-weight:400;}
 .sep{color:rgba(255,255,255,0.3);}
@@ -782,7 +782,7 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
 /* Mobile drawer search results */
 .mobile-drawer-results{margin:-0.5rem 0 0.8rem;max-height:40vh;overflow-y:auto;flex-shrink:0;}
 .mobile-drawer-results .mdr-item{display:block;padding:10px 4px;border-bottom:0.5px solid rgba(0,0,0,0.06);font-size:14px !important;color:#333;text-decoration:none;letter-spacing:0 !important;text-transform:none !important;font-weight:400 !important;}
-.mobile-drawer-results .mdr-cat{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8A9B6E;margin-bottom:2px;}
+.mobile-drawer-results .mdr-cat{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8F9574;margin-bottom:2px;}
 .mobile-drawer-results .mdr-none{padding:10px 4px;font-size:13px;color:#aaa;font-weight:300;}
 
 /* ── CANONICAL NAV CSS (master, overrides all) ── */
@@ -1246,5 +1246,49 @@ if (typeof initFilters === 'undefined') { window.initFilters = function() {}; }
 buildSearchIndex();
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8d1cf8805fc34424a2c1aafb7dcbaceb"}'></script><!-- End Cloudflare Web Analytics -->
+<script>
+/* Contact: open and close the pop-up reliably, and actually send messages (falls back to email if sending fails) */
+(function () {
+  var ENDPOINT = 'https://pristine-api.jc-a7f.workers.dev/contact';
+  var EMAIL = 'hello@pristinewellness.com.au';
+  window.openContactModal = function () {
+    var m = document.getElementById('contact-modal'); if (!m) return;
+    m.style.display = 'flex'; m.classList.add('open'); document.body.style.overflow = 'hidden';
+  };
+  window.closeContactModal = function () {
+    var m = document.getElementById('contact-modal'); if (!m) return;
+    m.classList.remove('open'); m.style.display = 'none'; document.body.style.overflow = '';
+  };
+  function statusFor(btn) {
+    var s = btn.parentNode.querySelector('.contact-status');
+    if (!s) { s = document.createElement('p'); s.className = 'contact-status'; s.style.cssText = 'font-size:13px;line-height:1.6;margin:0.8rem 0 0;color:#2C4A2E;'; btn.parentNode.insertBefore(s, btn.nextSibling); }
+    return s;
+  }
+  window.sendContactMessage = async function (btn) {
+    var box = btn.closest('.modal, .contact-form'); if (!box) return;
+    var name = box.querySelector('input[type="text"]'), email = box.querySelector('input[type="email"]');
+    var subject = box.querySelector('input[placeholder*="Subject"]'), msg = box.querySelector('textarea');
+    var d = { name: name ? name.value.trim() : '', email: email ? email.value.trim() : '', subject: subject ? subject.value.trim() : '', message: msg ? msg.value.trim() : '', page: location.pathname, website: '' };
+    var status = statusFor(btn);
+    if (!d.name || !d.email || !d.message) { status.style.color = '#c0392b'; status.textContent = 'Please add your name, email and message.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) { status.style.color = '#c0392b'; status.textContent = 'Please check your email address.'; return; }
+    var label = btn.textContent; btn.disabled = true; btn.textContent = 'Sending...'; status.textContent = '';
+    try {
+      var resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+      var data = await resp.json().catch(function () { return {}; });
+      if (!resp.ok || !data.ok) throw new Error('not sent');
+      box.querySelectorAll('input, textarea').forEach(function (el) { el.value = ''; });
+      status.style.color = '#2C4A2E'; status.textContent = 'Message sent. We read every one and will be in touch soon.';
+    } catch (e) {
+      var href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(d.subject || 'Message from ' + d.name) + '&body=' + encodeURIComponent(d.message + '\n\n' + d.name + ' (' + d.email + ')');
+      status.style.color = '#2C4A2E'; status.innerHTML = 'We could not send that just now. Please email us at <a href="' + href + '" style="color:#2C4A2E;text-decoration:underline;">' + EMAIL + '</a> and your message will come across with it.';
+    }
+    btn.disabled = false; btn.textContent = label;
+  };
+  document.querySelectorAll('#contact-modal .ms, .contact-form .cf-submit').forEach(function (b) {
+    b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
+  });
+})();
+</script>
 </body>
 </html>

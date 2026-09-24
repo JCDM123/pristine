@@ -6,18 +6,18 @@
 <title>Pristine Wellness, Live the way you were designed to.</title>
 <meta name="description" content="Evidence-based wellness and wholefood living rooted in ancestral wisdom. Pure water, nutrient dense food, grounding and nature, for your family."/>
 <meta name="robots" content="index, follow"/>
-<link rel="canonical" href="https://pristinewellness.com/"/>
+<link rel="canonical" href="https://pristinewellness.com.au/"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Pristine Wellness, Live the way you were designed to."/>
 <meta property="og:description" content="Evidence-based wellness and wholefood living rooted in ancestral wisdom. For your family."/>
-<meta property="og:url" content="https://pristinewellness.com/"/>
-<meta property="og:image" content="https://pristinewellness.com/og-image.jpg"/>
+<meta property="og:url" content="https://pristinewellness.com.au/"/>
+<meta property="og:image" content="https://pristinewellness.com.au/images/newsletter-bg.jpg"/>
 <meta property="og:site_name" content="Pristine Wellness"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:site" content="@getpristinewell"/>
 <meta name="twitter:title" content="Pristine Wellness, Live the way you were designed to."/>
 <meta name="twitter:description" content="Evidence-based wellness and wholefood living rooted in ancestral wisdom."/>
-<meta name="twitter:image" content="https://pristinewellness.com/og-image.jpg"/>
+<meta name="twitter:image" content="https://pristinewellness.com.au/images/newsletter-bg.jpg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -244,7 +244,7 @@ p, li, .card-excerpt, .feat-excerpt,
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transform: translateY(10px);
   transition: opacity 0.3s, transform 0.3s, background 0.2s;
-  box-shadow: 0 4px 20px rgba(138,155,110,0.4);
+  box-shadow: 0 4px 20px rgba(143,149,116,0.4);
 }
 .back-to-top.visible { opacity: 1; transform: translateY(0); }
 .back-to-top:hover { background: var(--sage-dark); }
@@ -927,6 +927,7 @@ html { scrollbar-gutter: stable; }
   
 
   
+</div><!-- closes explore-section so the footer spans the full width -->
 <div class="footer"><div class="footer-inner">
     <div class="footer-left"><span class="footer-copy">© 2026 Pristine Wellness</span></div>
     <div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div>
@@ -959,7 +960,7 @@ html { scrollbar-gutter: stable; }
 </button>
 
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"Pristine Wellness","url":"https://pristinewellness.com","description":"Evidence-based wellness and wholefood living rooted in ancestral wisdom.","publisher":{"@type":"Organization","name":"Pristine Wellness","url":"https://pristinewellness.com","sameAs":["https://x.com/getpristinewell","https://instagram.com/getpristinewell","https://pinterest.com/getpristinewell"]}}
+{"@context":"https://schema.org","@type":"WebSite","name":"Pristine Wellness","url":"https://pristinewellness.com.au","description":"Evidence-based wellness and wholefood living rooted in ancestral wisdom.","publisher":{"@type":"Organization","name":"Pristine Wellness","url":"https://pristinewellness.com.au","sameAs":["https://x.com/getpristinewell","https://instagram.com/getpristinewell","https://pinterest.com/getpristinewell"]}}
 </script>
 
 <script>
@@ -1379,5 +1380,61 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8d1cf8805fc34424a2c1aafb7dcbaceb"}'></script><!-- End Cloudflare Web Analytics -->
+<script>
+/* Contact: open and close the pop-up reliably, and actually send messages (falls back to email if sending fails) */
+(function () {
+  var ENDPOINT = 'https://pristine-api.jc-a7f.workers.dev/contact';
+  var EMAIL = 'hello@pristinewellness.com.au';
+  window.openContactModal = function () {
+    var m = document.getElementById('contact-modal'); if (!m) return;
+    m.style.display = 'flex'; m.classList.add('open'); document.body.style.overflow = 'hidden';
+  };
+  window.closeContactModal = function () {
+    var m = document.getElementById('contact-modal'); if (!m) return;
+    m.classList.remove('open'); m.style.display = 'none'; document.body.style.overflow = '';
+  };
+  function statusFor(btn) {
+    var s = btn.parentNode.querySelector('.contact-status');
+    if (!s) { s = document.createElement('p'); s.className = 'contact-status'; s.style.cssText = 'font-size:13px;line-height:1.6;margin:0.8rem 0 0;color:#2C4A2E;'; btn.parentNode.insertBefore(s, btn.nextSibling); }
+    return s;
+  }
+  window.sendContactMessage = async function (btn) {
+    var box = btn.closest('.modal, .contact-form'); if (!box) return;
+    var name = box.querySelector('input[type="text"]'), email = box.querySelector('input[type="email"]');
+    var subject = box.querySelector('input[placeholder*="Subject"]'), msg = box.querySelector('textarea');
+    var d = { name: name ? name.value.trim() : '', email: email ? email.value.trim() : '', subject: subject ? subject.value.trim() : '', message: msg ? msg.value.trim() : '', page: location.pathname, website: '' };
+    var status = statusFor(btn);
+    if (!d.name || !d.email || !d.message) { status.style.color = '#c0392b'; status.textContent = 'Please add your name, email and message.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) { status.style.color = '#c0392b'; status.textContent = 'Please check your email address.'; return; }
+    var label = btn.textContent; btn.disabled = true; btn.textContent = 'Sending...'; status.textContent = '';
+    try {
+      var resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+      var data = await resp.json().catch(function () { return {}; });
+      if (!resp.ok || !data.ok) throw new Error('not sent');
+      box.querySelectorAll('input, textarea').forEach(function (el) { el.value = ''; });
+      status.style.color = '#2C4A2E'; status.textContent = 'Message sent. We read every one and will be in touch soon.';
+    } catch (e) {
+      var href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(d.subject || 'Message from ' + d.name) + '&body=' + encodeURIComponent(d.message + '\n\n' + d.name + ' (' + d.email + ')');
+      status.style.color = '#2C4A2E'; status.innerHTML = 'We could not send that just now. Please email us at <a href="' + href + '" style="color:#2C4A2E;text-decoration:underline;">' + EMAIL + '</a> and your message will come across with it.';
+    }
+    btn.disabled = false; btn.textContent = label;
+  };
+  document.querySelectorAll('#contact-modal .ms, .contact-form .cf-submit').forEach(function (b) {
+    b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
+  });
+})();
+</script>
+<script>
+/* Home: the page init calls these but they were never defined here, which stopped search and the nav from working */
+if (typeof initFilters !== 'function') { window.initFilters = function () {}; }
+if (typeof buildSearchIndex !== 'function') {
+  window.buildSearchIndex = function () {
+    fetch('data/search-index.json?cb=' + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (Array.isArray(d) && d.length) searchDocs = d; })
+      .catch(function () {});
+  };
+}
+</script>
 </body>
 </html>
