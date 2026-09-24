@@ -2828,7 +2828,7 @@ async function publishArticle() {
     // Skip if this article already has a grid card (prevents duplicates)
     // Search everything EXCEPT the featured section itself (which now contains its own onclick)
     var restHTML = sourceHTML.slice(0, featStart) + sourceHTML.slice(featEnd);
-    if (oldHref && restHTML.indexOf("window.location='" + oldHref + "'") !== -1) {
+    if (oldHref && hasGridCard(restHTML, '<div class="article-card"', oldHref)) {
       oldHref = '';
     }
     if (oldHref === filename) oldHref = '';
@@ -2851,17 +2851,7 @@ async function publishArticle() {
     // Replace featured + insert old featured as first card in grid
     var sourceWithNewFeat = sourceHTML.slice(0, featStart) + newFeatured + sourceHTML.slice(featEnd);
     // Remove an existing grid card for this article (republish), it now lives in the featured slot
-    var dupAt = sourceWithNewFeat.indexOf('<div class="article-card"', featStart + newFeatured.length);
-    while (dupAt !== -1) {
-      var dupEnd = findDivEndJS(sourceWithNewFeat, dupAt);
-      if (dupEnd === -1) break;
-      if (sourceWithNewFeat.slice(dupAt, dupEnd).indexOf("window.location='" + filename + "'") !== -1) {
-        sourceWithNewFeat = sourceWithNewFeat.slice(0, dupAt) + sourceWithNewFeat.slice(dupEnd);
-        dupAt = sourceWithNewFeat.indexOf('<div class="article-card"', dupAt);
-      } else {
-        dupAt = sourceWithNewFeat.indexOf('<div class="article-card"', dupEnd);
-      }
-    }
+    sourceWithNewFeat = removeGridCards(sourceWithNewFeat, '<div class="article-card"', filename, featStart + newFeatured.length);
     
     // Find injection point - try article-grid div first, then placeholder
     var gridMarker = '<div class="article-grid">';
@@ -3341,7 +3331,8 @@ async function publishRecipe() {
     if (kCurrentFeat) {
       var kOldHref = (kCurrentFeat.match(/window\.location='([^']+)'/) || kCurrentFeat.match(/href="([^"]+\.html)"/) || ['',''])[1];
       var kRest = kitchenHTML.slice(0, kFeatStart) + kitchenHTML.slice(kFeatEnd);
-      if (kOldHref && kRest.indexOf("window.location='" + kOldHref + "'") !== -1) kOldHref = '';
+      if (kOldHref && hasGridCard(kRest, '<div class="card"', kOldHref)) kOldHref = '';
+      if (kOldHref === filename) kOldHref = '';
       if (kOldHref) {
         var kOldTitle = (kCurrentFeat.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
         var kOldCat = (kCurrentFeat.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
@@ -3374,6 +3365,8 @@ async function publishRecipe() {
 
     // Apply: new featured in, old featured card into grid (no new-recipe card in grid)
     var kitchenWithFeat = kitchenHTML.slice(0, kFeatStart) + newFeatRecipe + kitchenHTML.slice(kFeatEnd);
+    // Republishing: drop this recipe's old grid card, it now lives in the featured slot
+    kitchenWithFeat = removeGridCards(kitchenWithFeat, '<div class="card"', filename, kFeatStart + newFeatRecipe.length);
     kInsertPos = kitchenWithFeat.indexOf(kitchenPlaceholder);
     kInsertLen = kitchenPlaceholder.length;
     if (kInsertPos === -1) { kInsertPos = kitchenWithFeat.indexOf(kitchenAlt); kInsertLen = kitchenAlt.length; }
@@ -3960,6 +3953,32 @@ async function loadKitchenForManage() {
   } catch(e) {
     el.innerHTML = '<div class="manage-empty">Could not load Ancestral Kitchen page. Check your token.</div>';
   }
+}
+
+/* Grid cards only: the pinned sections also link to articles and recipes, so a plain text search is not enough */
+function hasGridCard(html, cardOpen, href) {
+  var at = html.indexOf(cardOpen);
+  while (at !== -1) {
+    var tagEnd = html.indexOf('>', at);
+    if (html.slice(at, tagEnd).indexOf("window.location='" + href + "'") !== -1) return true;
+    at = html.indexOf(cardOpen, tagEnd);
+  }
+  return false;
+}
+function removeGridCards(html, cardOpen, href, from) {
+  var at = html.indexOf(cardOpen, from || 0);
+  while (at !== -1) {
+    var tagEnd = html.indexOf('>', at);
+    var end = findDivEndJS(html, at);
+    if (end === -1) break;
+    if (html.slice(at, tagEnd).indexOf("window.location='" + href + "'") !== -1) {
+      html = html.slice(0, at) + html.slice(end);
+      at = html.indexOf(cardOpen, at);
+    } else {
+      at = html.indexOf(cardOpen, end);
+    }
+  }
+  return html;
 }
 
 function findDivEndJS(html, start) {
