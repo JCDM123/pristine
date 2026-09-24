@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://pristinewellness.com/sitemap.xml
+Sitemap: https://pristinewellness.com.au/sitemap.xml

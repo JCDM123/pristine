@@ -1218,11 +1218,11 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
   </div>
   <div class="filter-pills">
   <button class="filter-pill active" onclick="filterCards(this,'All')">All</button>
- <button class="filter-pill" onclick="filterCards(this,'Mains')">Mains</button>
- <button class="filter-pill" onclick="filterCards(this,'Sides')">Sides</button>
- <button class="filter-pill" onclick="filterCards(this,'Desserts')">Desserts</button>
- <button class="filter-pill" onclick="filterCards(this,'Breakfast')">Breakfast</button>
- <button class="filter-pill" onclick="filterCards(this,'Snacks')">Snacks</button>
+  <button class="filter-pill" onclick="filterCards(this,'Mains')">Mains</button>
+  <button class="filter-pill" onclick="filterCards(this,'Sides')">Sides</button>
+  <button class="filter-pill" onclick="filterCards(this,'Desserts')">Desserts</button>
+  <button class="filter-pill" onclick="filterCards(this,'Breakfast')">Breakfast</button>
+  <button class="filter-pill" onclick="filterCards(this,'Snacks')">Snacks</button>
 </div>
 </div>
 
@@ -1233,7 +1233,7 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
 <div class="inner">
 
 <div class="featured" onclick="window.location='recipe-soaked-slow-cooked-lentil-dal-with-ghee-.html'" style="cursor:pointer">
-      <div class="feat-img" style="background:#8F9574;">
+      <div class="feat-img" style="background:var(--forest);">
         <div class="feat-img-overlay"></div>
         <div class="feat-label">
           <span class="feat-badge">Latest recipe</span>
@@ -1244,59 +1244,163 @@ div[style*="z-index:1"] span { color: #a8bb8a !important; }
         <span class="feat-cat">Mains</span>
         <h2 class="feat-title">Soaked & Slow-Cooked Lentil Dal with Ghee Tarka</h2>
         <p class="feat-excerpt">Dal has been feeding families across generations not because it is simple, but because it is wise: soaking the lentils overnight breaks down the anti-nutrients that make legumes hard on digestion, and</p>
-        <div class="feat-meta">15 prep &nbsp;·&nbsp; 15 min total</div>
+        <div class="feat-meta">15 min prep &nbsp;&middot;&nbsp; 45 min total</div>
         <a class="read-link" href="recipe-soaked-slow-cooked-lentil-dal-with-ghee-.html">View recipe <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       </div>
     </div>
 
 <div class="recipe-grid" id="recipe-grid">
 <!-- RECIPE_CARDS_PLACEHOLDER -->
-        <div class="card" data-cat="Mains" onclick="window.location='recipe-chickpea-curry.html'">
-          <div class="card-img"><div class="card-img-inner" style="background-image:url('');"></div><span class="card-badge">Mains</span></div>
-          <div class="card-body">
-            <div class="card-tags"></div>
-            <h3 class="card-title">Chickpea &amp; Green Bean Curry</h3>
-            <p class="card-excerpt">A deeply nourishing, plant-based curry that celebrates the anti-inflammatory power of turmeric and the wholesome goodness of chickpeas, a staple in our family kitchen.</p>
-            <div class="card-footer"><span class="card-date">10 min prep &nbsp;&middot;&nbsp; Serves 4</span></div>
-          </div>
-        </div>
-        
+<div class="card" data-cat="Mains" onclick="window.location='recipe-chickpea-curry.html'">
+  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/chickpea-curry-hero.jpg');"></div><span class="card-badge">Mains</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">Chickpea & Green Bean Curry</h3>
+    <p class="card-excerpt">A deeply nourishing, plant-based curry that celebrates the anti-inflammatory power of turmeric and the wholesome goodness of chickpeas, a staple in our family kitchen.</p>
+    <div class="card-footer"><span class="card-date">10 min prep &nbsp;&middot;&nbsp; 35 min total</span></div>
+  </div>
+</div>
+
 <div class="card" data-cat="Sides" onclick="window.location='recipe-organic-micro-salad.html'">
   <div class="card-img"><div class="card-img-inner" style="background-image:url('images/organic-micro-salad-hero.jpg');"></div><span class="card-badge">Sides</span></div>
   <div class="card-body">
     <div class="card-tags"></div>
     <h3 class="card-title">Organic Micro Garden Salad</h3>
-    <p class="card-excerpt">A finely chopped wholefood salad the whole family loves. Every ingredient cut small so each mouthful delivers the perfect balance of flavour, crunch a...</p>
-    <div class="card-footer"><span class="card-date">1 hour prep &nbsp;&middot;&nbsp; Serves 6</span></div>
+    <p class="card-excerpt">This salad is absolutely delectable. Every time we serve it, someone asks for the recipe. The secret isn't just the ingredients, it's the preparation. Taking the time to finely chop everything creates</p>
+    <div class="card-footer"><span class="card-date">1 hr prep &nbsp;&middot;&nbsp; 1 hr total</span></div>
   </div>
 </div>
+
 <div class="card" data-cat="Desserts" onclick="window.location='recipe-wheat-free-chocolate-mud-cake.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg');"></div><span class="card-badge"></span></div>
+  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg');"></div><span class="card-badge">Desserts</span></div>
   <div class="card-body">
     <div class="card-tags"></div>
     <h3 class="card-title">Wheat-Free Chocolate Mud Cake</h3>
     <p class="card-excerpt">This is the cake we make when we want something genuinely indulgent that still fits with how we feed our family. Built on almond flour and sweetened with monk fruit, it delivers that dense, fudgy mud </p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
+    <div class="card-footer"><span class="card-date">total</span></div>
   </div>
 </div>
+
 <div class="card" data-cat="Breakfast" onclick="window.location='recipe-fermented-overnight-oats-with-raw-honey-.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/fermented-overnight-oats-with--hero.jpg');"></div><span class="card-badge"></span></div>
+  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/fermented-overnight-oats-with--hero.jpg');"></div><span class="card-badge">Breakfast</span></div>
   <div class="card-body">
     <div class="card-tags"></div>
     <h3 class="card-title">Fermented Overnight Oats with Raw Honey and Seasonal Fruit</h3>
-    <p class="card-excerpt">School mornings are chaos, and this recipe is our answer to that. We soak our oats overnight in an acidic medium, which breaks down phytic acid and makes all those vitamins and minerals far easier for</p>
-    <div class="card-footer"><span class="card-date">prep &nbsp;&middot;&nbsp; 45 min total</span></div>
+    <p class="card-excerpt">Soaked, fermented, wholefood school-morning fuel no refined sugar needed</p>
+    <div class="card-footer"><span class="card-date">total</span></div>
   </div>
 </div>
+
 <div class="card" data-cat="Snacks" onclick="window.location='recipe-no-sugar-banana-choc-chip-muffins.html'">
   <div class="card-img"><div class="card-img-inner" style="background-image:url('images/no-sugar-bannana-choc-chip-muf-hero.jpg');"></div><span class="card-badge">Snacks</span></div>
   <div class="card-body">
     <div class="card-tags"></div>
     <h3 class="card-title">No Sugar Banana Choc Chip Muffins</h3>
-    <p class="card-excerpt">These nourishing banana muffins are a staple in our kitchen. Made with organic spelt flour, naturally sweetened with rip...</p>
-    <div class="card-footer"><span class="card-date">20m prep &nbsp;&middot;&nbsp; 40 min total</span></div>
+    <p class="card-excerpt">These nourishing banana muffins are a staple in our kitchen. Made with organic spelt flour, naturally sweetened with ripe bananas and a touch of maple syrup, and loaded with dairy free choc chips, the</p>
+    <div class="card-footer"><span class="card-date">20 min prep &nbsp;&middot;&nbsp; 40 min total</span></div>
   </div>
 </div>
+
+<div class="card" data-cat="Mains" onclick="window.location='recipe-wild-fermented-beetroot-and-goat-s-chees.html'">
+  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge">Mains</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">Wild Fermented Beetroot and Goat's Cheese Salad</h3>
+    <p class="card-excerpt">This salad came about because we wanted something that could hold its own as a proper main, not just a side thought, and the lacto-fermented beetroot we had sitting quietly in the pantry turned out to</p>
+    <div class="card-footer"><span class="card-date">total</span></div>
+  </div>
+</div>
+
+<div class="card" data-cat="Snacks" onclick="window.location='recipe-spelt-banana-choc-chip-muffins.html'">
+  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/spelt-banana-choc-chip-muffins-hero.jpg');"></div><span class="card-badge">Snacks</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">Spelt Banana Choc Chip Muffins</h3>
+    <p class="card-excerpt">These nourishing banana muffins are a staple in our kitchen. Made with organic spelt flour, naturally sweetened with ripe bananas and a touch of maple syrup, and loaded with dairy free choc chips, the</p>
+    <div class="card-footer"><span class="card-date">15 min prep &nbsp;&middot;&nbsp; 37 min total</span></div>
+  </div>
+</div>
+
+<div class="card" data-cat="Mains" onclick="window.location='recipe-slow-cooked-beef-bone-broth-ramen.html'">
+  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge">Mains</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">Slow-Cooked Beef Bone Broth Ramen</h3>
+    <p class="card-excerpt">This bowl came together out of a desire to give our family something deeply nourishing on a school night without spending the whole weekend in the kitchen. We start with pasture-raised beef bones, let</p>
+    <div class="card-footer"><span class="card-date">total</span></div>
+  </div>
+</div>
+
+<div class="card" data-cat="Desserts" onclick="window.location='recipe-no-wheat-chocolate-mud-cake.html'">
+  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg');"></div><span class="card-badge">Desserts</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">No Wheat Chocolate Mud Cake</h3>
+    <p class="card-excerpt">This recipe is the cake we eat whe n someonein our house has a birthday its amazing, and can be no sugar depending on what sweetner you decide to use. high in protein and my kids cant get rnough and i</p>
+    <div class="card-footer"><span class="card-date">total</span></div>
+  </div>
+</div>
+
+<div class="card" data-cat="Snacks" onclick="window.location='recipe-lamb-liver-p-t-with-sourdough-toast.html'">
+  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/lamb-liver-p-t-with-sourdough--hero.jpg');"></div><span class="card-badge">Snacks</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">Lamb Liver Pâté with Sourdough Toast</h3>
+    <p class="card-excerpt">Pasture-raised lamb liver is one of the most nutrient-dense foods we can put on the table, rich in fat-soluble vitamins, iron, and folate in forms the body actually absorbs. We make this pâté often be</p>
+    <div class="card-footer"><span class="card-date">1 hr prep &nbsp;&middot;&nbsp; 1 hr 20 min total</span></div>
+  </div>
+</div>
+
+<div class="card" data-cat="Sides" onclick="window.location='recipe-creamy-cauliflower-soup.html'">
+  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge">Sides</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">Creamy Cauliflower Soup</h3>
+    <p class="card-excerpt">This is the kind of soup we return to again and again through the cooler months, simple enough for a weeknight but nourishing enough to feel like real care on a plate. Cauliflower is rich in sulforaph</p>
+    <div class="card-footer"><span class="card-date">total</span></div>
+  </div>
+</div>
+
+<div class="card" data-cat="Snacks" onclick="window.location='recipe-banana-spelt-choc-chip-muffins.html'">
+  <div class="card-img"><div class="card-img-inner" style="background:var(--forest);"></div><span class="card-badge">Snacks</span></div>
+  <div class="card-body">
+    <div class="card-tags"></div>
+    <h3 class="card-title">Banana Spelt Choc Chip Muffins</h3>
+    <p class="card-excerpt">These nourishing banana muffins are a staple in our kitchen. Made with organic spelt flour, naturally sweetened with ripe bananas and a touch of maple syrup, and loaded with dairy free choc chips, the</p>
+    <div class="card-footer"><span class="card-date">15 min prep &nbsp;&middot;&nbsp; 35 min total</span></div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+
+
+
+
 </div>
 <div id="pinned-recipes" style="display:none"></div>
 
