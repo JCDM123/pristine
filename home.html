@@ -804,6 +804,11 @@ body { overflow-y: auto !important; overflow-x: hidden; }
    as the sticky navs on every other page (removes a half-scrollbar shift). */
 html { scrollbar-gutter: stable; }
 </style>
+<style>
+/* Locked menu: every link has the same height and underline slot on every page, so the menu never shifts between pages */
+html body #main-nav .nav-links a{display:block !important;line-height:20px !important;padding:0 0 3px !important;border-bottom-width:1px !important;border-bottom-style:solid !important;}
+html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !important;}
+</style>
 </head>
 <body>
 <div class="site-wrap">

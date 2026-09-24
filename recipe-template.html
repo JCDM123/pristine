@@ -821,6 +821,11 @@ html { scrollbar-gutter: stable; }
 .mobile-drawer-results .mdr-cat{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8F9574;margin-bottom:2px;}
 .mobile-drawer-results .mdr-none{padding:10px 4px;font-size:13px;color:#aaa;font-weight:300;}
 </style>
+<style>
+/* Locked menu: every link has the same height and underline slot on every page, so the menu never shifts between pages */
+html body #main-nav .nav-links a{display:block !important;line-height:20px !important;padding:0 0 3px !important;border-bottom-width:1px !important;border-bottom-style:solid !important;}
+html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !important;}
+</style>
 </head>
 <body>
 <div class="site-wrap">
