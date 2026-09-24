@@ -1129,7 +1129,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       </div>
       <div style="margin-top:1.5rem;">
         <button class="gen-btn" onclick="publishExplorePanels()" style="background:var(--forest);">Publish Explore Panel Images to Homepage</button>
-        <span id="exp-status" style="font-size:13px;color:var(--muted);margin-left:1rem;"></span>
+        <span id="explore-status" style="font-size:13px;color:var(--muted);margin-left:1rem;"></span>
       </div>
     </div>
     </div>
@@ -1982,7 +1982,7 @@ function renderArticlePreview(article, category, readtime, author, dateVal, tags
       if (imgSlots.length > 0) {
         var imgIdx = Math.floor(i * imgSlots.length / totalSections);
         if (i < imgSlots.length) {
-          sectionsHTML += '<img class="ap-body-img" src="' + imgSlots[i] + '" alt="Article image">';
+          sectionsHTML += '<img class="ap-body-img" src="' + (bodyImgPreview[imgSlots[i]] || imgSlots[i]) + '" alt="Article image">';
         }
       }
     });
@@ -2065,6 +2065,7 @@ var TMPL_TOP = null, TMPL_HERO = null, TMPL_MID = null, TMPL_BOTTOM = null;
 async function loadArticleTemplates() {
   if (TMPL_TOP) return;
   var resp = await fetch('https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/article-template.html?t=' + Date.now());
+  if (!resp.ok) { throw new Error('Could not load article-template.html (' + resp.status + '). Try again in a minute.'); }
   var html = await resp.text();
 
   var heroDivStart = html.indexOf('<div class="article-hero" style="background-image:url(');
@@ -2094,9 +2095,8 @@ async function loadArticleTemplates() {
   var rawBottom = html.slice(bottomStart);
   TMPL_BOTTOM = rawBottom;
   // SAFETY: validate the template was captured correctly before allowing publish
-  if (!resp.ok) { throw new Error('Could not load article-template.html (' + resp.status + '). Upload it to the repo root first.'); }
-  if (heroDivStart === -1 || introStart === -1 || midEnd === -1) { TMPL_TOP = TMPL_HERO = TMPL_MID = TMPL_BOTTOM = ''; throw new Error('article-template.html is missing expected markers (hero/intro/article-text). Aborting to prevent a broken article.'); }
-  if (TMPL_BOTTOM.indexOf('article-sidebar') === -1 || TMPL_BOTTOM.indexOf('</article>') === -1 || TMPL_BOTTOM.indexOf('<scr'+'ipt') === -1 || TMPL_BOTTOM.indexOf('</html>') === -1) { TMPL_TOP = TMPL_HERO = TMPL_MID = TMPL_BOTTOM = ''; throw new Error('Template bottom is incomplete (missing sidebar, article close, script, or html close). Aborting to prevent a broken article.'); }
+  if (heroDivStart === -1 || introStart === -1 || midEnd === -1) { TMPL_TOP = TMPL_HERO = TMPL_MID = TMPL_BOTTOM = null; throw new Error('article-template.html is missing expected markers (hero/intro/article-text). Aborting to prevent a broken article.'); }
+  if (TMPL_BOTTOM.indexOf('article-sidebar') === -1 || TMPL_BOTTOM.indexOf('</article>') === -1 || TMPL_BOTTOM.indexOf('<scr'+'ipt') === -1 || TMPL_BOTTOM.indexOf('</html>') === -1) { TMPL_TOP = TMPL_HERO = TMPL_MID = TMPL_BOTTOM = null; throw new Error('Template bottom is incomplete (missing sidebar, article close, script, or html close). Aborting to prevent a broken article.'); }
 }
 
 async function downloadArticle() {
@@ -2488,19 +2488,24 @@ function prefillRFromRelated(btn) {
   if (nameEl && topic) { nameEl.value = topic; nameEl.focus(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 
-function downloadRecipe() {
+async function downloadRecipe() {
   if (!generatedRecipeData) return;
-  var d = generatedRecipeData;
-  var ingsHTML = d.ings.map(function(i){ return '      <li>'+(i.amount?i.amount+' ':'')+i.name+'</li>'; }).join('\n');
-  var stepsHTML = d.finalSteps.map(function(s,i){ return '      <div class="step"><span class="step-num">'+(i+1)+'</span><p>'+s+'</p></div>'; }).join('\n');
-  var content = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>'+(d.recipe.title||d.name)+' - Pristine Wellness</title>\n<!-- Copy CSS and nav from recipe-chickpea-curry.html -->\n</head>\n<body>\n<div class="recipe-header"><h1>'+(d.recipe.title||d.name)+'</h1></div>\n<p>'+d.recipe.intro+'</p>\n<h2>Ingredients</h2>\n<ul>\n'+ingsHTML+'\n</ul>\n<h2>Method</h2>\n'+stepsHTML+'\n'+(d.recipe.chefTip?'<p><strong>Chef tip:</strong> '+d.recipe.chefTip+'</p>\n':'')+'<!-- Copy footer from recipe-chickpea-curry.html -->\n>\n</html>';
-  var slug = (d.recipe.title||d.name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
-  downloadFile('recipe-' + slug + '.html', content);
+  try {
+    var built = await buildRecipeHTML();
+    if (!built) return;
+    var slug = built.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
+    downloadFile('recipe-' + slug + '.html', built.html);
+  } catch (e) { alert('Could not build the recipe page: ' + e.message); }
 }
 
-function copyRecipeHTML() {
+async function copyRecipeHTML() {
   if (!generatedRecipeData) return;
-  downloadRecipe();
+  try {
+    var built = await buildRecipeHTML();
+    if (!built) return;
+    await navigator.clipboard.writeText(built.html);
+    alert('Recipe page HTML copied to the clipboard.');
+  } catch (e) { alert('Could not copy the recipe page: ' + e.message); }
 }
 
 function downloadFile(filename, content) {
@@ -2657,7 +2662,8 @@ async function getFileSHA(path) {
 }
 
 async function publishArticle() {
-  await loadArticleTemplates();
+  try { await loadArticleTemplates(); }
+  catch (e) { setStatus('a', 'error', 'Publish failed: ' + e.message); return; }
   if (!generatedArticleData) return;
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token at the top of the page.'); return; }
@@ -2667,6 +2673,7 @@ async function publishArticle() {
   btn.textContent = 'Publishing...';
   setStatus('a', 'active', 'Publishing to GitHub...');
 
+  var articleUploaded = false;
   try {
     var d = generatedArticleData;
     var article = d.article;
@@ -2677,6 +2684,9 @@ async function publishArticle() {
     // 1. Build full article HTML (same as download)
     var sectionsHTML = '';
     var bodyImgsForPub = articleBodyImages.filter(Boolean);
+    if (bodyImgsForPub.some(function(p){ return String(p).indexOf('data:') === 0; })) {
+      throw new Error('A body image has not finished uploading. Re-add it and try again.');
+    }
     if (article.sections) {
       var midPoint = Math.floor(article.sections.length / 2);
       article.sections.forEach(function(sec, i) {
@@ -2700,11 +2710,23 @@ async function publishArticle() {
         }
       });
     }
-    var tags = selectedRTags.length ? selectedRTags : (d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : []);
+    var tags = d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
     var seoTitleText = String(article.seoTitle || article.title).replace(/\s*\|\s*Pristine Wellness\s*$/i, '') + ' | Pristine Wellness';
     var pageTitle = '<title>' + seoTitleText + '</title>';
     var metaDescTag = article.metaDesc ? '<meta name="description" content="' + article.metaDesc.replace(/"/g,'&quot;') + '">' : '';
-    var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle + '\n' + metaDescTag);
+    var aOgImg = articleImagePath ? 'https://pristinewellness.com.au/' + articleImagePath : 'https://pristinewellness.com.au/images/newsletter-bg.jpg';
+    var aOgTitle = seoTitleText.replace(/\s*\|\s*Pristine Wellness\s*$/i,'').replace(/"/g,'&quot;');
+    var aOgDesc = String(article.metaDesc || article.intro || '').replace(/<[^>]+>/g,'').replace(/"/g,'&quot;').slice(0,160);
+    var articleOgTags = '<meta property="og:title" content="' + aOgTitle + '">\n'
+      + '<meta property="og:description" content="' + aOgDesc + '">\n'
+      + '<meta property="og:image" content="' + aOgImg + '">\n'
+      + '<meta property="og:url" content="https://pristinewellness.com.au/' + filename + '">\n'
+      + '<meta property="og:type" content="article">\n'
+      + '<meta name="twitter:card" content="summary_large_image">\n'
+      + '<meta name="twitter:title" content="' + aOgTitle + '">\n'
+      + '<meta name="twitter:description" content="' + aOgDesc + '">\n'
+      + '<meta name="twitter:image" content="' + aOgImg + '">';
+    var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle + '\n' + metaDescTag + '\n' + articleOgTags);
     // Never embed base64 in published HTML - too large for GitHub
     if (!articleImagePath && articleImageBase64) {
       setStatus('a', 'error', 'Image still uploading. Wait a moment and try again, or remove the image.');
@@ -2716,7 +2738,7 @@ async function publishArticle() {
       ? ' style="background-image:url(' + articleImagePath + ')"'
       : ' style="background:var(--forest)"';
     var heroShell = TMPL_HERO.replace('ARTICLE_CAT', d.category).replace('ARTICLE_DATE', date).replace('ARTICLE_RT', d.readtime).replace('ARTICLE_H1', article.title);
-    var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + (article.closing || '') + '</p>\n    </div>\n' + buildSourcesHTML(article) + TMPL_BOTTOM;
+    var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + renderCitationsForExport(article.closing || '') + '</p>\n    </div>\n' + buildSourcesHTML(article) + TMPL_BOTTOM;
     // Inject author signature + bio into template
     var authorData = getAuthorData(d.author);
     fullHTML = fullHTML.replace('AUTHOR_SIG_PLACEHOLDER', authorData.sigPath).replace('AUTHOR_BIO', escHtml(authorData.bio));
@@ -2740,17 +2762,6 @@ async function publishArticle() {
       }
     } catch(e) { fullHTML = fullHTML.replace('RELATED_CARDS_PLACEHOLDER', ''); }
 
-    // 2. Upload article file to GitHub
-    var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
-    var existingSHA = await getFileSHA(filename);
-    var uploadBody = {
-      message: 'Add article: ' + article.title,
-      content: articleContent,
-      branch: GITHUB_BRANCH
-    };
-    if (existingSHA) uploadBody.sha = existingSHA;
-    await githubRequest(filename, 'PUT', uploadBody);
-    setStatus('a', 'active', 'Article published, updating The Source...');
 
     // 3. Fetch current the-source.html
     var sourceData = await githubRequest('the-source.html', 'GET');
@@ -2817,9 +2828,10 @@ async function publishArticle() {
     // Skip if this article already has a grid card (prevents duplicates)
     // Search everything EXCEPT the featured section itself (which now contains its own onclick)
     var restHTML = sourceHTML.slice(0, featStart) + sourceHTML.slice(featEnd);
-    if (oldHref && restHTML.indexOf("window.location='" + oldHref + "'") !== -1) {
+    if (oldHref && hasGridCard(restHTML, '<div class="article-card"', oldHref)) {
       oldHref = '';
     }
+    if (oldHref === filename) oldHref = '';
     
     var oldCard = oldHref ? '\n      <div class="article-card" data-cat="' + oldCat + '" onclick="window.location=\'' + oldHref + '\'" style="cursor:pointer">' +
       '\n        <div class="card-img"><div class="card-img-inner" style="background-image:url(\'' + oldBg + '\')"></div>' +
@@ -2838,6 +2850,8 @@ async function publishArticle() {
 
     // Replace featured + insert old featured as first card in grid
     var sourceWithNewFeat = sourceHTML.slice(0, featStart) + newFeatured + sourceHTML.slice(featEnd);
+    // Remove an existing grid card for this article (republish), it now lives in the featured slot
+    sourceWithNewFeat = removeGridCards(sourceWithNewFeat, '<div class="article-card"', filename, featStart + newFeatured.length);
     
     // Find injection point - try article-grid div first, then placeholder
     var gridMarker = '<div class="article-grid">';
@@ -2853,6 +2867,19 @@ async function publishArticle() {
     // and will get its grid card when the next article pushes it down.
     var updatedSource = sourceWithNewFeat.slice(0, insertPos + insertLen) + oldCard + sourceWithNewFeat.slice(insertPos + insertLen);
     updatedSource = rebuildFilterPills(updatedSource);
+
+    // 2. Upload article file to GitHub (only once The Source update is ready, so a parse failure never leaves an unlinked article live)
+    var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
+    var existingSHA = await getFileSHA(filename);
+    var uploadBody = {
+      message: 'Add article: ' + article.title,
+      content: articleContent,
+      branch: GITHUB_BRANCH
+    };
+    if (existingSHA) uploadBody.sha = existingSHA;
+    await githubRequest(filename, 'PUT', uploadBody);
+    articleUploaded = true;
+    setStatus('a', 'active', 'Article published, updating The Source...');
 
     // 6. Push updated the-source.html
     var sourceContent = btoa(unescape(encodeURIComponent(updatedSource)));
@@ -2872,9 +2899,15 @@ async function publishArticle() {
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
     btn.textContent = 'Published!';
     btn.style.background = '#8A9B6E';
+    for (var bi = 0; bi < articleBodyImages.length; bi++) { if (articleBodyImages[bi]) clearBodyImg(bi, 'article'); }
+    setTimeout(function() {
+      btn.disabled = false;
+      btn.textContent = 'Publish to Site';
+      btn.style.background = 'var(--forest)';
+    }, 4000);
 
   } catch(err) {
-    setStatus('a', 'error', 'Publish failed: ' + err.message);
+    setStatus('a', 'error', 'Publish failed: ' + err.message + (articleUploaded ? ' The article file was saved but The Source was not updated. Click Publish again to finish.' : ''));
     btn.disabled = false;
     btn.textContent = 'Publish to Site';
     btn.style.background = 'var(--forest)';
@@ -2922,6 +2955,22 @@ async function loadRecipeTemplates() {
   TMPL_RECIPE_BOTTOM = html.slice(bodyIdx + 20);          // includes RELATED_SECTION marker
 }
 
+
+/* Recipe times: read "20 mins", "1 hour 20 mins", "4h 20m", "1.5 hours", "90". Returns minutes, or NaN if unreadable. */
+function parseRecipeMins(text) {
+  var t = String(text || '').trim().toLowerCase();
+  if (!t) return NaN;
+  if (/^\d+(\.\d+)?$/.test(t)) return Math.round(parseFloat(t));
+  var re = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|h|minutes?|mins?|m)\b/g, total = 0, used = '', m;
+  while ((m = re.exec(t))) { total += parseFloat(m[1]) * (m[2].charAt(0) === 'h' ? 60 : 1); used += m[0]; }
+  if (!used || t.replace(re, '').replace(/[\s,&]|and/g, '') !== '') return NaN;
+  return Math.round(total);
+}
+function fmtRecipeMins(n) {
+  if (!n) return '';
+  var h = Math.floor(n / 60), m = n % 60;
+  return h ? h + ' hr' + (m ? ' ' + m + ' min' : '') : m + ' min';
+}
 
 async function buildRecipeHTML() {
   await loadRecipeTemplates();
@@ -2995,8 +3044,8 @@ async function buildRecipeHTML() {
   });
 
   // Build total time
-  var prepNum = parseInt(d.prep) || 0;
-  var cookNum = parseInt(d.cook) || 0;
+  var prepNum = parseRecipeMins(d.prep) || 0;
+  var cookNum = parseRecipeMins(d.cook) || 0;
   var totalMin = prepNum + cookNum;
 
   var seoTitleText = String(recipe.seoTitle || recipe.title).replace(/\s*\|\s*Pristine Wellness\s*$/i, '') + ' | Pristine Wellness';
@@ -3022,9 +3071,9 @@ async function buildRecipeHTML() {
     + '    <div class="recipe-eyebrow"><span class="recipe-cat-badge">' + escHtml(d.category || 'Recipes') + '</span></div>\n'
     + '    <h1>' + escHtml(recipe.title) + '</h1>\n'
     + '    <div class="recipe-quick-stats">\n'
-    + '      <div class="quick-stat"><span class="qs-label">Prep</span><span class="qs-value">' + escHtml(d.prep || '15m') + '</span></div>\n'
-    + '      <div class="quick-stat"><span class="qs-label">Cook</span><span class="qs-value">' + escHtml(d.cook || '30m') + '</span></div>\n'
-    + '      <div class="quick-stat"><span class="qs-label">Total</span><span class="qs-value">' + (totalMin ? totalMin + ' min' : '45 min') + '</span></div>\n'
+    + (prepNum ? '      <div class="quick-stat"><span class="qs-label">Prep</span><span class="qs-value">' + fmtRecipeMins(prepNum) + '</span></div>\n' : '')
+    + (cookNum ? '      <div class="quick-stat"><span class="qs-label">Cook</span><span class="qs-value">' + fmtRecipeMins(cookNum) + '</span></div>\n' : '')
+    + (totalMin ? '      <div class="quick-stat"><span class="qs-label">Total</span><span class="qs-value">' + fmtRecipeMins(totalMin) + '</span></div>\n' : '')
     + '      <div class="quick-stat"><span class="qs-label">Serves</span><span class="qs-value" id="hero-servings">' + (d.servings || 4) + '</span></div>\n'
     + '      <div class="quick-stat"><span class="qs-label">Difficulty</span><span class="qs-value">' + escHtml(d.difficulty || 'Easy') + '</span></div>\n'
     + '    </div>\n  </div>\n</div>\n';
@@ -3063,8 +3112,14 @@ async function buildRecipeHTML() {
 }
 
 async function publishRecipe() {
-  await loadRecipeTemplates();
+  try { await loadRecipeTemplates(); }
+  catch (e) { setStatus('r', 'error', 'Publish failed: ' + e.message); return; }
   if (!generatedRecipeData) return;
+  var rp = generatedRecipeData.prep, rc = generatedRecipeData.cook;
+  if (isNaN(parseRecipeMins(rp)) || (rc && !/^(n\/?a|none|-|0)$/i.test(String(rc).trim()) && isNaN(parseRecipeMins(rc)))) {
+    setStatus('r', 'error', 'Check the prep and cook times (for example "20 mins" or "1 hour 20 mins"). Prep: "' + (rp || 'blank') + '", Cook: "' + (rc || 'blank') + '".');
+    return;
+  }
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token at the top of the page.'); return; }
   if (!recipeImagePath) {
@@ -3195,7 +3250,7 @@ async function publishRecipe() {
     var d = generatedRecipeData;
     var recipe = d.recipe;
     var date = fmtDate(d.dateVal || new Date().toISOString().slice(0,10));
-    var tags = d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
+    var tags = selectedRTags.length ? selectedRTags.slice() : (d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : []);
     var slug = recipe.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
     var filename = 'recipe-' + slug + '.html';
 
@@ -3225,8 +3280,9 @@ async function publishRecipe() {
       : 'background:var(--forest);';
     var cardTagsHTML = tags.slice(0,3).map(function(t){ return '<span class="card-tag">' + t + '</span>'; }).join('');
     var excerptText = (recipe.intro || '').slice(0, 120) + ((recipe.intro||'').length > 120 ? '...' : '');
-    var prepTime = d.prep || '15 min';
-    var totalTime = (parseInt(d.prep)||0) + (parseInt(d.cook)||0);
+    var prepMins = parseRecipeMins(d.prep) || 0;
+    var prepTime = fmtRecipeMins(prepMins);
+    var totalTime = fmtRecipeMins(prepMins + (parseRecipeMins(d.cook) || 0));
 
     var newCard = '\n    <div class="card" data-cat="' + d.category + '" onclick="window.location=\'' + filename + '\'">' +
       '\n  <div class="card-img"><div class="card-img-inner" style="' + cardImg + '"></div><span class="card-badge">' + d.category + '</span></div>' +
@@ -3234,7 +3290,7 @@ async function publishRecipe() {
       '\n    <div class="card-tags">' + cardTagsHTML + '</div>' +
       '\n    <h3 class="card-title">' + recipe.title + '</h3>' +
       '\n    <p class="card-excerpt">' + excerptText + '</p>' +
-      '\n    <div class="card-footer"><span class="card-date">' + prepTime + ' prep</span><span class="card-time"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg> ' + (totalTime || 45) + ' min</span></div>' +
+      '\n    <div class="card-footer"><span class="card-date">' + (prepTime ? prepTime + ' prep' : '') + '</span><span class="card-time"><svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg> ' + totalTime + '</span></div>' +
       '\n  </div>\n</div>';
 
     // 4. Insert using placeholder or known markers
@@ -3275,7 +3331,8 @@ async function publishRecipe() {
     if (kCurrentFeat) {
       var kOldHref = (kCurrentFeat.match(/window\.location='([^']+)'/) || kCurrentFeat.match(/href="([^"]+\.html)"/) || ['',''])[1];
       var kRest = kitchenHTML.slice(0, kFeatStart) + kitchenHTML.slice(kFeatEnd);
-      if (kOldHref && kRest.indexOf("window.location='" + kOldHref + "'") !== -1) kOldHref = '';
+      if (kOldHref && hasGridCard(kRest, '<div class="card"', kOldHref)) kOldHref = '';
+      if (kOldHref === filename) kOldHref = '';
       if (kOldHref) {
         var kOldTitle = (kCurrentFeat.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
         var kOldCat = (kCurrentFeat.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
@@ -3302,12 +3359,14 @@ async function publishRecipe() {
       '      <div class="feat-body">\n        <span class="feat-cat">' + getCategoryValue('r') + '</span>\n' +
       '        <h2 class="feat-title">' + recipe.title + '</h2>\n' +
       '        <p class="feat-excerpt">' + (recipe.intro || '').slice(0, 200) + '</p>\n' +
-      '        <div class="feat-meta">' + (d.prep || '') + ' prep &nbsp;&middot;&nbsp; ' + (totalTime || 45) + ' min total</div>\n' +
+      '        <div class="feat-meta">' + (prepTime ? prepTime + ' prep &nbsp;&middot;&nbsp; ' : '') + totalTime + ' total</div>\n' +
       '        <a class="read-link" href="' + filename + '">View recipe <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>\n' +
       '      </div>\n    </div>';
 
     // Apply: new featured in, old featured card into grid (no new-recipe card in grid)
     var kitchenWithFeat = kitchenHTML.slice(0, kFeatStart) + newFeatRecipe + kitchenHTML.slice(kFeatEnd);
+    // Republishing: drop this recipe's old grid card, it now lives in the featured slot
+    kitchenWithFeat = removeGridCards(kitchenWithFeat, '<div class="card"', filename, kFeatStart + newFeatRecipe.length);
     kInsertPos = kitchenWithFeat.indexOf(kitchenPlaceholder);
     kInsertLen = kitchenPlaceholder.length;
     if (kInsertPos === -1) { kInsertPos = kitchenWithFeat.indexOf(kitchenAlt); kInsertLen = kitchenAlt.length; }
@@ -3561,6 +3620,7 @@ renderTrends();
 var articleImageBase64 = '';
 var articleImagePath = '';
 var articleBodyImages = [null,null,null,null,null,null]; // up to 4 body images
+var bodyImgPreview = {}; // uploaded path -> local data URL, so the preview shows images before the site redeploys
 
 // ── Recipe method images: upload to GitHub on drop, store file paths ──
 var recipeBodyImages = [null,null,null,null,null,null]; // stores images/ paths
@@ -3568,6 +3628,7 @@ var _recipeBodyImgIdx = 0;
 
 function triggerRecipeBodyImgUpload(idx) {
   _recipeBodyImgIdx = idx;
+  _bodyImgTarget = { kind: 'recipe', idx: idx };
   document.getElementById('recipe-body-img-input').click();
 }
 
@@ -3640,6 +3701,7 @@ var _bodyImgUploadIdx = 0;
 
 function triggerBodyImgUpload(idx) {
   _bodyImgUploadIdx = idx;
+  _bodyImgTarget = { kind: 'article', idx: idx };
   document.getElementById('body-img-input').click();
 }
 
@@ -3660,10 +3722,12 @@ function handleBodyImgUpload(event) {
   event.target.value = '';
 }
 
-function renderBodyImgSlot(idx, src) {
-  var slot = document.getElementById('bslot-' + idx);
+function renderBodyImgSlot(idx, kind, src) {
+  if (kind !== 'article' && kind !== 'recipe') { src = kind; kind = 'article'; }
+  var slot = document.getElementById((kind === 'recipe' ? 'rslot-' : 'bslot-') + idx);
   if (!slot) return;
-  slot.innerHTML = '<img src="' + src + '" alt="Body image ' + (idx+1) + '"><button class="rm-body-img" onclick="removeBodyImg(event,' + idx + ')">&times;</button>';
+  var rm = kind === 'recipe' ? 'removeRecipeBodyImg' : 'removeBodyImg';
+  slot.innerHTML = '<img src="' + src + '" alt="Body image ' + (idx+1) + '"><button class="rm-body-img" onclick="' + rm + '(event,' + idx + ')">&times;</button>';
 }
 
 function removeBodyImg(event, idx) {
@@ -3693,16 +3757,7 @@ function bodyImgDrop(event, idx) {
   bodyImgDragLeave(idx);
   var file = event.dataTransfer.files[0];
   if (!file || !file.type.startsWith('image/')) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    articleBodyImages[idx] = e.target.result;
-    renderBodyImgSlot(idx, e.target.result);
-    if (generatedArticleData) {
-      var d = generatedArticleData;
-      renderArticlePreview(d.article, d.category, d.readtime, d.author, d.dateVal, d.tagsRaw);
-    }
-  };
-  reader.readAsDataURL(file);
+  uploadBodyImg(file, idx, 'article');
 }
 
 
@@ -3898,6 +3953,32 @@ async function loadKitchenForManage() {
   } catch(e) {
     el.innerHTML = '<div class="manage-empty">Could not load Ancestral Kitchen page. Check your token.</div>';
   }
+}
+
+/* Grid cards only: the pinned sections also link to articles and recipes, so a plain text search is not enough */
+function hasGridCard(html, cardOpen, href) {
+  var at = html.indexOf(cardOpen);
+  while (at !== -1) {
+    var tagEnd = html.indexOf('>', at);
+    if (html.slice(at, tagEnd).indexOf("window.location='" + href + "'") !== -1) return true;
+    at = html.indexOf(cardOpen, tagEnd);
+  }
+  return false;
+}
+function removeGridCards(html, cardOpen, href, from) {
+  var at = html.indexOf(cardOpen, from || 0);
+  while (at !== -1) {
+    var tagEnd = html.indexOf('>', at);
+    var end = findDivEndJS(html, at);
+    if (end === -1) break;
+    if (html.slice(at, tagEnd).indexOf("window.location='" + href + "'") !== -1) {
+      html = html.slice(0, at) + html.slice(end);
+      at = html.indexOf(cardOpen, at);
+    } else {
+      at = html.indexOf(cardOpen, end);
+    }
+  }
+  return html;
 }
 
 function findDivEndJS(html, start) {
@@ -4467,7 +4548,7 @@ function renderSlidesEditor() {
     // Only show hero text fields on first slide (shared across all)
     if (i === 0) {
       html += '<div class="slide-field-group"><span class="slide-field-label">Eyebrow text</span><input class="field" id="slide-eyebrow" value="' + escHtml(slide.eyebrow) + '" placeholder="Pristine Wellness"></div>';
-      html += '<div class="slide-field-group"><span class="slide-field-label">Headline (use \\n for line breaks)</span><input class="field" id="slide-headline" value="' + escHtml(slide.headline) + '" placeholder="Live the way..."></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Headline (use \\n for line breaks)</span><input class="field" id="slide-headline" value="' + escHtml(String(slide.headline || '').replace(/\n/g, '\\n')) + '" placeholder="Live the way..."></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Subheading</span><input class="field" id="slide-sub" value="' + escHtml(slide.sub) + '" placeholder="Subheading text"></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA text</span><input class="field" id="slide-cta1text" value="' + escHtml(slide.cta1text) + '"></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA link</span><input class="field" id="slide-cta1href" value="' + escHtml(slide.cta1href) + '"></div>';
@@ -4561,7 +4642,7 @@ function collectSlideTextFields() {
   var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
   var text = {
     eyebrow: get('slide-eyebrow'),
-    headline: get('slide-headline'),
+    headline: get('slide-headline').replace(/\\n/g, '\n'),
     sub: get('slide-sub'),
     cta1text: get('slide-cta1text'),
     cta1href: get('slide-cta1href'),
@@ -5694,7 +5775,12 @@ async function uploadBodyImg(file, idx, kind) {
     await githubRequest(path, 'PUT', { message: 'Body image', content: compressed.base64, branch: GITHUB_BRANCH });
     if (kind === 'article') articleBodyImages[idx] = path;
     else recipeBodyImages[idx] = path;
+    bodyImgPreview[path] = compressed.dataUrl;
     renderBodyImgSlot(idx, kind, compressed.dataUrl, path);
+    if (kind === 'article' && generatedArticleData) {
+      var d = generatedArticleData;
+      renderArticlePreview(d.article, d.category, d.readtime, d.author, d.dateVal, d.tagsRaw);
+    }
   } catch(e) {
     slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Failed , try again</span>';
   }
@@ -5927,7 +6013,7 @@ async function uploadExpImage(panel, num, input) {
 async function publishExplorePanels() {
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token first.'); return; }
-  var statusEl = document.getElementById('exp-status');
+  var statusEl = document.getElementById('explore-status');
   var imgs = {
     source1: (document.getElementById('exp-source-img1') || {}).value || '',
     source2: (document.getElementById('exp-source-img2') || {}).value || '',
@@ -5944,7 +6030,9 @@ async function publishExplorePanels() {
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     var sha = data.sha;
     // Update explore panel images
+    var before = html;
     html = rebuildExplorePanelsInHTML(html, imgs);
+    if (html === before) throw new Error('The explore panels on home.html are not set up for studio editing, so nothing was published.');
     var encoded = btoa(unescape(encodeURIComponent(html)));
     await githubRequest('home.html', 'PUT', { message: 'Update explore panel images via studio', content: encoded, sha: sha });
     if (statusEl) statusEl.textContent = 'Published! Explore panel images updated.';
@@ -6494,11 +6582,12 @@ async function saveReminderSettings() {
     } catch(e) {}
     var body = { message: 'Update email reminder settings', content: btoa(unescape(encodeURIComponent(JSON.stringify(settings, null, 2)))) };
     if (existing) body.sha = existing;
-    await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/data/email-reminder.json', {
+    var putResp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/data/email-reminder.json', {
       method: 'PUT',
       headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
       body: JSON.stringify(body)
     });
+    if (!putResp.ok) throw new Error('GitHub returned ' + putResp.status);
     if (statusEl) statusEl.textContent = '';
     setReminderStatus('Saved! Reminder scheduled for ' + ['','Mon','Tue','Wed','Thu','Fri'][settings.day] + ' ' + settings.time + ':00am AEST.', true);
   } catch(e) {
