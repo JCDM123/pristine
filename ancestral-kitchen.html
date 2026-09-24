@@ -1724,7 +1724,9 @@ document.addEventListener('keydown', function(e) {
     var allCards = document.querySelectorAll('.card-grid .card');
     // Show/hide featured card based on filter
   var featEl = document.querySelector('.featured');
-  if (featEl) {
+  if (featEl && currentPage > 1) {
+    featEl.style.display = 'none'; // the featured post belongs on page 1 only
+  } else if (featEl) {
     if (currentFilter === 'All') {
       featEl.style.display = '';
     } else {
@@ -1878,6 +1880,13 @@ function renderPage() {
   if (currentPage > totalPages) currentPage = totalPages;
 
   // Hide all, show only current page of filtered
+  // Featured recipe: page 1 only, and only under All or its own category
+  var featEl = document.querySelector('.featured');
+  if (featEl) {
+    var fc = featEl.querySelector('.feat-cat');
+    var featCat = fc ? fc.textContent.trim() : '';
+    featEl.style.display = (currentPage > 1 || (currentFilter !== 'All' && featCat !== currentFilter)) ? 'none' : '';
+  }
   allCards.forEach(function(c) { c.style.display = 'none'; });
   var start = (currentPage - 1) * PAGE_SIZE;
   filtered.slice(start, start + PAGE_SIZE).forEach(function(c) { c.style.display = ''; });
