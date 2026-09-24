@@ -1747,7 +1747,9 @@ function renderPage() {
   // Hide all, show only current page of filtered
   // Show/hide featured card based on filter
   var featEl = document.querySelector('.featured');
-  if (featEl) {
+  if (featEl && currentPage > 1) {
+    featEl.style.display = 'none'; // the featured post belongs on page 1 only
+  } else if (featEl) {
     if (currentFilter === 'All') {
       featEl.style.display = '';
     } else {
