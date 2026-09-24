@@ -26,7 +26,7 @@ img{max-width:100%;display:block;}
 .lock-form input{width:100%;padding:12px 16px;background:rgba(245,240,232,0.1);border:1px solid rgba(245,240,232,0.25);color:#F5F0E8;font-family:'Jost',sans-serif;font-size:15px;letter-spacing:2px;outline:none;border-radius:2px;text-align:center;}
 .lock-form input::placeholder{color:rgba(245,240,232,0.4);letter-spacing:1px;}
 .lock-form input:focus{border-color:#C9A96E;}
-.lock-btn{width:100%;padding:13px;background:#8A9B6E;border:none;color:#fff;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background 0.2s;}
+.lock-btn{width:100%;padding:13px;background:#8F9574;border:none;color:#fff;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background 0.2s;}
 .lock-btn:hover{background:#4a5e38;}
 .lock-error{color:#e08888;font-size:12px;min-height:16px;}
 #studio{display:none;min-height:100vh;}
@@ -87,10 +87,10 @@ img{max-width:100%;display:block;}
 .preview-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:var(--muted);gap:1rem;text-align:center;}
 .preview-empty svg{opacity:0.3;}
 .preview-empty p{font-size:13px;line-height:1.8;max-width:260px;}
-.status-bar{padding:12px 2rem;background:rgba(138,155,110,0.08);border-top:0.5px solid var(--border);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;min-height:44px;}
+.status-bar{padding:12px 2rem;background:rgba(143,149,116,0.08);border-top:0.5px solid var(--border);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;min-height:44px;}
 .status-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;}
-.status-dot.active{background:#8A9B6E;animation:pulse 1.5s infinite;}
-.status-dot.done{background:#8A9B6E;}
+.status-dot.active{background:#8F9574;animation:pulse 1.5s infinite;}
+.status-dot.done{background:#8F9574;}
 .status-dot.error{background:#c0392b;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
 .ap-hero{background:var(--forest);color:#F5F0E8;padding:2.5rem 2rem 2rem;margin:-2rem -2rem 1.5rem;}
@@ -109,17 +109,17 @@ img{max-width:100%;display:block;}
 .ap-author-info .role{font-size:11px;color:var(--muted);}
 .edit-hint{font-size:10px;color:var(--sage);letter-spacing:1px;text-transform:uppercase;padding:6px 0 2px;opacity:0.7;}
 [contenteditable]{outline:none;border-radius:2px;transition:background 0.15s;}
-[contenteditable]:hover{background:rgba(138,155,110,0.08);}
-[contenteditable]:focus{background:rgba(138,155,110,0.13);box-shadow:0 0 0 2px rgba(138,155,110,0.35);}
+[contenteditable]:hover{background:rgba(143,149,116,0.08);}
+[contenteditable]:focus{background:rgba(143,149,116,0.13);box-shadow:0 0 0 2px rgba(143,149,116,0.35);}
 .body-images-section{margin-top:1.2rem;}
 .body-images-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block;}
 .body-images-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .slot-reorder-handle{position:absolute;top:4px;right:5px;font-size:14px;color:#bbb;cursor:grab;line-height:1;pointer-events:none;}
 .body-img-slot.drag-source{opacity:0.4;border-style:dashed;}
-.body-img-slot.drop-target{border-color:var(--sage);background:rgba(138,155,110,0.08);}
+.body-img-slot.drop-target{border-color:var(--sage);background:rgba(143,149,116,0.08);}
 .body-img-slot{position:relative;height:90px;border:1.5px dashed var(--border);border-radius:3px;background:#fafafa;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color 0.2s;}
 .body-img-slot:hover{border-color:var(--sage);}
-.body-img-slot.drag-over{border-color:var(--sage);background:rgba(138,155,110,0.08);}
+.body-img-slot.drag-over{border-color:var(--sage);background:rgba(143,149,116,0.08);}
 .body-img-slot img{width:100%;height:100%;object-fit:cover;display:block;}
 .body-img-slot .slot-label{font-size:11px;color:#bbb;text-align:center;padding:8px;}
 .body-img-slot .rm-body-img{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.55);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;}
@@ -137,7 +137,7 @@ img{max-width:100%;display:block;}
 .rp-step-text p{font-size:13px;line-height:1.7;color:var(--text);}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.wc-badge{font-size:11px;color:var(--sage);margin-left:auto;padding:2px 8px;background:rgba(138,155,110,0.1);border-radius:2px;}
+.wc-badge{font-size:11px;color:var(--sage);margin-left:auto;padding:2px 8px;background:rgba(143,149,116,0.1);border-radius:2px;}
 .img-upload-zone{border:1.5px dashed var(--border);border-radius:4px;cursor:pointer;overflow:hidden;transition:border-color 0.2s;background:#fafaf8;min-height:80px;}
 .img-upload-zone:hover{border-color:var(--sage);}
 .img-source-toggle{display:flex;gap:0;margin-bottom:10px;border:1px solid var(--border);border-radius:2px;overflow:hidden;}
@@ -188,14 +188,14 @@ img{max-width:100%;display:block;}
 .trend-card{background:rgba(245,240,232,0.93);border:0.5px solid var(--border);padding:0;}
 .trend-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:0.5px solid var(--border-light);transition:background 0.15s;}
 .trend-item:last-child{border-bottom:none;}
-.trend-item:hover{background:rgba(138,155,110,0.07);}
+.trend-item:hover{background:rgba(143,149,116,0.07);}
 .trend-rank{font-size:11px;color:var(--border);font-weight:500;min-width:16px;padding-top:2px;font-family:'Cormorant Garamond',serif;font-style:italic;}
 .trend-body{flex:1;}
 .trend-label{font-size:13px;color:var(--text);font-weight:500;line-height:1.35;}
 .trend-meta{font-size:11px;color:var(--muted);margin-top:3px;}
 .trend-badge{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-top:5px;display:inline-block;}
 .trend-badge.hot{background:rgba(201,169,110,0.15);color:#7a5a1a;}
-.trend-badge.rising{background:rgba(138,155,110,0.15);color:var(--sage-dark);}
+.trend-badge.rising{background:rgba(143,149,116,0.15);color:var(--sage-dark);}
 .trend-badge.niche{background:rgba(44,74,46,0.1);color:var(--forest);}
 .trend-arrow{font-size:12px;color:var(--border);padding-top:3px;align-self:center;}
 .trend-prefill-banner{display:none;background:rgba(44,74,46,0.07);border:0.5px solid rgba(44,74,46,0.2);border-radius:3px;padding:8px 14px;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--forest);}
@@ -222,11 +222,11 @@ sup.cite { font-size:10px; color:var(--sage); font-weight:600; cursor:pointer; }
 sup.cite:hover { text-decoration:underline; }
 
 /* ===== TAG PICKER ===== */
-.tag-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; background:rgba(138,155,110,0.15); border:1px solid rgba(138,155,110,0.4); border-radius:20px; font-size:12px; color:var(--forest); }
+.tag-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; background:rgba(143,149,116,0.15); border:1px solid rgba(143,149,116,0.4); border-radius:20px; font-size:12px; color:var(--forest); }
 .tag-chip-remove { background:none; border:none; color:var(--sage); cursor:pointer; font-size:14px; line-height:1; padding:0; }
 .tag-suggestion-chip { display:inline-flex; align-items:center; padding:3px 10px; background:var(--surface); border:1px solid var(--border); border-radius:20px; font-size:12px; color:#666; cursor:pointer; transition:all 0.15s; }
 .tag-suggestion-chip:hover { background:var(--sage); color:#fff; border-color:var(--sage); }
-.tag-suggestion-chip.ai-suggested { border-color:var(--sage); color:var(--forest); background:rgba(138,155,110,0.08); }
+.tag-suggestion-chip.ai-suggested { border-color:var(--sage); color:var(--forest); background:rgba(143,149,116,0.08); }
 
 /* ===== CONTENT PIPELINE ===== */
 .ap-related-item { display:inline-flex; align-items:center; gap:3px; }
@@ -239,10 +239,10 @@ sup.cite:hover { text-decoration:underline; }
 .pipeline-remove:hover { color:#c44; }
 
 /* ===== EXTRAS PANEL (SEO / SOCIAL / RELATED) ===== */
-.recipe-about { margin-bottom:1.5rem; padding:1rem 1.4rem; border-left:3px solid var(--sage); background:rgba(138,155,110,0.06); font-style:italic; font-size:15px; line-height:1.8; color:var(--muted); border-radius:0 4px 4px 0; }
+.recipe-about { margin-bottom:1.5rem; padding:1rem 1.4rem; border-left:3px solid var(--sage); background:rgba(143,149,116,0.06); font-style:italic; font-size:15px; line-height:1.8; color:var(--muted); border-radius:0 4px 4px 0; }
 .recipe-dietary { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.5rem; }
-.dietary-tag { font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 12px; background:rgba(138,155,110,0.12); border:1px solid rgba(138,155,110,0.3); border-radius:20px; color:var(--sage); }
-.ap-extras { margin-top:2rem; padding:1.5rem; background:rgba(138,155,110,0.07); border-radius:6px; border:1px solid rgba(138,155,110,0.2); }
+.dietary-tag { font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 12px; background:rgba(143,149,116,0.12); border:1px solid rgba(143,149,116,0.3); border-radius:20px; color:var(--sage); }
+.ap-extras { margin-top:2rem; padding:1.5rem; background:rgba(143,149,116,0.07); border-radius:6px; border:1px solid rgba(143,149,116,0.2); }
 .ap-extra-field { margin-bottom:1.2rem; }
 .ap-extra-field:last-child { margin-bottom:0; }
 .ap-extra-label { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--sage); font-weight:600; display:block; margin-bottom:4px; }
@@ -430,7 +430,7 @@ sup.cite:hover { text-decoration:underline; }
       </div>
       <input type="text" id="sub-search" placeholder="Search emails..." oninput="subPage=1;renderSubscribers()" style="width:100%;margin-bottom:0.7rem;padding:9px 12px;border:0.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Jost',sans-serif;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.7rem;font-size:12px;color:var(--muted);">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="sub-select-all" onchange="selectAllSubscribers(this.checked)" style="accent-color:#8A9B6E;cursor:pointer;">Select all active</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="sub-select-all" onchange="selectAllSubscribers(this.checked)" style="accent-color:#8F9574;cursor:pointer;">Select all active</label>
         <span id="sub-selected-count"></span>
       </div>
       <div id="sub-list" style="border:0.5px solid var(--border);border-radius:8px;overflow:hidden;"></div>
@@ -767,7 +767,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
         </div>
         <div class="preview-body" id="a-preview">
           <div class="preview-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8A9B6E" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8F9574" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             <p>Fill in the form and click Generate Article to create Pristine brand content.</p>
           </div>
         </div>
@@ -1004,7 +1004,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
         </div>
         <div class="preview-body" id="r-preview">
           <div class="preview-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8A9B6E" stroke-width="1.2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8F9574" stroke-width="1.2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
             <p>Fill in the form and click Generate Recipe to create a formatted recipe page.</p>
           </div>
         </div>
@@ -1038,7 +1038,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
         </div>
       </div>
 
-      <div style="margin:1.5rem 0;padding:1.2rem 1.4rem;background:rgba(138,155,110,0.1);border-left:2px solid var(--sage);border-radius:2px;">
+      <div style="margin:1.5rem 0;padding:1.2rem 1.4rem;background:rgba(143,149,116,0.1);border-left:2px solid var(--sage);border-radius:2px;">
         <p style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--sage);margin-bottom:0.5rem;">Recommended image sizes</p>
         <p style="font-size:13px;color:var(--muted);line-height:1.7;">
           Article / Recipe hero: <strong>1200 x 630px</strong>, JPG, under 200kb<br>
@@ -1781,7 +1781,7 @@ async function generateArticle() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Generating...';
   setStatus('a', 'active', useCitations ? 'Searching for sources...' : 'Writing your article...');
-  document.getElementById('a-preview').innerHTML = '<div class="preview-empty"><div class="spinner" style="width:32px;height:32px;border-color:rgba(138,155,110,0.3);border-top-color:var(--sage);"></div><p>Writing in Pristine brand voice...</p></div>';
+  document.getElementById('a-preview').innerHTML = '<div class="preview-empty"><div class="spinner" style="width:32px;height:32px;border-color:rgba(143,149,116,0.3);border-top-color:var(--sage);"></div><p>Writing in Pristine brand voice...</p></div>';
 
   // Base voice rules shared across all formats
   var baseVoice = 'You are the content writer for Pristine Wellness, an evidence-based ancestral wellness brand from Australia. ' +
@@ -2333,7 +2333,7 @@ async function generateRecipe() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Generating...';
   setStatus('r', 'active', 'Writing your recipe...');
-  document.getElementById('r-preview').innerHTML = '<div class="preview-empty"><div class="spinner" style="width:32px;height:32px;border-color:rgba(138,155,110,0.3);border-top-color:var(--sage);"></div><p>Writing recipe...</p></div>';
+  document.getElementById('r-preview').innerHTML = '<div class="preview-empty"><div class="spinner" style="width:32px;height:32px;border-color:rgba(143,149,116,0.3);border-top-color:var(--sage);"></div><p>Writing recipe...</p></div>';
 
   var systemPrompt = 'You are the recipe writer for Pristine Wellness, an ancestral wholefood brand from Australia. ' +
     'Voice: warm, practical, first person plural (we/our). Write like a well-read parent and home cook who genuinely loves real food, talking to other health-conscious parents. Composed and grounded, never blokey or pub-talk. ' +
@@ -2449,7 +2449,7 @@ function renderRecipePreview(recipe, ings, steps, name, category, servings, prep
   ].filter(Boolean).join(' · ');
   var dietaryHTML = (d.dietary && d.dietary.length) ?
     '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;">' +
-    d.dietary.map(function(t){ return '<span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;background:rgba(138,155,110,0.12);border:1px solid rgba(138,155,110,0.3);border-radius:20px;color:var(--sage);">' + t + '</span>'; }).join('') +
+    d.dietary.map(function(t){ return '<span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;background:rgba(143,149,116,0.12);border:1px solid rgba(143,149,116,0.3);border-radius:20px;color:var(--sage);">' + t + '</span>'; }).join('') +
     '</div>' : '';
   var aboutHTML = (d.about) ?
     '<div style="font-size:14px;color:var(--muted);line-height:1.8;font-style:italic;margin-bottom:1.5rem;padding:1rem 1.2rem;border-left:3px solid var(--sage);">' + escHtml(d.about) + '</div>' : '';
@@ -2478,7 +2478,7 @@ function renderRecipePreview(recipe, ings, steps, name, category, servings, prep
     '<div class="rp-section-title">Ingredients</div><ul class="rp-ingredient-list">' + ingsHTML + '</ul>' +
     '<div class="rp-section-title">Method</div>' + stepsHTML +
     (recipe.chefNote ? '<div style="margin-top:1.5rem;padding:1rem 1.2rem;background:rgba(201,169,110,0.1);border-left:3px solid var(--gold);"><p style="font-size:13px;"><strong>Chef note:</strong> ' + recipe.chefNote + '</p></div>' : '') +
-    (recipe.servingSuggestion ? '<div style="margin-top:1rem;padding:0.8rem 1.2rem;background:rgba(138,155,110,0.07);border-left:3px solid var(--sage);"><p style="font-size:13px;"><strong>Serve with:</strong> ' + recipe.servingSuggestion + '</p></div>' : '') +
+    (recipe.servingSuggestion ? '<div style="margin-top:1rem;padding:0.8rem 1.2rem;background:rgba(143,149,116,0.07);border-left:3px solid var(--sage);"><p style="font-size:13px;"><strong>Serve with:</strong> ' + recipe.servingSuggestion + '</p></div>' : '') +
     extrasHTML;
 }
 
@@ -2601,7 +2601,7 @@ function saveToken(val) {
   localStorage.setItem('gh_token', val.trim());
   var status = document.getElementById('gh-token-status');
   status.textContent = val.trim() ? 'Token saved for this session' : '';
-  status.style.color = '#8A9B6E';
+  status.style.color = '#8F9574';
 }
 
 function getToken() {
@@ -2620,7 +2620,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (saved && inp) {
     inp.value = saved;
     document.getElementById('gh-token-status').textContent = 'Token saved for this session';
-    document.getElementById('gh-token-status').style.color = '#8A9B6E';
+    document.getElementById('gh-token-status').style.color = '#8F9574';
   }
 });
 
@@ -2898,7 +2898,7 @@ async function publishArticle() {
     });
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
     btn.textContent = 'Published!';
-    btn.style.background = '#8A9B6E';
+    btn.style.background = '#8F9574';
     for (var bi = 0; bi < articleBodyImages.length; bi++) { if (articleBodyImages[bi]) clearBodyImg(bi, 'article'); }
     setTimeout(function() {
       btn.disabled = false;
@@ -3390,7 +3390,7 @@ async function publishRecipe() {
     });
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
     btn.textContent = 'Published!';
-    btn.style.background = '#8A9B6E';
+    btn.style.background = '#8F9574';
 
     // Clear images now the recipe is safely published (next recipe starts clean)
     recipeImageBase64 = '';
@@ -4249,7 +4249,7 @@ async function deleteKitchenRecipe(i) {
 function setManageStatus(page, msg, busy) {
   var dot = document.getElementById(page + '-dot');
   var status = document.getElementById(page + '-status');
-  if (dot) { dot.style.background = busy ? '#f0a500' : (msg.toLowerCase().includes('error') ? '#c44' : '#8A9B6E'); }
+  if (dot) { dot.style.background = busy ? '#f0a500' : (msg.toLowerCase().includes('error') ? '#c44' : '#8F9574'); }
   if (status) status.textContent = msg;
 }
 
@@ -5005,7 +5005,7 @@ function buildSourcesHTML(article) {
   html += '<ol style="padding-left:0;list-style:none;">';
   article.sources.forEach(function(s) {
     html += '<li id="source-' + s.num + '" style="font-size:13px;color:#666;line-height:1.7;margin-bottom:0.6rem;display:flex;gap:0.5rem;">';
-    html += '<span style="font-weight:600;color:#8A9B6E;min-width:20px;">' + s.num + '.</span>';
+    html += '<span style="font-weight:600;color:#8F9574;min-width:20px;">' + s.num + '.</span>';
     html += '<span><a href="' + (s.url || '#') + '" target="_blank" rel="noopener" style="color:#2C4A2E;">' + (s.title || '') + '</a>';
     if (s.publication) html += ' <span style="color:#aaa;">, ' + s.publication + '</span>';
     html += '</span></li>';
@@ -5015,7 +5015,7 @@ function buildSourcesHTML(article) {
 }
 
 function renderCitationsForExport(text) {
-  return (text || '').replace(/\[(\d+)\]/g, '<sup style="font-size:10px;color:#8A9B6E;font-weight:600;"><a href="#source-$1" style="color:#8A9B6E;text-decoration:none;">[$1]</a></sup>');
+  return (text || '').replace(/\[(\d+)\]/g, '<sup style="font-size:10px;color:#8F9574;font-weight:600;"><a href="#source-$1" style="color:#8F9574;text-decoration:none;">[$1]</a></sup>');
 }
 
 function renderCitations(text) {
@@ -5091,10 +5091,10 @@ function renderSubscribers() {
   listEl.innerHTML = pageRows.map(function(sub) {
     var statusBadge = sub.status === 'unsubscribed'
       ? '<span style="background:#f3e0dd;color:#a04438;font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:10px;text-transform:uppercase;">Unsubscribed</span>'
-      : '<span style="background:rgba(138,155,110,0.15);color:#5a7344;font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:10px;text-transform:uppercase;">Active</span>';
+      : '<span style="background:rgba(143,149,116,0.15);color:#5a7344;font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:10px;text-transform:uppercase;">Active</span>';
     var rowOpacity = sub.status === 'unsubscribed' ? 'opacity:0.55;' : '';
     var checked = selectedEmails.has(sub.email) ? ' checked' : '';
-    var cb = sub.status === 'unsubscribed' ? '<span style="width:16px;"></span>' : '<input type="checkbox"' + checked + ' onchange="toggleEmailSelect(\'' + sub.email.replace(/'/g,"\\'") + '\', this.checked)" style="accent-color:#8A9B6E;cursor:pointer;">';
+    var cb = sub.status === 'unsubscribed' ? '<span style="width:16px;"></span>' : '<input type="checkbox"' + checked + ' onchange="toggleEmailSelect(\'' + sub.email.replace(/'/g,"\\'") + '\', this.checked)" style="accent-color:#8F9574;cursor:pointer;">';
     return '<div style="display:flex;align-items:center;gap:1rem;padding:10px 14px;border-bottom:0.5px solid var(--border);font-size:13px;' + rowOpacity + '">' +
       cb +
       '<span style="flex:1;color:var(--text);">' + escHtml(sub.email) + '</span>' + statusBadge +
@@ -5106,7 +5106,7 @@ function renderSubscribers() {
 
   if (totalPages <= 1) { pagEl.innerHTML = ''; return; }
   var btnStyle = 'min-width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;font-size:12px;border:0.5px solid var(--border);color:#999;background:#fff;';
-  var activeStyle = btnStyle.replace('color:#999;background:#fff;', 'color:#fff;background:#8A9B6E;border:none;');
+  var activeStyle = btnStyle.replace('color:#999;background:#fff;', 'color:#fff;background:#8F9574;border:none;');
   var html = '';
   for (var p = 1; p <= totalPages; p++) {
     html += '<div style="' + (p === subPage ? activeStyle : btnStyle) + '" onclick="subPage=' + p + ';renderSubscribers()">' + p + '</div>';
@@ -6231,7 +6231,7 @@ function saveSocialAsPDF() {
   div.style.cssText = 'font-family:Jost,sans-serif;padding:40px;max-width:800px;margin:0 auto;';
 
   var eyebrow = document.createElement('div');
-  eyebrow.style.cssText = 'font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8A9B6E;font-weight:500;margin-bottom:8px;';
+  eyebrow.style.cssText = 'font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8F9574;font-weight:500;margin-bottom:8px;';
   eyebrow.textContent = 'Pristine Wellness | Social Content';
 
   var h1 = document.createElement('h1');
@@ -6348,7 +6348,7 @@ async function generateSocialContent(type, data) {
     'Editorial: clean magazine feel, text-heavy, Cormorant Garamond vibes, lots of white space, sophisticated. Copy is considered and precise.\n' +
     'Bold Statement: high contrast, one powerful stat or quote, big typography, stops the scroll. Copy is short and punchy , one sentence max.\n' +
     'Lifestyle: warm, organic, human, photo-led. Copy feels personal, like a friend sharing something real.\n\n' +
-    'For each DESIGN BRIEF: write a specific brief for a graphic designer using Photoshop/Illustrator/InDesign. Include: dimensions, background, typography direction, imagery description, colour palette from brand colours (Sage #8A9B6E, Forest #2C4A2E, Cream #F5F0E8, Gold #C9A96E). Be specific enough that a designer can execute without asking questions.\n\n' +
+    'For each DESIGN BRIEF: write a specific brief for a graphic designer using Photoshop/Illustrator/InDesign. Include: dimensions, background, typography direction, imagery description, colour palette from brand colours (Sage #8F9574, Forest #2C4A2E, Cream #F5F0E8, Gold #C9A96E). Be specific enough that a designer can execute without asking questions.\n\n' +
     'X posts: 280 chars max. No hashtags.\n' +
     'Instagram: 150-300 chars caption + 15-20 relevant hashtags on a new line.\n' +
     'Pinterest: pin title under 100 chars, description 200-300 chars optimised for Pinterest search, suggest a board name.\n' +
@@ -6389,7 +6389,7 @@ function renderSocialContent(social) {
   var dirColours = { 'Editorial': '#2C4A2E', 'Bold Statement': '#7B6FAB', 'Lifestyle': '#C9A96E' };
 
   function makeCard(item, platform) {
-    var col = dirColours[item.direction] || '#8A9B6E';
+    var col = dirColours[item.direction] || '#8F9574';
     var copy = '';
     if (platform === 'x') {
       copy = '<div style="font-size:14px;line-height:1.7;color:#111;margin:0.7rem 0 0.5rem;">' + escHtml(item.copy) + '</div>';

@@ -182,7 +182,7 @@ p, li, .card-excerpt, .feat-excerpt,
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transform: translateY(10px);
   transition: opacity 0.3s, transform 0.3s, background 0.2s;
-  box-shadow: 0 4px 20px rgba(138,155,110,0.4);
+  box-shadow: 0 4px 20px rgba(143,149,116,0.4);
 }
 .back-to-top.visible { opacity: 1; transform: translateY(0); }
 .back-to-top:hover { background: var(--sage-dark); }
@@ -752,7 +752,7 @@ p.ba-caption { font-size:14px;color:#666;font-weight:300;line-height:1.75;margin
 /* Mobile drawer search results */
 .mobile-drawer-results{margin:-0.5rem 0 0.8rem;max-height:40vh;overflow-y:auto;flex-shrink:0;}
 .mobile-drawer-results .mdr-item{display:block;padding:10px 4px;border-bottom:0.5px solid rgba(0,0,0,0.06);font-size:14px !important;color:#333;text-decoration:none;letter-spacing:0 !important;text-transform:none !important;font-weight:400 !important;}
-.mobile-drawer-results .mdr-cat{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8A9B6E;margin-bottom:2px;}
+.mobile-drawer-results .mdr-cat{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8F9574;margin-bottom:2px;}
 .mobile-drawer-results .mdr-none{padding:10px 4px;font-size:13px;color:#aaa;font-weight:300;}
 
 /* Experiment page: page-header style */
@@ -1471,4 +1471,48 @@ function buildSearchIndex() {
 if (typeof initFilters === 'undefined') { window.initFilters = function() {}; }
 buildSearchIndex();
 </script><!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8d1cf8805fc34424a2c1aafb7dcbaceb"}'></script><!-- End Cloudflare Web Analytics -->
+<script>
+/* Contact: open and close the pop-up reliably, and actually send messages (falls back to email if sending fails) */
+(function () {
+  var ENDPOINT = 'https://pristine-api.jc-a7f.workers.dev/contact';
+  var EMAIL = 'hello@pristinewellness.com.au';
+  window.openContactModal = function () {
+    var m = document.getElementById('contact-modal'); if (!m) return;
+    m.style.display = 'flex'; m.classList.add('open'); document.body.style.overflow = 'hidden';
+  };
+  window.closeContactModal = function () {
+    var m = document.getElementById('contact-modal'); if (!m) return;
+    m.classList.remove('open'); m.style.display = 'none'; document.body.style.overflow = '';
+  };
+  function statusFor(btn) {
+    var s = btn.parentNode.querySelector('.contact-status');
+    if (!s) { s = document.createElement('p'); s.className = 'contact-status'; s.style.cssText = 'font-size:13px;line-height:1.6;margin:0.8rem 0 0;color:#2C4A2E;'; btn.parentNode.insertBefore(s, btn.nextSibling); }
+    return s;
+  }
+  window.sendContactMessage = async function (btn) {
+    var box = btn.closest('.modal, .contact-form'); if (!box) return;
+    var name = box.querySelector('input[type="text"]'), email = box.querySelector('input[type="email"]');
+    var subject = box.querySelector('input[placeholder*="Subject"]'), msg = box.querySelector('textarea');
+    var d = { name: name ? name.value.trim() : '', email: email ? email.value.trim() : '', subject: subject ? subject.value.trim() : '', message: msg ? msg.value.trim() : '', page: location.pathname, website: '' };
+    var status = statusFor(btn);
+    if (!d.name || !d.email || !d.message) { status.style.color = '#c0392b'; status.textContent = 'Please add your name, email and message.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) { status.style.color = '#c0392b'; status.textContent = 'Please check your email address.'; return; }
+    var label = btn.textContent; btn.disabled = true; btn.textContent = 'Sending...'; status.textContent = '';
+    try {
+      var resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+      var data = await resp.json().catch(function () { return {}; });
+      if (!resp.ok || !data.ok) throw new Error('not sent');
+      box.querySelectorAll('input, textarea').forEach(function (el) { el.value = ''; });
+      status.style.color = '#2C4A2E'; status.textContent = 'Message sent. We read every one and will be in touch soon.';
+    } catch (e) {
+      var href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(d.subject || 'Message from ' + d.name) + '&body=' + encodeURIComponent(d.message + '\n\n' + d.name + ' (' + d.email + ')');
+      status.style.color = '#2C4A2E'; status.innerHTML = 'We could not send that just now. Please email us at <a href="' + href + '" style="color:#2C4A2E;text-decoration:underline;">' + EMAIL + '</a> and your message will come across with it.';
+    }
+    btn.disabled = false; btn.textContent = label;
+  };
+  document.querySelectorAll('#contact-modal .ms, .contact-form .cf-submit').forEach(function (b) {
+    b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
+  });
+})();
+</script>
 </body></html>
