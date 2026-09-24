@@ -997,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-window.addEventListener('scroll',function(){var nav=document.getElementById('nav');if(window.scrollY>60){nav.classList.add('scrolled');}else{nav.classList.remove('scrolled');}});
+window.addEventListener('scroll',function(){var nav=document.getElementById('main-nav');if(window.scrollY>60){nav.classList.add('scrolled');}else{nav.classList.remove('scrolled');}});
 function openContactModal(){document.getElementById('contact-modal').classList.add('open');document.body.style.overflow='hidden';}
 function closeContactModal(){document.getElementById('contact-modal').classList.remove('open');document.body.style.overflow='';}
 function handleModalClick(e){if(e.target===document.getElementById('contact-modal'))closeContactModal();}
