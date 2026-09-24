@@ -2754,7 +2754,7 @@ async function publishArticle() {
 
     // 3. Fetch current the-source.html
     var sourceData = await githubRequest('the-source.html', 'GET');
-    var sourceHTML = atob(sourceData.content.replace(/\n/g,''));
+    var sourceHTML = decodeURIComponent(escape(atob(sourceData.content.replace(/\n/g,''))));
     var sourceSHA = sourceData.sha;
 
     // 4. Build new article card HTML
@@ -3209,7 +3209,7 @@ async function publishRecipe() {
 
     // 2. Fetch ancestral-kitchen.html
     var kitchenData = await githubRequest('ancestral-kitchen.html', 'GET');
-    var kitchenHTML = atob(kitchenData.content.replace(/\n/g,''));
+    var kitchenHTML = decodeURIComponent(escape(atob(kitchenData.content.replace(/\n/g,''))));
     var kitchenSHA = kitchenData.sha;
 
     // 3. Build recipe card
@@ -4956,7 +4956,7 @@ async function loadSubscribers() {
   listEl.innerHTML = '<div style="padding:1.2rem;color:var(--muted);font-size:13px;">Loading...</div>';
   try {
     var data = await githubRequest('data/subscribers.json', 'GET');
-    subscribersData = JSON.parse(decodeURIComponent(escape(decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, '')))))));
+    subscribersData = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, '')))));
     window._subSHA = data.sha;
     renderSubscribers();
   } catch(e) {
@@ -5551,7 +5551,7 @@ async function updateSearchIndex(entry, removeUrl) {
     var sha = null;
     try {
       var data = await githubRequest('data/search-index.json', 'GET');
-      idx = JSON.parse(decodeURIComponent(escape(decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, '')))))));
+      idx = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, '')))));
       sha = data.sha;
     } catch(e) {}
     if (removeUrl) idx = idx.filter(function(d) { return d.url !== removeUrl; });
