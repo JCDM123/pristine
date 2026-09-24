@@ -14,11 +14,11 @@ if (location.protocol === 'http:' && location.hostname !== 'localhost' && locati
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--sage:#8F9574;--sage-dark:#4a5e38;--forest:#2C4A2E;--cream:#F5F0E8;--gold:#C9A96E;--text:#1a1a1a;--muted:#666;--border:#e8e8e4;--border-light:#f0f0ec;}
+:root{--sage:#8F9574;--sage-dark:#4a5e38;--forest:#8F9574;--cream:#F5F0E8;--gold:#C9A96E;--text:#1a1a1a;--muted:#666;--border:#e8e8e4;--border-light:#f0f0ec;}
 body{font-family:'Jost',sans-serif;font-size:15px;color:var(--text);min-height:100vh;}
 a{text-decoration:none;color:inherit;}
 img{max-width:100%;display:block;}
-#lock-screen{position:fixed;inset:0;background:rgba(44,74,46,0.97);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:2rem;}
+#lock-screen{position:fixed;inset:0;background:rgba(143,149,116,0.97);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:2rem;}
 #lock-screen .lock-logo{width:180px;filter:brightness(0) invert(1);opacity:0.85;}
 #lock-screen h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;color:#F5F0E8;font-weight:400;}
 #lock-screen p{color:rgba(245,240,232,0.6);font-size:13px;letter-spacing:1px;text-transform:uppercase;}
@@ -41,13 +41,13 @@ img{max-width:100%;display:block;}
 .studio-main{max-width:1280px;margin:0 auto;padding:3rem 2.5rem;}
 .studio-tabs{display:flex;flex-wrap:wrap;gap:0 4px;border-bottom:1px solid var(--border);margin-bottom:3rem;flex-shrink:0;}
 .tab-btn{padding:14px 28px;font-size:12px;letter-spacing:2px;text-transform:uppercase;background:transparent;border:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;white-space:nowrap;flex-shrink:0;}
-.tab-btn.active{color:var(--forest);border-bottom-color:var(--sage);}
+.tab-btn.active{color:#1a1a1a;border-bottom-color:var(--sage);}
 .tab-btn:hover:not(.active){color:var(--text);}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
 .studio-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
 .form-card{background:rgba(245,240,232,0.93);backdrop-filter:blur(4px);border:0.5px solid var(--border);padding:2.5rem;}
-.form-card h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:30px;color:var(--forest);margin-bottom:0.4rem;}
+.form-card h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:30px;color:#1a1a1a;margin-bottom:0.4rem;}
 .form-card p.subtitle{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--sage);margin-bottom:2rem;}
 .field{margin-bottom:1.4rem;}
 .field label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
@@ -98,9 +98,9 @@ img{max-width:100%;display:block;}
 .ap-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;font-weight:400;line-height:1.15;margin-bottom:1rem;}
 .ap-meta{font-size:12px;opacity:0.7;display:flex;gap:16px;}
 .ap-body p{font-size:14px;line-height:1.8;color:var(--text);margin-bottom:1.2rem;}
-.ap-body h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:var(--forest);margin:1.8rem 0 0.8rem;}
+.ap-body h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#1a1a1a;margin:1.8rem 0 0.8rem;}
 .ap-pull{border-left:3px solid var(--gold);padding:1rem 1.5rem;margin:1.5rem 0;background:rgba(201,169,110,0.07);}
-.ap-pull p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--forest);margin:0;}
+.ap-pull p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:#1a1a1a;margin:0;}
 .ap-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.5rem;}
 .ap-tag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border);color:var(--muted);}
 .ap-author{display:flex;align-items:center;gap:12px;padding:1.2rem;background:var(--cream);margin-top:1.5rem;border:0.5px solid var(--border);}
@@ -143,7 +143,7 @@ img{max-width:100%;display:block;}
 .img-source-toggle{display:flex;gap:0;margin-bottom:10px;border:1px solid var(--border);border-radius:2px;overflow:hidden;}
 .img-source-btn{flex:1;padding:8px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:transparent;border:none;cursor:pointer;color:var(--muted);font-family:'Jost',sans-serif;transition:all 0.15s;}
 .img-source-btn.active{background:var(--forest);color:#F5F0E8;}
-.img-source-btn:hover:not(.active){background:rgba(44,74,46,0.06);}
+.img-source-btn:hover:not(.active){background:rgba(143,149,116,0.06);}
 .ai-img-panel,.upload-img-panel{display:none;}
 .ai-img-panel.show,.upload-img-panel.show{display:block;}
 .ai-img-prompt-wrap{margin-top:8px;}
@@ -196,9 +196,9 @@ img{max-width:100%;display:block;}
 .trend-badge{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-top:5px;display:inline-block;}
 .trend-badge.hot{background:rgba(201,169,110,0.15);color:#7a5a1a;}
 .trend-badge.rising{background:rgba(143,149,116,0.15);color:var(--sage-dark);}
-.trend-badge.niche{background:rgba(44,74,46,0.1);color:var(--forest);}
+.trend-badge.niche{background:rgba(143,149,116,0.1);color:#1a1a1a;}
 .trend-arrow{font-size:12px;color:var(--border);padding-top:3px;align-self:center;}
-.trend-prefill-banner{display:none;background:rgba(44,74,46,0.07);border:0.5px solid rgba(44,74,46,0.2);border-radius:3px;padding:8px 14px;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--forest);}
+.trend-prefill-banner{display:none;background:rgba(143,149,116,0.07);border:0.5px solid rgba(143,149,116,0.2);border-radius:3px;padding:8px 14px;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;font-size:12px;color:#1a1a1a;}
 .trend-prefill-banner .clear-prefill{margin-left:auto;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;background:none;border:none;padding:0 4px;}
 .trend-refresh-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
 .trend-refresh-row p{font-size:12px;color:var(--muted);}
@@ -211,22 +211,22 @@ img{max-width:100%;display:block;}
 
 /* ===== CITATIONS & SOURCES ===== */
 .ap-sources { margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid var(--border-light); }
-.ap-sources-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; color:var(--forest); margin-bottom:1rem; }
+.ap-sources-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; color:#1a1a1a; margin-bottom:1rem; }
 .ap-sources-list { padding-left:0; list-style:none; }
 .ap-sources-list li { font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:0.5rem; display:flex; gap:0.4rem; }
 .ap-source-num { font-weight:600; color:var(--sage); min-width:18px; }
-.ap-sources-list a { color:var(--forest); text-decoration:underline; }
+.ap-sources-list a { color:#1a1a1a; text-decoration:underline; }
 .ap-sources-list a:hover { color:var(--sage); }
 .ap-source-pub { color:#aaa; }
 sup.cite { font-size:10px; color:var(--sage); font-weight:600; cursor:pointer; }
 sup.cite:hover { text-decoration:underline; }
 
 /* ===== TAG PICKER ===== */
-.tag-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; background:rgba(143,149,116,0.15); border:1px solid rgba(143,149,116,0.4); border-radius:20px; font-size:12px; color:var(--forest); }
+.tag-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; background:rgba(143,149,116,0.15); border:1px solid rgba(143,149,116,0.4); border-radius:20px; font-size:12px; color:#1a1a1a; }
 .tag-chip-remove { background:none; border:none; color:var(--sage); cursor:pointer; font-size:14px; line-height:1; padding:0; }
 .tag-suggestion-chip { display:inline-flex; align-items:center; padding:3px 10px; background:var(--surface); border:1px solid var(--border); border-radius:20px; font-size:12px; color:#666; cursor:pointer; transition:all 0.15s; }
 .tag-suggestion-chip:hover { background:var(--sage); color:#fff; border-color:var(--sage); }
-.tag-suggestion-chip.ai-suggested { border-color:var(--sage); color:var(--forest); background:rgba(143,149,116,0.08); }
+.tag-suggestion-chip.ai-suggested { border-color:var(--sage); color:#1a1a1a; background:rgba(143,149,116,0.08); }
 
 /* ===== CONTENT PIPELINE ===== */
 .ap-related-item { display:inline-flex; align-items:center; gap:3px; }
@@ -248,14 +248,14 @@ sup.cite:hover { text-decoration:underline; }
 .ap-extra-label { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--sage); font-weight:600; display:block; margin-bottom:4px; }
 .ap-extra-val { font-size:13px; color:var(--text); line-height:1.6; padding:6px 8px; background:var(--surface); border:1px solid var(--border); border-radius:3px; min-height:32px; }
 .ap-related-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
-.ap-related-tag { font-size:12px; padding:5px 12px; background:var(--surface); border:1px solid var(--border); border-radius:20px; cursor:pointer; color:var(--forest); transition:all 0.15s; }
+.ap-related-tag { font-size:12px; padding:5px 12px; background:var(--surface); border:1px solid var(--border); border-radius:20px; cursor:pointer; color:#1a1a1a; transition:all 0.15s; }
 .ap-related-tag:hover { background:var(--sage); color:#fff; border-color:var(--sage); }
 sup.cite:hover { text-decoration:underline; }
 
 /* ===== SLIDES EDITOR ===== */
 .slide-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;position:relative;}
 .slide-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;}
-.slide-card-title{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--forest);}
+.slide-card-title{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;}
 .slide-img-preview{width:100%;height:160px;object-fit:cover;border-radius:6px;display:block;margin-bottom:0.8rem;background:#eee;}
 .slide-img-placeholder{width:100%;height:160px;border-radius:6px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;margin-bottom:0.8rem;border:2px dashed var(--border);}
 .slide-upload-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:4px;cursor:pointer;margin-bottom:1rem;}
@@ -286,7 +286,7 @@ sup.cite:hover { text-decoration:underline; }
 .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Studio tab responsive: two-row desktop, dropdown on mobile */
-.studio-tab-select{display:none;width:100%;padding:12px 14px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--forest);background:var(--cream,#F5F0E8);border:1px solid var(--border);border-radius:6px;margin-bottom:2rem;box-sizing:border-box;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232C4A2E' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;}
+.studio-tab-select{display:none;width:100%;padding:12px 14px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;background:var(--cream,#F5F0E8);border:1px solid var(--border);border-radius:6px;margin-bottom:2rem;box-sizing:border-box;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232C4A2E' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;}
 @media (max-width:760px){
   .studio-tabs{display:none;}
   .studio-tab-select{display:block;}
@@ -476,7 +476,7 @@ sup.cite:hover { text-decoration:underline; }
         <div class="field"><label>Button text</label><input type="text" id="em-btn-text" placeholder="Read the recipe" value="Read more"></div>
         <div class="field"><label>Button link</label><input type="text" id="em-btn-link" placeholder="https://pristinewellness.com.au/..."></div>
         <button class="gen-btn" onclick="previewEmail()">Preview</button>
-        <button class="gen-btn" id="em-send-btn" onclick="sendEmailCampaign()" style="display:none;background:#2C4A2E;">Send to subscribers</button>
+        <button class="gen-btn" id="em-send-btn" onclick="sendEmailCampaign()" style="display:none;background:#8F9574;">Send to subscribers</button>
         <div id="em-status" style="margin-top:0.8rem;font-size:13px;color:var(--muted);"></div>
         <div style="margin-top:2rem;">
           <h2 style="font-size:16px;">Past campaigns</h2>
@@ -1191,7 +1191,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;">
             <div style="width:28px;height:28px;background:var(--sage);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;">1</div>
             <div>
-              <div style="font-size:13px;font-weight:600;color:var(--forest);">Welcome Email</div>
+              <div style="font-size:13px;font-weight:600;color:#1a1a1a;">Welcome Email</div>
               <div style="font-size:11px;color:var(--muted);">Sends immediately on signup</div>
             </div>
           </div>
@@ -1207,7 +1207,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;">
             <div style="width:28px;height:28px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;">2</div>
             <div>
-              <div style="font-size:13px;font-weight:600;color:var(--forest);">Our Story</div>
+              <div style="font-size:13px;font-weight:600;color:#1a1a1a;">Our Story</div>
               <div style="font-size:11px;color:var(--muted);">Sends on day 3</div>
             </div>
           </div>
@@ -1223,7 +1223,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;">
             <div style="width:28px;height:28px;background:var(--forest);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;">3</div>
             <div>
-              <div style="font-size:13px;font-weight:600;color:var(--forest);">Best of Pristine</div>
+              <div style="font-size:13px;font-weight:600;color:#1a1a1a;">Best of Pristine</div>
               <div style="font-size:11px;color:var(--muted);">Sends on day 7</div>
             </div>
           </div>
@@ -1292,7 +1292,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
         </div>
 
         <div style="background:#f0f8f0;border:0.5px solid var(--sage);border-radius:8px;padding:1.2rem;margin-bottom:1.5rem;">
-          <div style="font-size:12px;font-weight:600;color:var(--forest);margin-bottom:0.5rem;">What the reminder email includes:</div>
+          <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:0.5rem;">What the reminder email includes:</div>
           <ul style="font-size:12px;color:#555;line-height:2;margin:0;padding-left:1.2rem;">
             <li>Articles published since your last send</li>
             <li>Recipes published since your last send</li>
@@ -5036,12 +5036,12 @@ function setImgLibStatus(msg, ok) {
 function buildSourcesHTML(article) {
   if (!article.sources || !article.sources.length) return '';
   var html = '<div class="article-sources" style="margin:3rem 0 2rem;padding:2rem;background:#f9f7f2;border-radius:4px;">';
-  html += '<h3 style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:500;color:#2C4A2E;margin-bottom:1rem;">Sources</h3>';
+  html += '<h3 style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:500;color:#1a1a1a;margin-bottom:1rem;">Sources</h3>';
   html += '<ol style="padding-left:0;list-style:none;">';
   article.sources.forEach(function(s) {
     html += '<li id="source-' + s.num + '" style="font-size:13px;color:#666;line-height:1.7;margin-bottom:0.6rem;display:flex;gap:0.5rem;">';
     html += '<span style="font-weight:600;color:#8F9574;min-width:20px;">' + s.num + '.</span>';
-    html += '<span><a href="' + (s.url || '#') + '" target="_blank" rel="noopener" style="color:#2C4A2E;">' + (s.title || '') + '</a>';
+    html += '<span><a href="' + (s.url || '#') + '" target="_blank" rel="noopener" style="color:#1a1a1a;">' + (s.title || '') + '</a>';
     if (s.publication) html += ' <span style="color:#aaa;">, ' + s.publication + '</span>';
     html += '</span></li>';
   });
@@ -5305,7 +5305,7 @@ async function buildEmailHTML(tplNum) {
       '<h1 style="margin:0 0 24px;font-family:Georgia,serif;font-size:28px;font-weight:400;font-style:italic;color:#111111;line-height:1.3;">' + escHtml(heading) + '</h1>' +
       '<div style="width:40px;height:1.5px;background:#8F9574;margin-bottom:24px;"></div>' +
       paras + '</td></tr>' +
-      (btnLink && btnText ? '<tr><td style="padding:0 40px 30px;"><a href="' + btnLink + '" style="color:#2C4A2E;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.5px;text-decoration:underline;">' + escHtml(btnText) + ' &rarr;</a></td></tr>' : '') +
+      (btnLink && btnText ? '<tr><td style="padding:0 40px 30px;"><a href="' + btnLink + '" style="color:#1a1a1a;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.5px;text-decoration:underline;">' + escHtml(btnText) + ' &rarr;</a></td></tr>' : '') +
       socialFooter + baseClose;
   }
 
@@ -6270,7 +6270,7 @@ function saveSocialAsPDF() {
   eyebrow.textContent = 'Pristine Wellness | Social Content';
 
   var h1 = document.createElement('h1');
-  h1.style.cssText = 'font-family:Georgia,serif;font-style:italic;font-size:28px;font-weight:400;color:#2C4A2E;margin-bottom:24px;border-bottom:1px solid #e8e8e4;padding-bottom:16px;';
+  h1.style.cssText = 'font-family:Georgia,serif;font-style:italic;font-size:28px;font-weight:400;color:#1a1a1a;margin-bottom:24px;border-bottom:1px solid #e8e8e4;padding-bottom:16px;';
   h1.textContent = titleText;
 
   var contentClone = content.cloneNode(true);
@@ -6383,7 +6383,7 @@ async function generateSocialContent(type, data) {
     'Editorial: clean magazine feel, text-heavy, Cormorant Garamond vibes, lots of white space, sophisticated. Copy is considered and precise.\n' +
     'Bold Statement: high contrast, one powerful stat or quote, big typography, stops the scroll. Copy is short and punchy , one sentence max.\n' +
     'Lifestyle: warm, organic, human, photo-led. Copy feels personal, like a friend sharing something real.\n\n' +
-    'For each DESIGN BRIEF: write a specific brief for a graphic designer using Photoshop/Illustrator/InDesign. Include: dimensions, background, typography direction, imagery description, colour palette from brand colours (Sage #8F9574, Forest #2C4A2E, Cream #F5F0E8, Gold #C9A96E). Be specific enough that a designer can execute without asking questions.\n\n' +
+    'For each DESIGN BRIEF: write a specific brief for a graphic designer using Photoshop/Illustrator/InDesign. Include: dimensions, background, typography direction, imagery description, colour palette from brand colours (Sage #8F9574, Cream #F5F0E8, Gold #C9A96E). Be specific enough that a designer can execute without asking questions.\n\n' +
     'X posts: 280 chars max. No hashtags.\n' +
     'Instagram: 150-300 chars caption + 15-20 relevant hashtags on a new line.\n' +
     'Pinterest: pin title under 100 chars, description 200-300 chars optimised for Pinterest search, suggest a board name.\n' +
@@ -6421,7 +6421,7 @@ function renderSocialContent(social) {
   document.getElementById('social-loading').style.display = 'none';
   document.getElementById('social-content').style.display = 'block';
 
-  var dirColours = { 'Editorial': '#2C4A2E', 'Bold Statement': '#7B6FAB', 'Lifestyle': '#C9A96E' };
+  var dirColours = { 'Editorial': '#8F9574', 'Bold Statement': '#7B6FAB', 'Lifestyle': '#C9A96E' };
 
   function makeCard(item, platform) {
     var col = dirColours[item.direction] || '#8F9574';
@@ -7254,7 +7254,7 @@ async function updateAllRecipes() {
   <div style="background:#fff;border-radius:8px;width:90%;max-width:860px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.25);">
     <div style="padding:1.4rem 1.8rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <div>
-        <div style="font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--forest);">Image Library</div>
+        <div style="font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;">Image Library</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px;">Click an image to select it</div>
       </div>
       <button onclick="closeImgPicker()" style="background:none;border:none;cursor:pointer;font-size:22px;color:#bbb;line-height:1;">&times;</button>
@@ -7333,7 +7333,7 @@ async function updateAllRecipes() {
   <div style="background:#fff;border-radius:8px;width:90%;max-width:860px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.25);">
     <div style="padding:1.4rem 1.8rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <div>
-        <div style="font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--forest);">Image Library</div>
+        <div style="font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;">Image Library</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px;">Click an image to select it</div>
       </div>
       <button onclick="closeImgPicker()" style="background:none;border:none;cursor:pointer;font-size:22px;color:#bbb;line-height:1;">&times;</button>

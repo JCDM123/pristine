@@ -19,7 +19,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --sage:#8F9574;--sage-dark:#4a5e38;--forest:#2C4A2E;
+  --sage:#8F9574;--sage-dark:#4a5e38;--forest:#8F9574;
   --cream:#F5F0E8;--gold:#C9A96E;--text:#1a1a1a;
   --muted:#666;--border:#e8e8e4;--border-light:#f0f0ec;
 }
@@ -1732,7 +1732,7 @@ function renderPage() {
       emptyState.id = 'grid-empty-state';
       emptyState.style.cssText = 'grid-column:1/-1;text-align:center;padding:6rem 2rem;';
       emptyState.innerHTML = '<div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#8F9574;font-weight:500;font-family:Jost,sans-serif;margin-bottom:14px;">The Source</div>' +
-        '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:clamp(32px,4vw,52px);color:#2C4A2E;font-weight:400;line-height:1.2;">New stories coming soon</div>' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:clamp(32px,4vw,52px);color:#1a1a1a;font-weight:400;line-height:1.2;">New stories coming soon</div>' +
         '<p style="font-size:15px;color:#888;margin-top:1rem;font-weight:300;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.8;">Research-backed wellness writing, rooted in ancestral wisdom.</p>';
       grid.appendChild(emptyState);
     }
@@ -1928,7 +1928,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   function statusFor(btn) {
     var s = btn.parentNode.querySelector('.contact-status');
-    if (!s) { s = document.createElement('p'); s.className = 'contact-status'; s.style.cssText = 'font-size:13px;line-height:1.6;margin:0.8rem 0 0;color:#2C4A2E;'; btn.parentNode.insertBefore(s, btn.nextSibling); }
+    if (!s) { s = document.createElement('p'); s.className = 'contact-status'; s.style.cssText = 'font-size:13px;line-height:1.6;margin:0.8rem 0 0;color:#1a1a1a;'; btn.parentNode.insertBefore(s, btn.nextSibling); }
     return s;
   }
   window.sendContactMessage = async function (btn) {
@@ -1945,10 +1945,10 @@ document.addEventListener('DOMContentLoaded', function() {
       var data = await resp.json().catch(function () { return {}; });
       if (!resp.ok || !data.ok) throw new Error('not sent');
       box.querySelectorAll('input, textarea').forEach(function (el) { el.value = ''; });
-      status.style.color = '#2C4A2E'; status.textContent = 'Message sent. We read every one and will be in touch soon.';
+      status.style.color = '#1a1a1a'; status.textContent = 'Message sent. We read every one and will be in touch soon.';
     } catch (e) {
       var href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(d.subject || 'Message from ' + d.name) + '&body=' + encodeURIComponent(d.message + '\n\n' + d.name + ' (' + d.email + ')');
-      status.style.color = '#2C4A2E'; status.innerHTML = 'We could not send that just now. Please email us at <a href="' + href + '" style="color:#2C4A2E;text-decoration:underline;">' + EMAIL + '</a> and your message will come across with it.';
+      status.style.color = '#1a1a1a'; status.innerHTML = 'We could not send that just now. Please email us at <a href="' + href + '" style="color:#1a1a1a;text-decoration:underline;">' + EMAIL + '</a> and your message will come across with it.';
     }
     btn.disabled = false; btn.textContent = label;
   };

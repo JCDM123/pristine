@@ -19,7 +19,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --sage:#8F9574;--sage-dark:#4a5e38;--forest:#2C4A2E;
+  --sage:#8F9574;--sage-dark:#4a5e38;--forest:#8F9574;
   --cream:#F5F0E8;--gold:#C9A96E;--text:#1a1a1a;
   --muted:#666;--border:#e8e8e4;--border-light:#f0f0ec;
 }
@@ -445,7 +445,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --sage:#8F9574;--sage-dark:#4a5e38;--forest:#2C4A2E;
+  --sage:#8F9574;--sage-dark:#4a5e38;--forest:#8F9574;
   --cream:#F5F0E8;--gold:#C9A96E;--text:#1a1a1a;
   --muted:#666;--border:#e8e8e4;--border-light:#f0f0ec;
 }
@@ -1420,7 +1420,7 @@ function doDrawerSearch(q) {
   };
   function statusFor(btn) {
     var s = btn.parentNode.querySelector('.contact-status');
-    if (!s) { s = document.createElement('p'); s.className = 'contact-status'; s.style.cssText = 'font-size:13px;line-height:1.6;margin:0.8rem 0 0;color:#2C4A2E;'; btn.parentNode.insertBefore(s, btn.nextSibling); }
+    if (!s) { s = document.createElement('p'); s.className = 'contact-status'; s.style.cssText = 'font-size:13px;line-height:1.6;margin:0.8rem 0 0;color:#1a1a1a;'; btn.parentNode.insertBefore(s, btn.nextSibling); }
     return s;
   }
   window.sendContactMessage = async function (btn) {
@@ -1437,10 +1437,10 @@ function doDrawerSearch(q) {
       var data = await resp.json().catch(function () { return {}; });
       if (!resp.ok || !data.ok) throw new Error('not sent');
       box.querySelectorAll('input, textarea').forEach(function (el) { el.value = ''; });
-      status.style.color = '#2C4A2E'; status.textContent = 'Message sent. We read every one and will be in touch soon.';
+      status.style.color = '#1a1a1a'; status.textContent = 'Message sent. We read every one and will be in touch soon.';
     } catch (e) {
       var href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(d.subject || 'Message from ' + d.name) + '&body=' + encodeURIComponent(d.message + '\n\n' + d.name + ' (' + d.email + ')');
-      status.style.color = '#2C4A2E'; status.innerHTML = 'We could not send that just now. Please email us at <a href="' + href + '" style="color:#2C4A2E;text-decoration:underline;">' + EMAIL + '</a> and your message will come across with it.';
+      status.style.color = '#1a1a1a'; status.innerHTML = 'We could not send that just now. Please email us at <a href="' + href + '" style="color:#1a1a1a;text-decoration:underline;">' + EMAIL + '</a> and your message will come across with it.';
     }
     btn.disabled = false; btn.textContent = label;
   };
