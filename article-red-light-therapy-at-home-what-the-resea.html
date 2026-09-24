@@ -900,7 +900,7 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
               </article>
           <aside class="article-sidebar">
     <div class="sb-block">
-      <span class="sb-title">Browse</span><div class="sb-cat-row"><a href="the-source.html?cat=Water" class="sb-cat-link">Water</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Longevity" class="sb-cat-link">Longevity</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Gut+Health" class="sb-cat-link">Gut Health</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Family+Health" class="sb-cat-link">Family Health</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Nutrition" class="sb-cat-link">Nutrition</a></div></div>
+      <span class="sb-title">Browse</span><div class="sb-cat-row"><a href="the-source.html?cat=Ancestral+Living" class="sb-cat-link">Ancestral Living</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Family+Health" class="sb-cat-link">Family Health</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Gut+Health" class="sb-cat-link">Gut Health</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Longevity" class="sb-cat-link">Longevity</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Movement" class="sb-cat-link">Movement</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Nutrition" class="sb-cat-link">Nutrition</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Sleep" class="sb-cat-link">Sleep</a></div><div class="sb-cat-row"><a href="the-source.html?cat=Water" class="sb-cat-link">Water</a></div></div>
   </aside>
 </div>
       <div class="related-section" id="related-section">
@@ -1291,6 +1291,29 @@ buildSearchIndex();
   document.querySelectorAll('#contact-modal .ms, .contact-form .cf-submit').forEach(function (b) {
     b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
   });
+})();
+</script>
+<script>
+/* Browse list: built from the live search index, so every article shows the same current categories */
+(function () {
+  var title = Array.prototype.find.call(document.querySelectorAll('.sb-title'), function (t) { return t.textContent.trim() === 'Browse'; });
+  if (!title) return;
+  fetch('data/search-index.json?cb=' + Date.now())
+    .then(function (r) { return r.json(); })
+    .then(function (idx) {
+      var cats = [];
+      (idx || []).forEach(function (e) { if (/^article-/.test(e.url || '') && e.cat && cats.indexOf(e.cat) === -1) cats.push(e.cat); });
+      if (!cats.length) return;
+      cats.sort();
+      var block = title.parentNode;
+      Array.prototype.forEach.call(block.querySelectorAll('.sb-cat-row'), function (r) { r.parentNode.removeChild(r); });
+      var html = cats.map(function (c) {
+        var safe = c.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        return '<div class="sb-cat-row"><a href="the-source.html?cat=' + encodeURIComponent(c).replace(/%20/g, '+') + '" class="sb-cat-link">' + safe + '</a></div>';
+      }).join('');
+      title.insertAdjacentHTML('afterend', html);
+    })
+    .catch(function () { /* keep the list already on the page */ });
 })();
 </script>
 </body>
