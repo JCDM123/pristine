@@ -1,7 +1,7 @@
 // Publish every existing story through the real studio.html, in a sealed browser with GitHub and the Worker mocked.
 const fs = require('fs'), path = require('path');
 const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const LIB = path.join(__dirname, '..', 'studio-sim2', 'lib');
+const LIB = path.join(__dirname, 'lib');
 const { VRepo } = require(path.join(LIB, 'vrepo'));
 const { createSandbox } = require(path.join(LIB, 'mocks'));
 const REPO = path.join(__dirname, 'repo');
