@@ -2068,7 +2068,7 @@ async function loadArticleTemplates() {
   var html = await resp.text();
 
   var heroDivStart = html.indexOf('<div class="article-hero" style="background-image:url(');
-  var heroUrlEnd = html.indexOf("')", heroDivStart + 50) + 2;
+  var heroUrlEnd = html.indexOf('>', html.indexOf("')", heroDivStart + 50)) + 1; // skip the rest of the hero opening tag so ';">' is not copied into articles
   var introStart = html.indexOf('<p class="article-intro">', heroDivStart);
   var introEnd = html.indexOf('</p>', introStart) + 4;
   var midEnd = html.indexOf('<div class="article-text">', introEnd) + '<div class="article-text">'.length;
