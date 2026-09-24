@@ -2342,12 +2342,14 @@ async function generateRecipe() {
     'Weave in real, specific family moments naturally and sparingly where relevant, kept genuine and understated. ' +
     'NO em dashes or en dashes ever, use commas, full stops or colons. No AI tells (no delve, unlock, journey, fascinating, crucial, game-changer). Australian spelling throughout. ' +
     'Generate a complete recipe with ALL ingredients (with quantities) and ALL method steps written out in full. ' +
+    'TIMES: estimate prepTime (chopping, mixing, assembling) and cookTime (time on the heat or in the oven) by adding up the method you wrote. Do not count soaking, fermenting, marinating, cooling, resting or setting; state those in the steps instead. If a Prep or Cook time is given below, write the method to match it. ' +
     'Output ONLY valid JSON: ' +
     '{"title":"Full recipe title","intro":"2-3 sentence intro blending the personal about note with health/ancestral context",' +
     '"ingredients":[{"amount":"2 tbsp","name":"beef tallow"},{"amount":"600g","name":"organic scotch fillet, cut into chunks"}],' +
     '"steps":["Step 1 written in full","Step 2 written in full"],' +
     '"chefNote":"One practical tip, substitution, or storage note",' +
     '"servingSuggestion":"What to serve it with",' +
+    '"prepTime":"hands-on prep time, e.g. 15 min","cookTime":"time on the heat or in the oven, e.g. 35 min or 2 hours",' +
     '"seoTitle":"string under 60 chars",' +
     '"metaDesc":"string under 155 chars",' +
     '"socialExcerpt":"1-2 sentence Instagram/Pinterest caption",' +
@@ -2410,6 +2412,9 @@ async function generateRecipe() {
     }
         // House rule: no em or en dashes anywhere in published content
     recipe = JSON.parse(JSON.stringify(recipe).replace(/\u2014/g, ', ').replace(/\u2013/g, '-').replace(/ ,/g, ',').replace(/,  +/g, ', '));
+    // Blank time boxes take the AI's estimate from the method it wrote; typed times are kept
+    if (!prep && recipe.prepTime && !isNaN(parseRecipeMins(recipe.prepTime))) { prep = recipe.prepTime; document.getElementById('r-prep').value = prep; }
+    if (!cook && recipe.cookTime && !isNaN(parseRecipeMins(recipe.cookTime))) { cook = recipe.cookTime; document.getElementById('r-cook').value = cook; }
     generatedRecipeData = { recipe: recipe, name: name, about: recipe.intro || about, category: category, author: author, servings: servings, difficulty: difficulty, prep: prep, cook: cook, dietary: dietary };
     // Update the about textarea with AI-generated intro
   if (recipe.intro) { var aboutEl = document.getElementById('r-about'); if (aboutEl) aboutEl.value = recipe.intro; }
@@ -2966,6 +2971,28 @@ function parseRecipeMins(text) {
   if (!used || t.replace(re, '').replace(/[\s,&]|and/g, '') !== '') return NaN;
   return Math.round(total);
 }
+/* Recipe times: add up the active cooking time the method describes ("bake for 28 to 35 minutes",
+   "simmer for eight hours"). Soaking, fermenting, cooling, resting and setting are left out. */
+function methodCookMins(steps) {
+  var words = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, 'forty-five': 45, fifty: 50, sixty: 60, ninety: 90 };
+  var num = '(\\d+(?:\\.\\d+)?|' + Object.keys(words).sort(function(a, b) { return b.length - a.length; }).join('|') + ')';
+  var re = new RegExp(num + '(?:\\s*(?:to|-|or)\\s*' + num + ')?\\s*(hours?|hrs?|minutes?|mins?)\\b', 'i');
+  var passive = /\b(soak|ferment|cool|rest|set aside|set up|to set|sit|stand|overnight|chill|marinat|refrigerat|fridge|freez|prove|proof|rise|steep|infuse|dissolve|keep|store|days?)\w*/i;
+  var total = 0;
+  (steps || []).forEach(function(step) {
+    var text = typeof step === 'string' ? step : ((step && step.text) || '');
+    var stepMax = 0; // a step that restates its time ("bake 28 to 35 minutes ... done closer to 28 minutes") counts once
+    text.replace(/([.!?])\s+/g, '$1\n').split('\n').forEach(function(sentence) {
+      if (passive.test(sentence)) return;
+      var m = sentence.match(re);
+      if (!m) return;
+      var n = isNaN(parseFloat(m[1])) ? words[m[1].toLowerCase()] : parseFloat(m[1]);
+      stepMax = Math.max(stepMax, /^h/i.test(m[3]) ? n * 60 : n);
+    });
+    total += stepMax;
+  });
+  return Math.round(total);
+}
 function fmtRecipeMins(n) {
   if (!n) return '';
   var h = Math.floor(n / 60), m = n % 60;
@@ -3119,6 +3146,14 @@ async function publishRecipe() {
   if (isNaN(parseRecipeMins(rp)) || (rc && !/^(n\/?a|none|-|0)$/i.test(String(rc).trim()) && isNaN(parseRecipeMins(rc)))) {
     setStatus('r', 'error', 'Check the prep and cook times (for example "20 mins" or "1 hour 20 mins"). Prep: "' + (rp || 'blank') + '", Cook: "' + (rc || 'blank') + '".');
     return;
+  }
+  var methodMins = methodCookMins((generatedRecipeData.recipe || {}).steps);
+  var cookMins = parseRecipeMins(rc) || 0;
+  if (methodMins > 10 && (cookMins < methodMins * 0.6 || cookMins > Math.max(methodMins * 3, methodMins + 60))) {
+    if (!confirm('The method describes about ' + fmtRecipeMins(methodMins) + ' of cooking, but Cook says ' + (rc ? '"' + rc + '"' : 'nothing') + '.\n\nPublish anyway? Cancel to fix the times first.')) {
+      setStatus('r', 'error', 'Cook time does not match the method (about ' + fmtRecipeMins(methodMins) + '). Fix the Cook box and publish again.');
+      return;
+    }
   }
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token at the top of the page.'); return; }
