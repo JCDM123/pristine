@@ -855,6 +855,30 @@ html body .slide-dots .dot::after{content:"";position:absolute;top:-14px;bottom:
 /* Story photos open larger when tapped */
 html body .article-text img, html body .method-section figure img{cursor:zoom-in;}
 </style>
+<style>
+/* Footer: one layout on every page (copyright left, links centred, icons right; stacked and centred on phones) */
+html body .footer{padding:0 !important;margin:0 !important;background:#fafaf8 !important;border-top:0.5px solid #e8e8e4 !important;}
+html body .footer .footer-inner{max-width:none !important;margin:0 !important;padding:30px 40px !important;display:flex !important;flex-direction:row !important;align-items:center !important;justify-content:space-between !important;gap:1.5rem !important;text-align:left !important;}
+html body .footer .footer-left{flex:1 1 0 !important;display:flex !important;align-items:center !important;justify-content:flex-start !important;margin:0 !important;}
+html body .footer .footer-copy{font-size:12px !important;color:#bbb !important;line-height:20px !important;}
+html body .footer .footer-links{flex:0 0 auto !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:32px !important;flex-wrap:nowrap !important;margin:0 !important;}
+html body .footer .footer-links a{display:inline-block !important;font-size:10px !important;letter-spacing:1.5px !important;line-height:20px !important;padding:0 !important;}
+html body .footer .footer-socials{flex:1 1 0 !important;display:flex !important;align-items:center !important;justify-content:flex-end !important;gap:14px !important;margin:0 !important;}
+html body .footer .footer-socials svg{width:18px !important;height:18px !important;}
+@media(max-width:700px){
+  html body .footer .footer-inner{flex-direction:column !important;justify-content:center !important;padding:28px 20px 32px !important;gap:12px !important;text-align:center !important;}
+  html body .footer .footer-left,html body .footer .footer-socials{flex:0 0 auto !important;justify-content:center !important;}
+  html body .footer .footer-links{flex-wrap:wrap !important;gap:0 4px !important;}
+  html body .footer .footer-links a{padding:12px 8px !important;}
+  html body .footer .footer-socials{gap:4px !important;}
+  html body .footer .footer-socials svg{box-sizing:content-box !important;padding:12px !important;margin:0 !important;}
+}
+</style>
+<style>
+/* "More recipes you'll love" cards: same look as "Keep Reading" on articles */
+html body .related-section .related-body .related-cat{position:static !important;display:block !important;background:none !important;padding:0 !important;font-size:10px !important;letter-spacing:2px !important;text-transform:uppercase !important;color:#8F9574 !important;margin-bottom:6px !important;font-weight:500 !important;}
+html body .related-section .related-title{font-family:'Cormorant Garamond',serif !important;font-style:italic !important;font-size:19px !important;font-weight:400 !important;color:#111 !important;line-height:1.3 !important;}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -891,7 +915,7 @@ html body .article-text img, html body .method-section figure img{cursor:zoom-in
   <div class="mobile-drawer-socials">
     <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="22" height="22" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg>
     <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="22" height="22" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg>
-    <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="22" height="22" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="22" height="22" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
 </div>
 
@@ -914,7 +938,7 @@ html body .article-text img, html body .method-section figure img{cursor:zoom-in
 <div class="share-bar">
   <span class="share-label">Share</span>
   <button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);var t=encodeURIComponent(document.title);window.open('https://twitter.com/intent/tweet?url='+u+'&text='+t,'_blank','width=600,height=400');})()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M4 4l16 16M4 20L20 4"/></svg> Share on X</button>
-  <button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);var t=encodeURIComponent(document.title);window.open('https://pinterest.com/pin/create/button/?url='+u+'&description='+t,'_blank','width=750,height=550');})()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg> Pin this</button>
+  <button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);var t=encodeURIComponent(document.title);window.open('https://pinterest.com/pin/create/button/?url='+u+'&description='+t,'_blank','width=750,height=550');})()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Pin this</button>
   <button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);window.open('https://www.facebook.com/sharer/sharer.php?u='+u,'_blank','width=600,height=400');})()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;stroke:none;"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Facebook</button>
   <button class="share-btn" id="copy-btn" onclick="copyLink()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy link</button>
 </div>
@@ -1051,9 +1075,6 @@ html body .article-text img, html body .method-section figure img{cursor:zoom-in
 <div class="related-card" onclick="window.location='recipe-lamb-liver-pate-with-sourdough-toast.html'" style="cursor:pointer"><div class="related-img" style="background-image:url('images/lamb-liver-p-t-with-sourdough--hero.jpg');background-size:cover;background-position:center;"></div><div class="related-body"><span class="related-cat">Snacks</span><div class="related-title">Lamb Liver Pâté with Sourdough Toast</div></div></div>
 <div class="related-card" onclick="window.location='recipe-no-wheat-chocolate-mud-cake.html'" style="cursor:pointer"><div class="related-img" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg');background-size:cover;background-position:center;"></div><div class="related-body"><span class="related-cat">Desserts</span><div class="related-title">No Wheat Chocolate Mud Cake</div></div></div></div></section>
 
-<div class="inner">
-<div class="newsletter-wrap" style="border:0.5px solid var(--border);position:relative;border-radius:12px;overflow:hidden;"><div style="position:absolute;inset:0;background-image:url('/images/site/embedded-3e99eb95f9.jpg');background-size:cover;background-position:center;"></div></div>
-</div>
 
 <div class="timer-overlay" id="timer-overlay">
   <button class="timer-close" onclick="stopTimer()">✕</button>
@@ -1062,12 +1083,10 @@ html body .article-text img, html body .method-section figure img{cursor:zoom-in
 </div>
 
 
-<div style="position:relative;border-radius:12px;overflow:hidden;margin-bottom:3rem;"><div style="position:absolute;inset:0;background-image:url('/images/site/paper-texture.jpg');background-size:cover;background-position:center;"></div><div style="position:absolute;inset:0;background:rgba(15,10,25,0.68);"></div>
-
-</div>
 
 
-<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/></svg></div></div></div>
+
+<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
 </div>
 <div class="search-overlay" id="search-overlay"><button class="search-close" onclick="closeSearch()">&#x2715;</button><div class="search-input-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input class="search-input" id="search-input" type="text" placeholder="Search..." oninput="doSearch(this.value)" autocomplete="off"/></div><div class="search-results" id="search-results"></div></div>
 <div class="modal-overlay" id="contact-modal" onclick="handleModalClick(event)">
