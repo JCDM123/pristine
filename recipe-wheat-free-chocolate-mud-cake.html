@@ -839,6 +839,22 @@ html body #main-nav .nav-links a{display:block !important;line-height:20px !impo
 html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !important;}
 </style>
 <script type="application/ld+json" id="pw-schema">{"@context":"https://schema.org","@type":"Recipe","name":"Wheat-Free Chocolate Mud Cake","description":"A rich, fudgy wheat-free chocolate mud cake made with almond flour and monk fruit sweetener. Gluten-free, lower-carb, and genuinely delicious for the whole family.","image":["https://pristinewellness.com.au/images/no-wheat-chocolate-mud-cake-hero.jpg"],"author":{"@type":"Person","name":"Mr Wellness","url":"https://pristinewellness.com.au/about.html"},"publisher":{"@type":"Organization","name":"Pristine Wellness","url":"https://pristinewellness.com.au/","logo":{"@type":"ImageObject","url":"https://pristinewellness.com.au/images/pw-logo-email.png"}},"url":"https://pristinewellness.com.au/recipe-wheat-free-chocolate-mud-cake.html","mainEntityOfPage":"https://pristinewellness.com.au/recipe-wheat-free-chocolate-mud-cake.html","prepTime":"PT15M","cookTime":"PT35M","totalTime":"PT50M","recipeYield":"4 servings","recipeCategory":"Desserts","recipeIngredient":["2 cups (210g) blanched almond flour","¾ cup (65g) unsweetened cocoa powder","¾ cup (130g) monk fruit sweetener or erythritol blend, adjusted to taste","4 large eggs, at room temperature","¼ cup (60ml) melted grass-fed butter, coconut oil, or light olive oil","⅓ cup (80ml) milk of choice: full-fat dairy, coconut milk, or almond milk","1 tsp pure vanilla extract","¾ tsp baking soda","¼ tsp fine sea salt","½ tsp espresso powder (optional, deepens chocolate flavour)","100g good-quality dark chocolate (70% or higher), for the ganache","⅓ cup (80ml) pouring cream or full-fat coconut cream, for the ganache"],"recipeInstructions":[{"@type":"HowToStep","text":"Preheat your oven to 175°C (350°F) and position the rack in the centre. Grease a 20cm (8-inch) or 23cm (9-inch) round cake tin lightly with butter or coconut oil, then line the base and sides with baking paper so the cake releases cleanly once cooled."},{"@type":"HowToStep","text":"In a large mixing bowl, whisk together the almond flour, cocoa powder, monk fruit sweetener, baking soda, salt, and espresso powder if you are using it. Almond flour tends to clump, so take a moment to work through any lumps with the whisk before moving on."},{"@type":"HowToStep","text":"In a separate bowl, whisk the eggs, melted butter or oil, milk, and vanilla extract together until the mixture is smooth. Make sure your melted butter has cooled slightly before adding the eggs so you do not accidentally scramble them."},{"@type":"HowToStep","text":"Pour the wet ingredients into the dry ingredients and stir with a spatula until just combined and no dry patches remain. The batter will be noticeably thicker than a conventional cake batter, which is entirely normal for almond flour. If you would like a little extra moisture, stir in one or two tablespoons of additional milk at this point."},{"@type":"HowToStep","text":"If you are folding in optional sugar-free chocolate chips or roughly chopped nuts, do so now with a few gentle strokes so they are evenly distributed without overworking the batter."},{"@type":"HowToStep","text":"Scrape the batter into the prepared tin and use the back of your spatula to smooth the top into an even layer. Almond flour batter is thick and will not spread itself during baking the way a thinner batter would."},{"@type":"HowToStep","text":"Bake for 28 to 35 minutes. A 20cm tin will generally need the longer end of that range, while a 23cm tin tends to be done closer to 28 minutes. Start checking at the 27-minute mark by inserting a toothpick into the centre of the cake. It is ready when the toothpick comes out with just a few moist crumbs clinging to it. A completely clean toothpick usually means the cake has gone a little too long, as almond flour cakes can dry out quickly if overbaked."},{"@type":"HowToStep","text":"Remove the cake from the oven and allow it to cool in the tin on a wire rack for 10 to 15 minutes before attempting to turn it out. Almond flour cakes are more fragile when warm than wheat-based cakes, so this resting time matters. Once the tin is cool enough to handle, carefully invert the cake onto the wire rack, peel away the baking paper, and leave it to cool completely before adding the ganache."},{"@type":"HowToStep","text":"While the cake cools, make the ganache. Break the dark chocolate into a small heatproof bowl. Heat the cream or coconut cream in a small saucepan over low heat until it just begins to steam and tiny bubbles appear around the edges, then pour it over the chocolate. Leave it to sit undisturbed for two minutes, then stir gently from the centre outward until the ganache is glossy and completely smooth. Allow it to cool at room temperature for 15 to 20 minutes until it thickens to a pourable but not runny consistency."},{"@type":"HowToStep","text":"Once the cake is fully cooled, pour the ganache over the top and use a spatula or the back of a spoon to ease it gently toward the edges, allowing it to drip down the sides naturally. Leave the ganache to set for at least 20 minutes before slicing and serving."}]}</script>
+<style>
+/* Bigger tap areas on phones. The invisible ::after area grows the touch target without moving anything on screen. */
+html body .mobile-menu-btn{position:relative;}
+html body .mobile-menu-btn::after{content:"";position:absolute;top:-10px;bottom:-10px;left:-11px;right:-11px;}
+html body .slide-dots .dot{position:relative;}
+html body .slide-dots .dot::after{content:"";position:absolute;top:-14px;bottom:-14px;left:-6px;right:-6px;}
+@media(max-width:700px){
+  html body .footer-links a{display:inline-block;padding:12px 6px;}
+  html body .footer-socials{gap:4px;}
+  html body .footer-socials svg{box-sizing:content-box;padding:12px;margin:-12px 0;}
+}
+</style>
+<style>
+/* Story photos open larger when tapped */
+html body .article-text img, html body .method-section figure img{cursor:zoom-in;}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -1158,7 +1174,7 @@ function doSearch(q) {
            d.cat.toLowerCase().indexOf(ql) > -1;
   });
   if (!matches.length) {
-    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + String(q).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }) + '"</p></div>';
     return;
   }
   results.innerHTML = matches.map(function(d) {
@@ -1281,11 +1297,19 @@ function initUnitToggle() {
 }
 
 function fractionStr(val){
-  if(Math.abs(val-0.25)<0.05)return '¼';
-  if(Math.abs(val-0.5)<0.05)return '½';
-  if(Math.abs(val-0.75)<0.05)return '¾';
-  if(Math.abs(val-0.33)<0.05)return '⅓';
-  if(Math.abs(val-0.67)<0.05)return '⅔';
+  // Kitchen-friendly amounts: 1½, ¾, ⅓ rather than 1.5 or 0.3
+  var fr=[[0.125,'⅛'],[0.25,'¼'],[1/3,'⅓'],[0.5,'½'],[2/3,'⅔'],[0.75,'¾']];
+  var whole=Math.floor(val), rest=val-whole;
+  if(rest<0.06)return whole||'⅛';
+  if(rest>0.94)return whole+1;
+  for(var i=0;i<fr.length;i++){ if(Math.abs(rest-fr[i][0])<0.06) return (whole?whole:'')+fr[i][1]; }
+  return Math.round(val*10)/10;
+}
+
+// Grams and millilitres read best as whole numbers ("450g"), rounded to 5 once they are larger
+function metricStr(val){
+  if(val>=20)return Math.round(val/5)*5;
+  if(val>=2)return Math.round(val);
   return Math.round(val*10)/10;
 }
 
@@ -1295,15 +1319,21 @@ function updateIngredients(){
     if(!el.hasAttribute('data-base'))return;
     var base=parseFloat(el.getAttribute('data-base'));
     if(isNaN(base))return;
-    var unit=currentUnit==='metric'?el.getAttribute('data-unit'):el.getAttribute('data-imp-unit');
+    var unit=(currentUnit==='metric'?el.getAttribute('data-unit'):(el.getAttribute('data-imp-unit')||el.getAttribute('data-unit')))||'';
     var impBase=parseFloat(el.getAttribute('data-imp-base'));
     var baseVal=currentUnit==='metric'?base:(isNaN(impBase)?base:impBase);
     var val=baseVal*ratio;
     var display;
     if(val===0){display='';}
-    else if(val<1&&val>0){display=fractionStr(val);}
-    else if(Number.isInteger(val)){display=val;}
-    else{display=Math.round(val*10)/10;}
+    else if(/^(g|kg|ml|l|mg)$/i.test(unit)){ el.textContent=metricStr(val)+unit; return; }
+    else if(/^(pinch|dash|handful|splash)/i.test(unit)){display=Math.max(1,Math.round(val));}
+    else{display=fractionStr(val);}
+    // Weights or volumes in brackets scale too: "cups (220g)"
+    unit=unit.replace(/\((approximately |about )?(\d+(?:\.\d+)?)\s*(g|kg|ml)\)/gi,function(m,approx,n,u){return '('+(approx||'')+metricStr(parseFloat(n)*ratio)+u+')';});
+    // One cup, two cups
+    var num=parseFloat(String(display).replace(/[⅛¼⅓½⅔¾]/g,'')) || 0;
+    var many=num>1 || (num===1 && /[⅛¼⅓½⅔¾]/.test(String(display)));
+    if(many) unit=unit.replace(/^cup\b(?!s)/,'cups'); else unit=unit.replace(/^cups\b/,'cup');
     el.textContent=unit?display+' '+unit:display;
   });
 }
@@ -1500,6 +1530,25 @@ function doDrawerSearch(q) {
   document.querySelectorAll('#contact-modal .ms, .contact-form .cf-submit').forEach(function (b) {
     b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
   });
+})();
+</script>
+<script>
+/* Tap a story photo to see it larger; Escape or a tap closes it */
+(function () {
+  function setup() {
+    if (!document.getElementById('lightbox') || typeof openLightbox !== 'function') return;
+    document.querySelectorAll('.article-text img, .method-section figure img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        openLightbox(img.currentSrc || img.src);
+        var big = document.getElementById('lightbox-img');
+        if (big) big.alt = img.alt || '';
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && typeof closeLightbox === 'function') closeLightbox();
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
 })();
 </script>
 </body>

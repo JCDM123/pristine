@@ -839,6 +839,22 @@ html body #main-nav .nav-links a{display:block !important;line-height:20px !impo
 html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !important;}
 </style>
 <script type="application/ld+json" id="pw-schema">{"@context":"https://schema.org","@type":"Recipe","name":"Fermented Overnight Oats with Raw Honey and Seasonal Fruit","description":"Oats soaked overnight in an acidic medium to break down phytic acid, making vitamins and minerals far easier to absorb. Topped with raw honey and seasonal fruit.","image":["https://pristinewellness.com.au/images/fermented-overnight-oats-with--hero.jpg"],"author":{"@type":"Person","name":"Mr Wellness","url":"https://pristinewellness.com.au/about.html"},"publisher":{"@type":"Organization","name":"Pristine Wellness","url":"https://pristinewellness.com.au/","logo":{"@type":"ImageObject","url":"https://pristinewellness.com.au/images/pw-logo-email.png"}},"url":"https://pristinewellness.com.au/recipe-fermented-overnight-oats-with-raw-honey-and-seasonal-fruit.html","mainEntityOfPage":"https://pristinewellness.com.au/recipe-fermented-overnight-oats-with-raw-honey-and-seasonal-fruit.html","prepTime":"PT15M","cookTime":"PT5M","totalTime":"PT20M","recipeYield":"4 servings","recipeCategory":"Breakfast","recipeIngredient":["2 cups organic rolled oats","2 cups filtered water","2 tbsp raw apple cider vinegar (with the mother) or plain full-fat yoghurt","1 cup full-fat organic milk or coconut milk","3 tbsp raw honey, plus extra to drizzle","1 tsp pure vanilla extract","1/2 tsp ground cinnamon","1/4 tsp fine sea salt","4 tbsp full-fat Greek yoghurt or coconut yoghurt, to serve","2 cups seasonal fresh fruit, sliced or chopped (strawberries, mango, banana, stone fruit or berries all work beautifully)","4 tbsp activated nuts or seeds of choice (pepitas, sunflower seeds or crushed walnuts)","2 tbsp desiccated coconut, to serve"],"recipeInstructions":[{"@type":"HowToStep","text":"The evening before, add the rolled oats and filtered water to a large bowl or glass jar. Stir in the raw apple cider vinegar or plain yoghurt. This acidic starter is what begins the fermentation process and unlocks the nutrition locked inside the oats. Cover loosely with a clean cloth or beeswax wrap and leave on the bench at room temperature for at least 8 hours and up to 12 hours overnight."},{"@type":"HowToStep","text":"In the morning, drain the oats through a fine mesh sieve and give them a quick rinse under cool filtered water. This removes the phytates and any bitter taste from the soaking liquid. Do not skip this step."},{"@type":"HowToStep","text":"Transfer the drained oats back into your bowl or a medium saucepan. Pour in the full-fat milk or coconut milk and stir well to combine. The oats will have softened considerably overnight and will absorb the milk beautifully."},{"@type":"HowToStep","text":"Add the raw honey, vanilla extract, ground cinnamon and sea salt. Stir everything together until the honey is dissolved and the oats are evenly coated. If you prefer a warm breakfast, gently heat the oats over low heat for 3 to 5 minutes, stirring frequently, until warmed through. If your household prefers them cold, they are ready to serve as is."},{"@type":"HowToStep","text":"Prepare your seasonal fruit while the oats are warming if needed. Slice strawberries, chop mango, halve grapes or scatter whole blueberries, whatever is in season and what your family loves right now."},{"@type":"HowToStep","text":"Spoon the oats evenly into four bowls. Top each bowl with a generous tablespoon of Greek yoghurt or coconut yoghurt."},{"@type":"HowToStep","text":"Scatter the seasonal fruit over each bowl, then add a tablespoon of activated nuts or seeds for crunch and healthy fats. Sprinkle over a little desiccated coconut."},{"@type":"HowToStep","text":"Finish each bowl with an extra drizzle of raw honey if you like things a touch sweeter. Serve immediately and watch the bowls disappear before you have even sat down yourself."}]}</script>
+<style>
+/* Bigger tap areas on phones. The invisible ::after area grows the touch target without moving anything on screen. */
+html body .mobile-menu-btn{position:relative;}
+html body .mobile-menu-btn::after{content:"";position:absolute;top:-10px;bottom:-10px;left:-11px;right:-11px;}
+html body .slide-dots .dot{position:relative;}
+html body .slide-dots .dot::after{content:"";position:absolute;top:-14px;bottom:-14px;left:-6px;right:-6px;}
+@media(max-width:700px){
+  html body .footer-links a{display:inline-block;padding:12px 6px;}
+  html body .footer-socials{gap:4px;}
+  html body .footer-socials svg{box-sizing:content-box;padding:12px;margin:-12px 0;}
+}
+</style>
+<style>
+/* Story photos open larger when tapped */
+html body .article-text img, html body .method-section figure img{cursor:zoom-in;}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -1146,7 +1162,7 @@ function doSearch(q) {
            d.cat.toLowerCase().indexOf(ql) > -1;
   });
   if (!matches.length) {
-    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + String(q).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }) + '"</p></div>';
     return;
   }
   results.innerHTML = matches.map(function(d) {
@@ -1269,11 +1285,19 @@ function initUnitToggle() {
 }
 
 function fractionStr(val){
-  if(Math.abs(val-0.25)<0.05)return '¼';
-  if(Math.abs(val-0.5)<0.05)return '½';
-  if(Math.abs(val-0.75)<0.05)return '¾';
-  if(Math.abs(val-0.33)<0.05)return '⅓';
-  if(Math.abs(val-0.67)<0.05)return '⅔';
+  // Kitchen-friendly amounts: 1½, ¾, ⅓ rather than 1.5 or 0.3
+  var fr=[[0.125,'⅛'],[0.25,'¼'],[1/3,'⅓'],[0.5,'½'],[2/3,'⅔'],[0.75,'¾']];
+  var whole=Math.floor(val), rest=val-whole;
+  if(rest<0.06)return whole||'⅛';
+  if(rest>0.94)return whole+1;
+  for(var i=0;i<fr.length;i++){ if(Math.abs(rest-fr[i][0])<0.06) return (whole?whole:'')+fr[i][1]; }
+  return Math.round(val*10)/10;
+}
+
+// Grams and millilitres read best as whole numbers ("450g"), rounded to 5 once they are larger
+function metricStr(val){
+  if(val>=20)return Math.round(val/5)*5;
+  if(val>=2)return Math.round(val);
   return Math.round(val*10)/10;
 }
 
@@ -1283,15 +1307,21 @@ function updateIngredients(){
     if(!el.hasAttribute('data-base'))return;
     var base=parseFloat(el.getAttribute('data-base'));
     if(isNaN(base))return;
-    var unit=currentUnit==='metric'?el.getAttribute('data-unit'):el.getAttribute('data-imp-unit');
+    var unit=(currentUnit==='metric'?el.getAttribute('data-unit'):(el.getAttribute('data-imp-unit')||el.getAttribute('data-unit')))||'';
     var impBase=parseFloat(el.getAttribute('data-imp-base'));
     var baseVal=currentUnit==='metric'?base:(isNaN(impBase)?base:impBase);
     var val=baseVal*ratio;
     var display;
     if(val===0){display='';}
-    else if(val<1&&val>0){display=fractionStr(val);}
-    else if(Number.isInteger(val)){display=val;}
-    else{display=Math.round(val*10)/10;}
+    else if(/^(g|kg|ml|l|mg)$/i.test(unit)){ el.textContent=metricStr(val)+unit; return; }
+    else if(/^(pinch|dash|handful|splash)/i.test(unit)){display=Math.max(1,Math.round(val));}
+    else{display=fractionStr(val);}
+    // Weights or volumes in brackets scale too: "cups (220g)"
+    unit=unit.replace(/\((approximately |about )?(\d+(?:\.\d+)?)\s*(g|kg|ml)\)/gi,function(m,approx,n,u){return '('+(approx||'')+metricStr(parseFloat(n)*ratio)+u+')';});
+    // One cup, two cups
+    var num=parseFloat(String(display).replace(/[⅛¼⅓½⅔¾]/g,'')) || 0;
+    var many=num>1 || (num===1 && /[⅛¼⅓½⅔¾]/.test(String(display)));
+    if(many) unit=unit.replace(/^cup\b(?!s)/,'cups'); else unit=unit.replace(/^cups\b/,'cup');
     el.textContent=unit?display+' '+unit:display;
   });
 }
@@ -1488,6 +1518,25 @@ function doDrawerSearch(q) {
   document.querySelectorAll('#contact-modal .ms, .contact-form .cf-submit').forEach(function (b) {
     b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
   });
+})();
+</script>
+<script>
+/* Tap a story photo to see it larger; Escape or a tap closes it */
+(function () {
+  function setup() {
+    if (!document.getElementById('lightbox') || typeof openLightbox !== 'function') return;
+    document.querySelectorAll('.article-text img, .method-section figure img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        openLightbox(img.currentSrc || img.src);
+        var big = document.getElementById('lightbox-img');
+        if (big) big.alt = img.alt || '';
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && typeof closeLightbox === 'function') closeLightbox();
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
 })();
 </script>
 </body>

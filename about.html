@@ -771,6 +771,18 @@ html body .page-header .page-tagline{font-family:'Jost',sans-serif !important;fo
 html body #main-nav .nav-links a{display:block !important;line-height:20px !important;padding:0 0 3px !important;border-bottom-width:1px !important;border-bottom-style:solid !important;}
 html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !important;}
 </style>
+<style>
+/* Bigger tap areas on phones. The invisible ::after area grows the touch target without moving anything on screen. */
+html body .mobile-menu-btn{position:relative;}
+html body .mobile-menu-btn::after{content:"";position:absolute;top:-10px;bottom:-10px;left:-11px;right:-11px;}
+html body .slide-dots .dot{position:relative;}
+html body .slide-dots .dot::after{content:"";position:absolute;top:-14px;bottom:-14px;left:-6px;right:-6px;}
+@media(max-width:700px){
+  html body .footer-links a{display:inline-block;padding:12px 6px;}
+  html body .footer-socials{gap:4px;}
+  html body .footer-socials svg{box-sizing:content-box;padding:12px;margin:-12px 0;}
+}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -1031,7 +1043,7 @@ function doSearch(q) {
            d.cat.toLowerCase().indexOf(ql) > -1;
   });
   if (!matches.length) {
-    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + String(q).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }) + '"</p></div>';
     return;
   }
   results.innerHTML = matches.map(function(d) {

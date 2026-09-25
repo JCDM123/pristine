@@ -839,6 +839,22 @@ html body #main-nav .nav-links a{display:block !important;line-height:20px !impo
 html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !important;}
 </style>
 <script type="application/ld+json" id="pw-schema">{"@context":"https://schema.org","@type":"Recipe","name":"Creamy Cauliflower Soup","description":"A simple, nourishing creamy cauliflower soup made with real chicken stock and pure cream. Gluten free, egg free and nut free. Ready in under 40 minutes.","image":["https://pristinewellness.com.au/images/newsletter-bg.jpg"],"author":{"@type":"Person","name":"Mr Wellness","url":"https://pristinewellness.com.au/about.html"},"publisher":{"@type":"Organization","name":"Pristine Wellness","url":"https://pristinewellness.com.au/","logo":{"@type":"ImageObject","url":"https://pristinewellness.com.au/images/pw-logo-email.png"}},"url":"https://pristinewellness.com.au/recipe-creamy-cauliflower-soup.html","mainEntityOfPage":"https://pristinewellness.com.au/recipe-creamy-cauliflower-soup.html","prepTime":"PT10M","cookTime":"PT35M","totalTime":"PT45M","recipeYield":"4 servings","recipeCategory":"Sides","recipeIngredient":["1 tbsp olive oil","1 large brown onion, peeled and chopped","2 garlic cloves, crushed","1 head (approximately 1.3kg) cauliflower, cut into florets","500g potatoes, peeled and chopped into rough chunks","1 litre good quality chicken stock, preferably homemade (see Chef Note)","1/2 cup pure cream"],"recipeInstructions":[{"@type":"HowToStep","text":"Place a large, heavy-based saucepan over medium-high heat and add the olive oil, allowing it to warm for about thirty seconds before adding the chopped onion and crushed garlic. Cook, stirring regularly, for around three minutes until the onion has softened and turned translucent and the garlic smells fragrant. Add the cauliflower florets and chopped potato to the pan and continue stirring everything together for five minutes, allowing the vegetables to begin softening and to absorb the flavour from the onion and garlic in the base of the pot."},{"@type":"HowToStep","text":"Pour in the chicken stock, then season generously with freshly ground black pepper. Place the lid on the saucepan and bring everything up to the boil over medium-high heat, then reduce the heat to medium-low and leave the soup to simmer steadily for fifteen to twenty minutes, or until a piece of potato yields easily when pressed with a spoon. Remove the pan from the heat and set it aside for five minutes so the soup cools slightly before blending, which makes the process safer and easier."},{"@type":"HowToStep","text":"Working in batches if needed, carefully ladle the soup into a blender and blend each batch until completely smooth, then return the blended soup to the saucepan. If you have a stick blender you can blend directly in the pot, which saves on washing up. Place the pan back over low heat, pour in the pure cream and stir gently for about two minutes until the soup is heated through and the cream is fully incorporated. Taste and adjust seasoning if needed, then ladle into warm bowls and serve straight away."}]}</script>
+<style>
+/* Bigger tap areas on phones. The invisible ::after area grows the touch target without moving anything on screen. */
+html body .mobile-menu-btn{position:relative;}
+html body .mobile-menu-btn::after{content:"";position:absolute;top:-10px;bottom:-10px;left:-11px;right:-11px;}
+html body .slide-dots .dot{position:relative;}
+html body .slide-dots .dot::after{content:"";position:absolute;top:-14px;bottom:-14px;left:-6px;right:-6px;}
+@media(max-width:700px){
+  html body .footer-links a{display:inline-block;padding:12px 6px;}
+  html body .footer-socials{gap:4px;}
+  html body .footer-socials svg{box-sizing:content-box;padding:12px;margin:-12px 0;}
+}
+</style>
+<style>
+/* Story photos open larger when tapped */
+html body .article-text img, html body .method-section figure img{cursor:zoom-in;}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -1105,7 +1121,7 @@ function doSearch(q) {
            d.cat.toLowerCase().indexOf(ql) > -1;
   });
   if (!matches.length) {
-    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + String(q).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }) + '"</p></div>';
     return;
   }
   results.innerHTML = matches.map(function(d) {
@@ -1228,11 +1244,19 @@ function initUnitToggle() {
 }
 
 function fractionStr(val){
-  if(Math.abs(val-0.25)<0.05)return '¼';
-  if(Math.abs(val-0.5)<0.05)return '½';
-  if(Math.abs(val-0.75)<0.05)return '¾';
-  if(Math.abs(val-0.33)<0.05)return '⅓';
-  if(Math.abs(val-0.67)<0.05)return '⅔';
+  // Kitchen-friendly amounts: 1½, ¾, ⅓ rather than 1.5 or 0.3
+  var fr=[[0.125,'⅛'],[0.25,'¼'],[1/3,'⅓'],[0.5,'½'],[2/3,'⅔'],[0.75,'¾']];
+  var whole=Math.floor(val), rest=val-whole;
+  if(rest<0.06)return whole||'⅛';
+  if(rest>0.94)return whole+1;
+  for(var i=0;i<fr.length;i++){ if(Math.abs(rest-fr[i][0])<0.06) return (whole?whole:'')+fr[i][1]; }
+  return Math.round(val*10)/10;
+}
+
+// Grams and millilitres read best as whole numbers ("450g"), rounded to 5 once they are larger
+function metricStr(val){
+  if(val>=20)return Math.round(val/5)*5;
+  if(val>=2)return Math.round(val);
   return Math.round(val*10)/10;
 }
 
@@ -1242,15 +1266,21 @@ function updateIngredients(){
     if(!el.hasAttribute('data-base'))return;
     var base=parseFloat(el.getAttribute('data-base'));
     if(isNaN(base))return;
-    var unit=currentUnit==='metric'?el.getAttribute('data-unit'):el.getAttribute('data-imp-unit');
+    var unit=(currentUnit==='metric'?el.getAttribute('data-unit'):(el.getAttribute('data-imp-unit')||el.getAttribute('data-unit')))||'';
     var impBase=parseFloat(el.getAttribute('data-imp-base'));
     var baseVal=currentUnit==='metric'?base:(isNaN(impBase)?base:impBase);
     var val=baseVal*ratio;
     var display;
     if(val===0){display='';}
-    else if(val<1&&val>0){display=fractionStr(val);}
-    else if(Number.isInteger(val)){display=val;}
-    else{display=Math.round(val*10)/10;}
+    else if(/^(g|kg|ml|l|mg)$/i.test(unit)){ el.textContent=metricStr(val)+unit; return; }
+    else if(/^(pinch|dash|handful|splash)/i.test(unit)){display=Math.max(1,Math.round(val));}
+    else{display=fractionStr(val);}
+    // Weights or volumes in brackets scale too: "cups (220g)"
+    unit=unit.replace(/\((approximately |about )?(\d+(?:\.\d+)?)\s*(g|kg|ml)\)/gi,function(m,approx,n,u){return '('+(approx||'')+metricStr(parseFloat(n)*ratio)+u+')';});
+    // One cup, two cups
+    var num=parseFloat(String(display).replace(/[⅛¼⅓½⅔¾]/g,'')) || 0;
+    var many=num>1 || (num===1 && /[⅛¼⅓½⅔¾]/.test(String(display)));
+    if(many) unit=unit.replace(/^cup\b(?!s)/,'cups'); else unit=unit.replace(/^cups\b/,'cup');
     el.textContent=unit?display+' '+unit:display;
   });
 }
@@ -1447,6 +1477,25 @@ function doDrawerSearch(q) {
   document.querySelectorAll('#contact-modal .ms, .contact-form .cf-submit').forEach(function (b) {
     b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
   });
+})();
+</script>
+<script>
+/* Tap a story photo to see it larger; Escape or a tap closes it */
+(function () {
+  function setup() {
+    if (!document.getElementById('lightbox') || typeof openLightbox !== 'function') return;
+    document.querySelectorAll('.article-text img, .method-section figure img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        openLightbox(img.currentSrc || img.src);
+        var big = document.getElementById('lightbox-img');
+        if (big) big.alt = img.alt || '';
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && typeof closeLightbox === 'function') closeLightbox();
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
 })();
 </script>
 </body>

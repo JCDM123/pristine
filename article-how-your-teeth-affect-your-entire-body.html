@@ -809,6 +809,22 @@ html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !i
 @media(max-width:900px){html body .related-inner{grid-template-columns:1fr !important;gap:2.5rem !important;}}
 </style>
 <script type="application/ld+json" id="pw-schema">{"@context":"https://schema.org","@type":"Article","headline":"How Your Teeth Affect Your Entire Body: What Quantum Dentistry Is Teaching Us","description":"Research keeps linking the health of your mouth to the rest of your body. What we learned about the oral and whole-body connection, and quantum dentistry.","image":["https://pristinewellness.com.au/images/newsletter-bg.jpg"],"author":{"@type":"Person","name":"Mr Wellness","url":"https://pristinewellness.com.au/about.html"},"publisher":{"@type":"Organization","name":"Pristine Wellness","url":"https://pristinewellness.com.au/","logo":{"@type":"ImageObject","url":"https://pristinewellness.com.au/images/pw-logo-email.png"}},"url":"https://pristinewellness.com.au/article-how-your-teeth-affect-your-entire-body.html","mainEntityOfPage":"https://pristinewellness.com.au/article-how-your-teeth-affect-your-entire-body.html","datePublished":"2026-06-15","dateModified":"2026-06-15","articleSection":"Family Health"}</script>
+<style>
+/* Bigger tap areas on phones. The invisible ::after area grows the touch target without moving anything on screen. */
+html body .mobile-menu-btn{position:relative;}
+html body .mobile-menu-btn::after{content:"";position:absolute;top:-10px;bottom:-10px;left:-11px;right:-11px;}
+html body .slide-dots .dot{position:relative;}
+html body .slide-dots .dot::after{content:"";position:absolute;top:-14px;bottom:-14px;left:-6px;right:-6px;}
+@media(max-width:700px){
+  html body .footer-links a{display:inline-block;padding:12px 6px;}
+  html body .footer-socials{gap:4px;}
+  html body .footer-socials svg{box-sizing:content-box;padding:12px;margin:-12px 0;}
+}
+</style>
+<style>
+/* Story photos open larger when tapped */
+html body .article-text img, html body .method-section figure img{cursor:zoom-in;}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -1072,7 +1088,7 @@ function doSearch(q) {
            d.cat.toLowerCase().indexOf(ql) > -1;
   });
   if (!matches.length) {
-    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + String(q).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }) + '"</p></div>';
     return;
   }
   results.innerHTML = matches.map(function(d) {
@@ -1338,6 +1354,25 @@ buildSearchIndex();
       title.insertAdjacentHTML('afterend', html);
     })
     .catch(function () { /* keep the list already on the page */ });
+})();
+</script>
+<script>
+/* Tap a story photo to see it larger; Escape or a tap closes it */
+(function () {
+  function setup() {
+    if (!document.getElementById('lightbox') || typeof openLightbox !== 'function') return;
+    document.querySelectorAll('.article-text img, .method-section figure img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        openLightbox(img.currentSrc || img.src);
+        var big = document.getElementById('lightbox-img');
+        if (big) big.alt = img.alt || '';
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && typeof closeLightbox === 'function') closeLightbox();
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
 })();
 </script>
 </body>
