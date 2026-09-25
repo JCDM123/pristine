@@ -2,11 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<base href="/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Page Not Found, Pristine Wellness</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -807,8 +811,6 @@ function handleModalClick(e) {
 
 // SEARCH
 var searchDocs = [
-  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
-  {title:'Longevity and Healthspan',cat:'Wellness',excerpt:'Making the science of living longer work in everyday life.',url:'article-longevity-and-healthspan-making-it-work-.html'},
   {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
   {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
   {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
@@ -837,7 +839,7 @@ function doSearch(q) {
            d.cat.toLowerCase().indexOf(ql) > -1;
   });
   if (!matches.length) {
-    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + q + '"</p></div>';
+    results.innerHTML = '<div style="text-align:center;padding:3rem;"><p style="color:#bbb;font-weight:300;">No results for "' + String(q).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }) + '"</p></div>';
     return;
   }
   results.innerHTML = matches.map(function(d) {
@@ -909,7 +911,6 @@ window.addEventListener('scroll', function() {
 // SEARCH
 var searchDocs = [
 
-  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
   {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-curry.html'},
   {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
   {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. Updated weekly.',url:'experiment.html'},
@@ -997,6 +998,15 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeContact
     b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
   });
 })();
+
+/* Real search index: loads from data/search-index.json (studio keeps it current) */
+function buildSearchIndex() {
+  fetch('/data/search-index.json?cb=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (Array.isArray(d) && d.length) searchDocs = d; })
+    .catch(function() { /* keep the short list above */ });
+}
+buildSearchIndex();
 </script>
 </body>
 </html>
