@@ -2637,21 +2637,43 @@ var GITHUB_OWNER = 'JCDM123';
 var GITHUB_REPO = 'pristine';
 var GITHUB_BRANCH = 'main';
 
+// Turn GitHub's technical errors into plain English. The original wording is kept on e.detail.
+function friendlyGitHubError(status, message) {
+  var m = String(message || '');
+  var e;
+  if (status === 401 || /bad credentials/i.test(m)) e = new Error('Your GitHub token is not working. Paste a fresh token in the bar at the top and try again.');
+  else if (status === 409 || /does not match|conflict/i.test(m)) { e = new Error('This page was changed somewhere else at the same moment. Wait a few seconds and try again.'); e.code = 'conflict'; }
+  else if (/rate limit/i.test(m) || status === 429) e = new Error('GitHub is busy right now (too many requests). Wait a minute and try again.');
+  else if (status === 403) e = new Error('GitHub refused the change. Your token may not have permission to edit this site.');
+  else if (status === 404) e = new Error('GitHub could not find that file. It may have been renamed or deleted.');
+  else if (status === 422) e = new Error('GitHub could not save the change (' + m + '). Reload the studio and try again.');
+  else if (status >= 500) e = new Error('GitHub is having trouble right now. Wait a minute and try again.');
+  else e = new Error(m || 'GitHub returned an error (' + status + ').');
+  e.detail = m; e.status = status;
+  return e;
+}
+
 async function githubRequest(path, method, body) {
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token at the top of the page.'); return null; }
-  var resp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + path, {
-    method: method,
-    headers: {
-      'Authorization': 'token ' + token,
-      'Content-Type': 'application/json',
-      'Accept': 'application/vnd.github.v3+json'
-    },
-    body: JSON.stringify(body)
-  });
+  var resp;
+  try {
+    resp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + path, {
+      method: method,
+      headers: {
+        'Authorization': 'token ' + token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify(body)
+    });
+  } catch (netErr) {
+    throw new Error('Could not reach GitHub. Check your internet connection and try again.');
+  }
   if (!resp.ok) {
-    var err = await resp.json();
-    throw new Error(err.message || resp.statusText);
+    var err = {};
+    try { err = await resp.json(); } catch (e) {}
+    throw friendlyGitHubError(resp.status, err.message || resp.statusText);
   }
   return resp.json();
 }
@@ -2688,6 +2710,11 @@ async function publishArticle() {
     var date = fmtDate(d.dateVal);
     var slug = pwSlug(article.title);
     var filename = 'article-' + slug + '.html';
+    if (!(await confirmSafeToReplace(filename, article.title))) {
+      setStatus('a', 'error', 'Not published. Change the title so it does not replace the other story, then publish again.');
+      btn.disabled = false; btn.textContent = 'Publish';
+      return;
+    }
 
     // 1. Build full article HTML (same as download)
     var sectionsHTML = '';
@@ -2844,10 +2871,12 @@ async function publishArticle() {
     }
     if (oldHref === filename) oldHref = '';
     
+    var oldTags = (currentFeat.match(/<span class="tag-pill">[^<]*<\/span>/g) || []).map(function(t) { return t.replace('tag-pill', 'card-tag'); }).join('');
     var oldCard = oldHref ? '\n      <div class="article-card" data-cat="' + oldCat + '" onclick="window.location=\'' + oldHref + '\'" style="cursor:pointer">' +
       '\n        <div class="card-img"><div class="card-img-inner" style="background-image:url(\'' + oldBg + '\')"></div>' +
       '<span class="card-cat-badge">' + oldCat + '</span></div>' +
       '\n        <div class="card-body">' +
+      (oldTags ? '\n          <div class="card-tags">' + oldTags + '</div>' : '') +
       '\n          <h3 class="card-title">' + oldTitle + '</h3>' +
       '\n          <p class="card-excerpt">' + oldExcerpt + '</p>' +
       '\n          <div class="card-footer"><span class="card-date">' + oldMeta + '</span></div>' +
@@ -2971,7 +3000,13 @@ async function loadRecipeTemplates() {
 
 /* Recipe times: read "20 mins", "1 hour 20 mins", "4h 20m", "1.5 hours", "90". Returns minutes, or NaN if unreadable. */
 function parseRecipeMins(text) {
-  var t = String(text || '').trim().toLowerCase();
+  var t = String(text || '').trim().toLowerCase()
+    .replace(/\u00bd/g, ' 1/2').replace(/\u00bc/g, ' 1/4').replace(/\u00be/g, ' 3/4')
+    .replace(/\b(about|approx\.?|approximately|around|roughly|up to)\b|~/g, ' ')
+    .replace(/(\d+(?:\.\d+)?)\s*(?:-|\u2013|to)\s*(\d+(?:\.\d+)?)/g, '$2')          // a range counts as its longer end
+    .replace(/(\d+)\s+(\d+)\/(\d+)/g, function(_, w, n, d) { return String(+w + n / d); })  // 1 1/2 -> 1.5
+    .replace(/(\d+)\/(\d+)/g, function(_, n, d) { return String(n / d); })              // 1/2 -> 0.5
+    .replace(/\s+/g, ' ').trim();
   if (!t) return NaN;
   if (/^\d+(\.\d+)?$/.test(t)) return Math.round(parseFloat(t));
   var re = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|h|minutes?|mins?|m)\b/g, total = 0, used = '', m;
@@ -2985,12 +3020,12 @@ function methodCookMins(steps) {
   var words = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, 'forty-five': 45, fifty: 50, sixty: 60, ninety: 90 };
   var num = '(\\d+(?:\\.\\d+)?|' + Object.keys(words).sort(function(a, b) { return b.length - a.length; }).join('|') + ')';
   var re = new RegExp(num + '(?:\\s*(?:to|-|or)\\s*' + num + ')?\\s*(hours?|hrs?|minutes?|mins?)\\b', 'i');
-  var passive = /\b(soak|ferment|cool|rest|set aside|set up|to set|sit|stand|overnight|chill|marinat|refrigerat|fridge|freez|prove|proof|rise|steep|infuse|dissolve|keep|store|days?)\w*/i;
+  var passive = /\b(soak|ferment|cool|rest(?!\s+of\b)|set aside|set up|to set|sit|stand|overnight|chill|marinat|refrigerat|fridge|freez|prove|proof|rise|steep|infuse|dissolve|keep|store|days?)\w*/i;
   var total = 0;
   (steps || []).forEach(function(step) {
     var text = typeof step === 'string' ? step : ((step && step.text) || '');
     var stepMax = 0; // a step that restates its time ("bake 28 to 35 minutes ... done closer to 28 minutes") counts once
-    text.replace(/([.!?])\s+/g, '$1\n').split('\n').forEach(function(sentence) {
+    text.replace(/([.!?])\s+/g, '$1\n').replace(/\s*(?:;|,\s*then\b|,\s*while\b|\bwhile\b|,\s*and\s+then\b)\s*/gi, '\n').split('\n').forEach(function(sentence) {
       if (passive.test(sentence)) return;
       var m = sentence.match(re);
       if (!m) return;
@@ -3010,6 +3045,7 @@ function fmtRecipeMins(n) {
 async function buildRecipeHTML() {
   await loadRecipeTemplates();
   if (!generatedRecipeData) return null;
+  syncRecipeTimeBoxes();
   var d = generatedRecipeData;
   var recipe = d.recipe;
   var date = fmtDate(d.dateVal || new Date().toISOString().slice(0,10));
@@ -3149,10 +3185,19 @@ async function buildRecipeHTML() {
   return { html: fullHTML, title: recipe.title };
 }
 
+// The Prep and Cook boxes can be corrected after generating: always publish what the boxes say now
+function syncRecipeTimeBoxes() {
+  if (!generatedRecipeData) return;
+  var p = document.getElementById('r-prep'), c = document.getElementById('r-cook');
+  if (p && p.value.trim()) generatedRecipeData.prep = p.value.trim();
+  if (c && c.value.trim()) generatedRecipeData.cook = c.value.trim();
+}
+
 async function publishRecipe() {
   try { await loadRecipeTemplates(); }
   catch (e) { setStatus('r', 'error', 'Publish failed: ' + e.message); return; }
   if (!generatedRecipeData) return;
+  syncRecipeTimeBoxes();
   var rp = generatedRecipeData.prep, rc = generatedRecipeData.cook;
   if (isNaN(parseRecipeMins(rp)) || (rc && !/^(n\/?a|none|-|0)$/i.test(String(rc).trim()) && isNaN(parseRecipeMins(rc)))) {
     setStatus('r', 'error', 'Check the prep and cook times (for example "20 mins" or "1 hour 20 mins"). Prep: "' + (rp || 'blank') + '", Cook: "' + (rc || 'blank') + '".');
@@ -3303,15 +3348,11 @@ async function publishRecipe() {
     var slug = pwSlug(recipe.title);
     var filename = 'recipe-' + slug + '.html';
 
-    // 1. Upload recipe file
-    // Hidden Google data block (Recipe), read from the finished page
-    try { built.html = pwAddSchema(built.html, filename); } catch(e) {}
-    var recipeContent = btoa(unescape(encodeURIComponent(built.html)));
-    var existingSHA = await getFileSHA(filename);
-    var uploadBody = { message: 'Add recipe: ' + recipe.title, content: recipeContent, branch: GITHUB_BRANCH };
-    if (existingSHA) uploadBody.sha = existingSHA;
-    await githubRequest(filename, 'PUT', uploadBody);
-    setStatus('r', 'active', 'Recipe published, updating Ancestral Kitchen...');
+    if (!(await confirmSafeToReplace(filename, recipe.title))) {
+      setStatus('r', 'error', 'Not published. Change the recipe name so it does not replace the other recipe, then publish again.');
+      btn.disabled = false; btn.textContent = 'Publish to Site';
+      return;
+    }
 
     // 2. Fetch ancestral-kitchen.html
     var kitchenData = await githubRequest('ancestral-kitchen.html', 'GET');
@@ -3393,7 +3434,7 @@ async function publishRecipe() {
         var kOldImgStyle = kOldBg.indexOf('url(') === 0 ? 'background-image:' + kOldBg + ';' : 'background:var(--forest);';
         kOldCard = '\n<div class="card" data-cat="' + kOldCat + '" onclick="window.location=\'' + kOldHref + '\'">\n' +
           '  <div class="card-img"><div class="card-img-inner" style="' + kOldImgStyle + '"></div><span class="card-badge">' + kOldCat + '</span></div>\n' +
-          '  <div class="card-body">\n    <div class="card-tags"></div>\n' +
+          '  <div class="card-body">\n    <div class="card-tags">' + ((kCurrentFeat.match(/data-tags="([^"]*)"/) || ['', ''])[1].split('|').filter(Boolean).map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('')) + '</div>\n' +
           '    <h3 class="card-title">' + kOldTitle + '</h3>\n' +
           '    <p class="card-excerpt">' + kOldExcerpt + '</p>\n' +
           '    <div class="card-footer"><span class="card-date">' + kOldMeta.replace(/<[^>]+>/g,'').trim() + '</span></div>\n' +
@@ -3403,7 +3444,7 @@ async function publishRecipe() {
 
     // Build new featured block
     var kFeatBg = recipeImagePath ? 'background-image:url(\'' + recipeImagePath + '\');' : 'background:var(--forest);';
-    var newFeatRecipe = '<div class="featured" onclick="window.location=\'' + filename + '\'" style="cursor:pointer">\n' +
+    var newFeatRecipe = '<div class="featured" data-tags="' + escHtml(tags.slice(0,3).join('|')) + '" onclick="window.location=\'' + filename + '\'" style="cursor:pointer">\n' +
       '      <div class="feat-img" style="' + kFeatBg + '">\n        <div class="feat-img-overlay"></div>\n' +
       '        <div class="feat-label">\n          <span class="feat-badge">Latest recipe</span>\n' +
       '          <div class="feat-img-title">' + recipe.title + '</div>\n        </div>\n      </div>\n' +
@@ -3424,14 +3465,28 @@ async function publishRecipe() {
     var updatedKitchen = kitchenWithFeat.slice(0, kInsertPos + kInsertLen) + kOldCard + kitchenWithFeat.slice(kInsertPos + kInsertLen);
     updatedKitchen = rebuildFilterPills(updatedKitchen);
 
-    // 5. Push updated ancestral-kitchen.html
+    // 5. Upload the recipe page (only now that the Kitchen update is ready, so a problem there never leaves a hidden recipe)
+    // Hidden Google data block (Recipe), read from the finished page
+    try { built.html = pwAddSchema(built.html, filename); } catch(e) {}
+    var recipeContent = btoa(unescape(encodeURIComponent(built.html)));
+    var existingSHA = await getFileSHA(filename);
+    var uploadBody = { message: 'Add recipe: ' + recipe.title, content: recipeContent, branch: GITHUB_BRANCH };
+    if (existingSHA) uploadBody.sha = existingSHA;
+    await githubRequest(filename, 'PUT', uploadBody);
+    setStatus('r', 'active', 'Recipe published, updating Ancestral Kitchen...');
+
+    // 6. Push updated ancestral-kitchen.html
     var kitchenContent = btoa(unescape(encodeURIComponent(updatedKitchen)));
-    await githubRequest('ancestral-kitchen.html', 'PUT', {
-      message: 'Add card for: ' + recipe.title,
-      content: kitchenContent,
-      sha: kitchenSHA,
-      branch: GITHUB_BRANCH
-    });
+    try {
+      await githubRequest('ancestral-kitchen.html', 'PUT', {
+        message: 'Add card for: ' + recipe.title,
+        content: kitchenContent,
+        sha: kitchenSHA,
+        branch: GITHUB_BRANCH
+      });
+    } catch (kitErr) {
+      throw new Error('The recipe page is saved, but it is not on the Ancestral Kitchen page yet (' + kitErr.message + ') Press Publish again to finish. It will not create a duplicate.');
+    }
 
     await updateSearchIndex({
       title: recipe.title,
@@ -3874,6 +3929,8 @@ function compressImage(file, maxWidth, maxHeight, quality, applyWatermark) {
         canvas.width = w;
         canvas.height = h;
         var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
         ctx.drawImage(img, 0, 0, w, h);
         // Apply watermark only on article body images (applyWatermark === true)
         if (applyWatermark === true) {
@@ -3968,6 +4025,23 @@ function clearArticleImage(event) {
 // ===== MANAGE CONTENT =====
 var manageSourceData = null;
 var manageKitchenData = null;
+var manageSourceLoadedUrls = [];
+var manageKitchenLoadedUrls = [];
+
+// Read a page straight from GitHub (never a cached copy) and make sure nothing was published
+// since the Manage list was opened. Otherwise saving would quietly drop the new story.
+async function manageFreshPage(file, parse, loadedUrls, reload) {
+  var page = await githubRequest(file, 'GET');
+  var html = decodeURIComponent(escape(atob(page.content.replace(/\n/g, ''))));
+  var added = parse(html).map(function(x) { return x.url; }).filter(function(u) { return u && loadedUrls.indexOf(u) === -1; });
+  if (added.length) {
+    await reload();
+    var e = new Error('Something new was published since this list was opened, so nothing was saved. The list is refreshed now: please make your change again.');
+    e.code = 'stale';
+    throw e;
+  }
+  return { html: html, sha: page.sha };
+}
 var manageLoaded = false;
 
 
@@ -3988,9 +4062,10 @@ async function loadSourceForManage() {
   try {
     var token = localStorage.getItem('gh_token') || '';
     var headers = token ? { 'Authorization': 'token ' + token } : {};
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html?cb=' + Date.now());
-    var html = await r.text();
+    var pg = await githubRequest('the-source.html', 'GET');
+    var html = decodeURIComponent(escape(atob(pg.content.replace(/\n/g, ''))));
     manageSourceData = parseSourceArticles(html);
+    manageSourceLoadedUrls = manageSourceData.map(function(a) { return a.url; }).filter(Boolean);
     renderSourceList();
   } catch(e) {
     el.innerHTML = '<div class="manage-empty">Could not load The Source page. Check your token.</div>';
@@ -4001,9 +4076,10 @@ async function loadKitchenForManage() {
   var el = document.getElementById('manage-kitchen-list');
   el.innerHTML = '<div class="manage-loading">Loading from GitHub...</div>';
   try {
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html?cb=' + Date.now());
-    var html = await r.text();
+    var pg = await githubRequest('ancestral-kitchen.html', 'GET');
+    var html = decodeURIComponent(escape(atob(pg.content.replace(/\n/g, ''))));
     manageKitchenData = parseKitchenRecipes(html);
+    manageKitchenLoadedUrls = manageKitchenData.map(function(r) { return r.url; }).filter(Boolean);
     renderKitchenList();
   } catch(e) {
     el.innerHTML = '<div class="manage-empty">Could not load Ancestral Kitchen page. Check your token.</div>';
@@ -4232,6 +4308,7 @@ async function deleteSourceArticle(i) {
   if (!confirm(msg)) return;
   setManageStatus('src', 'Deleting...', true);
   try {
+    await manageFreshPage('the-source.html', parseSourceArticles, manageSourceLoadedUrls, loadSourceForManage);
     // 1. Delete the article file from GitHub (if it has one)
     if (a.url) {
       try {
@@ -4248,10 +4325,9 @@ async function deleteSourceArticle(i) {
     // 2. Remove from list and push the updated page
     manageSourceData.splice(i, 1);
     renderSourceList();
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html?cb=' + Date.now());
-    var html = await r.text();
-    html = rebuildSourceGrid(html);
-    var pageSha = await getFileSHA('the-source.html');
+    var fresh = await manageFreshPage('the-source.html', parseSourceArticles, manageSourceLoadedUrls, loadSourceForManage);
+    var html = rebuildSourceGrid(fresh.html);
+    var pageSha = fresh.sha;
     await githubRequest('the-source.html', 'PUT', {
       message: 'Studio: delete article - ' + a.title,
       content: btoa(unescape(encodeURIComponent(html))),
@@ -4271,6 +4347,7 @@ async function deleteKitchenRecipe(i) {
   if (!confirm(msg)) return;
   setManageStatus('kit', 'Deleting...', true);
   try {
+    await manageFreshPage('ancestral-kitchen.html', parseKitchenRecipes, manageKitchenLoadedUrls, loadKitchenForManage);
     if (rec.url) {
       try {
         var sha = await getFileSHA(rec.url);
@@ -4284,10 +4361,9 @@ async function deleteKitchenRecipe(i) {
     }
     manageKitchenData.splice(i, 1);
     renderKitchenList();
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html?cb=' + Date.now());
-    var html = await r.text();
-    html = rebuildKitchenGrid(html);
-    var pageSha = await getFileSHA('ancestral-kitchen.html');
+    var fresh = await manageFreshPage('ancestral-kitchen.html', parseKitchenRecipes, manageKitchenLoadedUrls, loadKitchenForManage);
+    var html = rebuildKitchenGrid(fresh.html);
+    var pageSha = fresh.sha;
     await githubRequest('ancestral-kitchen.html', 'PUT', {
       message: 'Studio: delete recipe - ' + rec.title,
       content: btoa(unescape(encodeURIComponent(html))),
@@ -4315,10 +4391,9 @@ async function saveSourceChanges() {
   if (btn) btn.disabled = true;
   setManageStatus('src', 'Saving...', true);
   try {
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/the-source.html?cb=' + Date.now());
-    var html = await r.text();
-    html = rebuildSourceGrid(html);
-    var sha = await getFileSHA('the-source.html');
+    var fresh = await manageFreshPage('the-source.html', parseSourceArticles, manageSourceLoadedUrls, loadSourceForManage);
+    var html = rebuildSourceGrid(fresh.html);
+    var sha = fresh.sha;
     await githubRequest('the-source.html', 'PUT', {
       message: 'Studio: update article grid',
       content: btoa(unescape(encodeURIComponent(html))),
@@ -4340,10 +4415,9 @@ async function saveKitchenChanges() {
   if (btn) btn.disabled = true;
   setManageStatus('kit', 'Saving...', true);
   try {
-    var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/ancestral-kitchen.html?cb=' + Date.now());
-    var html = await r.text();
-    html = rebuildKitchenGrid(html);
-    var sha = await getFileSHA('ancestral-kitchen.html');
+    var fresh = await manageFreshPage('ancestral-kitchen.html', parseKitchenRecipes, manageKitchenLoadedUrls, loadKitchenForManage);
+    var html = rebuildKitchenGrid(fresh.html);
+    var sha = fresh.sha;
     await githubRequest('ancestral-kitchen.html', 'PUT', {
       message: 'Studio: update recipe grid',
       content: btoa(unescape(encodeURIComponent(html))),
@@ -5398,7 +5472,11 @@ async function sendEmailCampaign() {
   var html = await buildEmailHTML();
   if (!html) return;
   var subject = document.getElementById('em-subject').value.trim();
-  if (!confirm('Send "' + subject + '" to all active subscribers now?\n\nThis cannot be unsent.')) return;
+  var whoSel = document.getElementById('em-recipients');
+  var whoText = whoSel && whoSel.value === 'selected'
+    ? (selectedEmails.size + ' selected subscriber' + (selectedEmails.size === 1 ? '' : 's'))
+    : 'all active subscribers';
+  if (!confirm('Send "' + subject + '" to ' + whoText + ' now?\n\nThis cannot be unsent.')) return;
   var status = document.getElementById('em-status');
   var btn = document.getElementById('em-send-btn');
   btn.disabled = true;
@@ -5482,6 +5560,23 @@ function updateSelectedCount() {
     who.options[1].textContent = 'Only selected (' + selectedEmails.size + ')';
     who.options[0].textContent = 'All active subscribers (' + activeN + ')';
   }
+}
+
+/* ===== SAFETY: never silently replace a different story ===== */
+// Returns true if it is fine to publish to this file: it is new, or it already holds this same story.
+async function confirmSafeToReplace(filename, title) {
+  var existing;
+  try { existing = await githubRequest(filename, 'GET'); }
+  catch (e) { if (e.status === 404) return true; throw e; }
+  if (!existing || !existing.content) return true;
+  var html = decodeURIComponent(escape(atob(existing.content.replace(/\n/g, ''))));
+  var h = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+  var tx = document.createElement('textarea');
+  tx.innerHTML = h ? h[1].replace(/<[^>]+>/g, '') : '';
+  var oldTitle = tx.value.replace(/\s+/g, ' ').trim();
+  var norm = function(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); };
+  if (!oldTitle || norm(oldTitle) === norm(title)) return true;
+  return confirm('The web address ' + filename + ' already holds a different story:\n\n"' + oldTitle + '"\n\nPublishing will REPLACE that story with "' + title + '".\n\nCancel to change the title first.');
 }
 
 /* ===== SEO HELPERS (shared: web addresses, page titles, Google data blocks) ===== */
@@ -5647,7 +5742,7 @@ async function expSavePage(message, change) {
       });
       return 'saved';
     } catch(e) {
-      if (attempt === 0 && /does not match|conflict|409/i.test(e.message)) continue;
+      if (attempt === 0 && (e.code === 'conflict' || /does not match|conflict|409/i.test(e.message))) continue;
       throw e;
     }
   }
@@ -6168,12 +6263,24 @@ function setEmailTemplate(n) {
 }
 
 /* ===== CROSS-LINK PANEL ===== */
+var studioSearchDocs = null;
 function searchCrossLinks(q) {
   var box = document.getElementById('xlink-results');
   if (!box) return;
   if (!q || q.length < 2) { box.style.display = 'none'; return; }
+  if (studioSearchDocs === null) {
+    studioSearchDocs = [];
+    box.style.display = 'block';
+    box.innerHTML = '<div style="padding:10px 14px;font-size:13px;color:#bbb;">Searching...</div>';
+    fetch('https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/data/search-index.json?cb=' + Date.now())
+      .then(function(r) { return r.json(); })
+      .then(function(d) { if (Array.isArray(d)) studioSearchDocs = d; })
+      .catch(function() {})
+      .then(function() { var inp = document.getElementById('xlink-search'); searchCrossLinks(inp ? inp.value : q); });
+    return;
+  }
   var ql = q.toLowerCase();
-  var docs = typeof searchDocs !== 'undefined' ? searchDocs : [];
+  var docs = studioSearchDocs;
   var matches = docs.filter(function(d) {
     return d.title.toLowerCase().indexOf(ql) > -1 || d.cat.toLowerCase().indexOf(ql) > -1;
   }).slice(0, 8);
@@ -6513,20 +6620,42 @@ function saveSocialAsPDF() {
 }
 
 
-function openSocialFromManage(kind, item) {
+async function openSocialFromManage(kind, item) {
   if (!item || !item.title) { alert('Could not load content for this item.'); return; }
+  var page = null;
+  if (item.url) {
+    try {
+      var pr = await fetch('https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + item.url + '?cb=' + Date.now());
+      if (pr.ok) page = new DOMParser().parseFromString(await pr.text(), 'text/html');
+    } catch (e) {}
+  }
+  var pageText = function(sel) { var e = page && page.querySelector(sel); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
   
   // Build a data object compatible with generateSocialContent
   var data;
   if (kind === 'article') {
     data = {
-      article: { title: item.title, intro: item.excerpt || '', sections: [], conclusion: '' },
+      article: {
+        title: item.title,
+        intro: pageText('.article-intro') || item.excerpt || '',
+        sections: page ? Array.prototype.map.call(page.querySelectorAll('.article-body h2, article h2'), function(h) {
+          var body = '', n = h.nextElementSibling;
+          while (n && n.tagName === 'P' && body.length < 300) { body += n.textContent + ' '; n = n.nextElementSibling; }
+          return { heading: h.textContent.trim(), content: body.trim() };
+        }).slice(0, 6) : [],
+        conclusion: ''
+      },
       category: item.cat || '',
       name: item.title
     };
   } else {
     data = {
-      recipe: { title: item.title, intro: item.excerpt || '', ingredients: [], steps: [] },
+      recipe: {
+        title: item.title,
+        intro: (page && (page.querySelector('meta[name="description"]') || {}).content) || item.excerpt || '',
+        ingredients: page ? Array.prototype.map.call(page.querySelectorAll('.ing-name'), function(e) { return e.textContent.trim(); }) : [],
+        steps: page ? Array.prototype.map.call(page.querySelectorAll('.step-text'), function(e) { return e.textContent.trim(); }) : []
+      },
       category: item.cat || '',
       name: item.title
     };
@@ -6567,13 +6696,13 @@ async function generateSocialContent(type, data) {
     contentSummary = 'Title: ' + (a.title || '') + '\n' +
       'Category: ' + (data.category || '') + '\n' +
       'Intro: ' + (a.intro || '').slice(0,300) + '\n' +
-      'Key points: ' + (a.sections || []).slice(0,4).map(function(s){ return s.heading + ': ' + (s.body||'').slice(0,100); }).join('\n') + '\n' +
-      'Conclusion: ' + (a.conclusion || '').slice(0,200);
+      'Key points: ' + (a.sections || []).slice(0,4).map(function(s){ return s.heading + ': ' + String(s.body || s.content || '').replace(/<[^>]+>/g, '').slice(0,160); }).join('\n') + '\n' +
+      'Conclusion: ' + String(a.conclusion || a.closing || '').slice(0,200);
   } else if (type === 'recipe' && data.recipe) {
     var r = data.recipe;
     contentSummary = 'Recipe: ' + (r.title || data.name || '') + '\n' +
       'About: ' + (r.about || r.intro || '').slice(0,300) + '\n' +
-      'Key ingredients: ' + (data.ings || []).slice(0,6).map(function(i){ return i.name; }).join(', ') + '\n' +
+      'Key ingredients: ' + (data.ings || r.ingredients || []).slice(0,8).map(function(i){ return typeof i === 'string' ? i : (i.name || i.item || ''); }).filter(Boolean).join(', ') + '\n' +
       'Health benefits: ' + (r.healthBenefits || r.nutritionNote || '').slice(0,200);
   }
 
