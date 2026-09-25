@@ -1804,23 +1804,23 @@ async function generateArticle() {
   var formatPrompts = {
     'deep-dive': {
       structure: 'Write a long-form evidence-based article with 4-6 sections. Each section has a heading and 2-4 short paragraphs. Include a pull quote. Start with a hook that draws the reader in with a relatable moment before getting into the science.',
-      json: '{"title":"string","intro":"2-3 sentence hook then context","sections":[{"heading":"string","content":"paragraphs separated by double newline"}],"pullQuote":"string","closing":"string","seoTitle":"string under 60 chars","metaDesc":"string under 155 chars","socialExcerpt":"1-2 sentence Instagram/Pinterest caption","relatedTopics":["topic 1","topic 2","topic 3"],"suggestedTags":["tag1","tag2","tag3","tag4"]}'
+      json: '{"title":"string","intro":"2-3 sentence hook then context","sections":[{"heading":"string","content":"paragraphs separated by double newline"}],"pullQuote":"string","closing":"string","seoTitle":"string under 55 characters, without the site name","metaDesc":"string under 155 chars","socialExcerpt":"1-2 sentence Instagram/Pinterest caption","relatedTopics":["topic 1","topic 2","topic 3"],"suggestedTags":["tag1","tag2","tag3","tag4"]}'
     },
     'top-list': {
       structure: 'Write a numbered list article. Short punchy intro, then numbered items each with a bold heading, 2-3 sentence explanation, and one practical takeaway or family example. No long paragraphs.',
-      json: '{"title":"string starting with a number like 7 Ways to...","intro":"string","sections":[{"heading":"1. Item name","content":"explanation paragraph"}],"pullQuote":"string","closing":"string","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2","topic 3"],"suggestedTags":["tag1","tag2","tag3","tag4"]}'
+      json: '{"title":"string starting with a number like 7 Ways to...","intro":"string","sections":[{"heading":"1. Item name","content":"explanation paragraph"}],"pullQuote":"string","closing":"string","seoTitle":"string under 55 characters, without the site name","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2","topic 3"],"suggestedTags":["tag1","tag2","tag3","tag4"]}'
     },
     'quick-read': {
       structure: 'Write a short focused piece on one single idea. No more than 3 sections, each just 1-2 paragraphs. Get to the point fast. End with one practical thing the reader can do today.',
-      json: '{"title":"string","intro":"string","sections":[{"heading":"string","content":"string"}],"pullQuote":"string","closing":"One thing to do today: ...","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
+      json: '{"title":"string","intro":"string","sections":[{"heading":"string","content":"string"}],"pullQuote":"string","closing":"One thing to do today: ...","seoTitle":"string under 55 characters, without the site name","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
     },
     'family-story': {
       structure: 'Write a personal narrative article. Start with a real family moment or problem. Weave the science in naturally as you tell the story. First person (we/our). Feel free to use "I noticed", "the kids", "my wife". End with what changed and what you now do differently.',
-      json: '{"title":"string","intro":"personal opening moment","sections":[{"heading":"string","content":"story-driven paragraphs"}],"pullQuote":"string","closing":"what we do now","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
+      json: '{"title":"string","intro":"personal opening moment","sections":[{"heading":"string","content":"story-driven paragraphs"}],"pullQuote":"string","closing":"what we do now","seoTitle":"string under 55 characters, without the site name","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
     },
     'product-review': {
       structure: 'Write a structured product review. Cover: what this type of product is and why it matters, what to look for when buying, how this specific product measures up, who it is best for, and a clear verdict. Be honest and specific.',
-      json: '{"title":"string","intro":"what this product is and why we reviewed it","sections":[{"heading":"What to look for","content":"string"},{"heading":"Our experience","content":"string"},{"heading":"The verdict","content":"string"}],"pullQuote":"one-line verdict","closing":"who should buy this","seoTitle":"string","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
+      json: '{"title":"string","intro":"what this product is and why we reviewed it","sections":[{"heading":"What to look for","content":"string"},{"heading":"Our experience","content":"string"},{"heading":"The verdict","content":"string"}],"pullQuote":"one-line verdict","closing":"who should buy this","seoTitle":"string under 55 characters, without the site name","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
     }
   };
 
@@ -2126,17 +2126,17 @@ async function downloadArticle() {
         var cap = capEl ? capEl.value.trim() : '';
         if (cap) {
           sectionsHTML += '      <figure style="margin:1.5rem 0;">\n';
-          sectionsHTML += '        <img src="' + bodyImgsForExport[i] + '" alt="' + escHtml(cap) + '" style="width:100%;border-radius:2px;display:block;">\n';
+          sectionsHTML += '        <img src="' + bodyImgsForExport[i] + '" alt="' + escHtml(cap || article.title) + '" loading="lazy" style="width:100%;border-radius:2px;display:block;">\n';
           sectionsHTML += '        <figcaption style="font-size:12px;color:#888;font-style:italic;margin-top:6px;text-align:center;">' + escHtml(cap) + '</figcaption>\n';
           sectionsHTML += '      </figure>\n';
         } else {
-          sectionsHTML += '      <img src="' + bodyImgsForExport[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
+          sectionsHTML += '      <img src="' + bodyImgsForExport[i] + '" alt="' + escHtml(article.title) + '" loading="lazy" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
         }
       }
     });
   }
 
-  var pageTitle = '<title>' + String(article.title).replace(/\s*\|\s*Pristine Wellness\s*$/i, '') + ' | Pristine Wellness</title>';
+  var pageTitle = '<title>' + pwPageTitle(article.seoTitle || article.title) + '</title>';
   var topPart = TMPL_TOP.replace('ARTICLE_TITLE_PLACEHOLDER', pageTitle);
   var bgStyle = articleImagePath
     ? ' style="background-image:url(' + articleImagePath + ')"'
@@ -2159,7 +2159,7 @@ async function downloadArticle() {
     + buildSourcesHTML(article)
     + TMPL_BOTTOM;
 
-  var slug = article.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
+  var slug = pwSlug(article.title);
   downloadFile('article-' + slug + '.html', fullHTML);
 }
 
@@ -2353,7 +2353,7 @@ async function generateRecipe() {
     '"chefNote":"One practical tip, substitution, or storage note",' +
     '"servingSuggestion":"What to serve it with",' +
     '"prepTime":"hands-on prep time, e.g. 15 min","cookTime":"time on the heat or in the oven, e.g. 35 min or 2 hours",' +
-    '"seoTitle":"string under 60 chars",' +
+    '"seoTitle":"string under 55 characters, without the site name",' +
     '"metaDesc":"string under 155 chars",' +
     '"socialExcerpt":"1-2 sentence Instagram/Pinterest caption",' +
     '"suggestedTags":["tag1","tag2","tag3","tag4"],' +
@@ -2501,7 +2501,7 @@ async function downloadRecipe() {
   try {
     var built = await buildRecipeHTML();
     if (!built) return;
-    var slug = built.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
+    var slug = pwSlug(built.title);
     downloadFile('recipe-' + slug + '.html', built.html);
   } catch (e) { alert('Could not build the recipe page: ' + e.message); }
 }
@@ -2686,7 +2686,7 @@ async function publishArticle() {
     var d = generatedArticleData;
     var article = d.article;
     var date = fmtDate(d.dateVal);
-    var slug = article.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
+    var slug = pwSlug(article.title);
     var filename = 'article-' + slug + '.html';
 
     // 1. Build full article HTML (same as download)
@@ -2709,17 +2709,17 @@ async function publishArticle() {
           var cap = capEl ? capEl.value.trim() : '';
           if (cap) {
             sectionsHTML += '      <figure style="margin:1.5rem 0;">\n';
-            sectionsHTML += '        <img src="' + bodyImgsForPub[i] + '" alt="' + escHtml(cap) + '" style="width:100%;border-radius:2px;display:block;">\n';
+            sectionsHTML += '        <img src="' + bodyImgsForPub[i] + '" alt="' + escHtml(cap || article.title) + '" loading="lazy" style="width:100%;border-radius:2px;display:block;">\n';
             sectionsHTML += '        <figcaption style="font-size:12px;color:#888;font-style:italic;margin-top:6px;text-align:center;">' + escHtml(cap) + '</figcaption>\n';
             sectionsHTML += '      </figure>\n';
           } else {
-            sectionsHTML += '      <img src="' + bodyImgsForPub[i] + '" alt="Article image" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
+            sectionsHTML += '      <img src="' + bodyImgsForPub[i] + '" alt="' + escHtml(article.title) + '" loading="lazy" style="width:100%;margin:1.5rem 0;border-radius:2px;display:block;">\n';
           }
         }
       });
     }
     var tags = d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
-    var seoTitleText = String(article.seoTitle || article.title).replace(/\s*\|\s*Pristine Wellness\s*$/i, '') + ' | Pristine Wellness';
+    var seoTitleText = pwPageTitle(article.seoTitle || article.title);
     var pageTitle = '<title>' + seoTitleText + '</title>';
     var metaDescTag = article.metaDesc ? '<meta name="description" content="' + article.metaDesc.replace(/"/g,'&quot;') + '">' : '';
     var aOgImg = articleImagePath ? 'https://pristinewellness.com.au/' + articleImagePath : 'https://pristinewellness.com.au/images/newsletter-bg.jpg';
@@ -2750,7 +2750,9 @@ async function publishArticle() {
     var fullHTML = topPart + '<div class="article-hero"' + bgStyle + '>' + heroShell + '<p class="article-intro">' + renderCitationsForExport(article.intro) + '</p>' + TMPL_MID + sectionsHTML + '      <p>' + renderCitationsForExport(article.closing || '') + '</p>\n    </div>\n' + buildSourcesHTML(article) + TMPL_BOTTOM;
     // Inject author signature + bio into template
     var authorData = getAuthorData(d.author);
-    fullHTML = fullHTML.replace('AUTHOR_SIG_PLACEHOLDER', authorData.sigPath).replace('AUTHOR_BIO', escHtml(authorData.bio));
+    fullHTML = fullHTML.replace('AUTHOR_SIG_PLACEHOLDER', authorData.sigPath).replace('AUTHOR_BIO', escHtml(authorData.bio))
+    // The signature image is described by the author's name, which Google reads as the byline
+    fullHTML = fullHTML.replace('src="' + authorData.sigPath + '" alt="Signature"', 'src="' + authorData.sigPath + '" alt="' + escHtml(d.author || 'Mr Wellness') + '"');
     // Clean up any legacy placeholders
     fullHTML = fullHTML.replace('AUTHOR_NAME', '').replace('AUTHOR_ROLE', '');
     // Dynamic sidebar: only show categories that have articles (include this new one)
@@ -2878,6 +2880,8 @@ async function publishArticle() {
     updatedSource = rebuildFilterPills(updatedSource);
 
     // 2. Upload article file to GitHub (only once The Source update is ready, so a parse failure never leaves an unlinked article live)
+    // Hidden Google data block (Article), read from the finished page
+    try { fullHTML = pwAddSchema(fullHTML, filename); } catch(e) {}
     var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
     var existingSHA = await getFileSHA(filename);
     var uploadBody = {
@@ -2925,7 +2929,7 @@ async function publishArticle() {
 
 // ── RECIPE TEMPLATE: load from live site at publish time ──
 
-function buildAuthorBlock(authorName) { var ad = getAuthorData(authorName); if (!ad) return ''; var sigImg = ad.sigPath ? '<div class="author-signature" style="margin-bottom:0.9rem;"><img src="' + ad.sigPath + '" alt="Signature" style="height:50px;width:auto;max-width:200px;opacity:0.85;display:block;"></div>' : ''; return '\n <div class="author-bio">' + '<div class="author-avatar"><img src="' + PW_AVATAR + '" alt="Pristine Wellness" style="filter:none;border:none;box-shadow:none;outline:none;"/></div>' + '<div style="flex:1;min-width:0;">' + sigImg + '<p class="author-bio-text" style="margin:0;">' + escHtml(ad.bio) + '</p>' + '</div></div>\n'; }
+function buildAuthorBlock(authorName) { var ad = getAuthorData(authorName); if (!ad) return ''; var sigImg = ad.sigPath ? '<div class="author-signature" style="margin-bottom:0.9rem;"><img src="' + ad.sigPath + '" alt="' + escHtml(authorName) + '" style="height:50px;width:auto;max-width:200px;opacity:0.85;display:block;"></div>' : ''; return '\n <div class="author-bio">' + '<div class="author-avatar"><img src="' + PW_AVATAR + '" alt="Pristine Wellness" style="filter:none;border:none;box-shadow:none;outline:none;"/></div>' + '<div style="flex:1;min-width:0;">' + sigImg + '<p class="author-bio-text" style="margin:0;">' + escHtml(ad.bio) + '</p>' + '<a href="about.html" class="author-more" style="display:inline-block;margin-top:0.7rem;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);text-decoration:none;">More about our family</a>' + '</div></div>\n'; }
 
 var AUTHOR_DATA = {
   'Mr Wellness': {
@@ -2944,7 +2948,7 @@ var AUTHOR_DATA = {
     sig: 'https://pristinewellness.com.au/images/sig-jnr.svg'
   }
 };
-var PW_AVATAR = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA4MDAgODAwIj4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjkuNy4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjEgQnVpbGQgOCkgIC0tPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuc3QwIHsKICAgICAgICBmaWxsOiAjOGY5NTc0OwogICAgICB9CgogICAgICAuc3QxIHsKICAgICAgICBmaWxsOiAjZjFlYWRmOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8Y2lyY2xlIGNsYXNzPSJzdDAiIGN4PSIzOTguMTQiIGN5PSIzODYuMDQiIHI9IjM3NS4yMyIvPgogIDxnPgogICAgPGc+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xNzEuODcsMzI2LjEyYy4wOSwyOC41NS0xOS43Niw3NS43NS01NS4wMiw3NS44Ni02LjgxLjAyLTEyLjcyLTMuODItMTUuNDEtMTAuODJsLTcuMDIsMjQuNzljLS40NSwxLjY2LS43MiwzLjEzLS43Miw0LjUxLjAyLDcsNi40Nyw5LjEsMTYuMDUsOS4wN2wtMS4xOCwzLjk3Yy01LjA2LS4xNy0xNS4wMS0uNzktMjUuMjMtLjc2LTcuOTIuMDItMTYuOTQuNy0yMC45LjlsMS4wOS0zLjk3YzkuMDMtLjAzLDEyLjI0LTIuODksMTQuNy0xMS43NGwzNC44OS0xMjUuOGMtOC4xNCwxOC4xNy0xOS4wNiwzMC4zNi0zMS43Myw0Mi4zNmwtMi4xMy0yLjM5YzE0LjUxLTE0LjIyLDI1Ljk4LTI2LjE0LDM4LjMyLTU1LjgzbC43My0yLjc3YzYuMDgtLjIsMTIuMDYtLjk1LDE3LjEyLTIuNzJsLTE5LjQ5LDY5LjAzYzExLjk4LTI4LjQ5LDIzLjI2LTQwLjEzLDM2LjI1LTQwLjE3LDExLjg4LS4wMywxOS42NCw4LjYxLDE5LjcsMjYuNDZaTTE1NS41NiwzMjIuMDNjLS4wMy0xMS4wNS0zLjM2LTE2LjM4LTguODktMTYuMzYtMTAuOTYuMDMtMjgsMjkuMDktMzkuMDQsNjMuNDdsLTQuODMsMTcuMjRjMy4zNCw4LjM3LDcuNzcsMTEuMywxMy44NSwxMS4yOCwyMS4yNy0uMDYsMzguOTktNDcuMjYsMzguOTEtNzUuNjNaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0yNjkuNjIsMzA5Ljk5Yy4wMiw3LjU1LTYuMjIsMTMuNjQtMTMuMjIsMTMuNjctNC4zMywwLTcuNDYtMi40Ni03LjQ4LTYuNzktLjAyLTUuOTksMy40Ny05Ljk2LDguNDMtMTIuMDktLjU1LS41NS0xLjItLjczLTIuMTItLjczLTEzLjcyLjA0LTMwLjQ3LDMyLjY5LTQ0LjI0LDc5LjIzbC0zLjkxLDE1Ljc1LTE2LjM5LjA2LDIyLjMyLTgxLjAxYy45MS0zLjE0LDEuMzYtNS41MywxLjM2LTcuMzgsMC0zLjA0LTEuMzktNC4zMi0zLjk3LTQuMzEtNS41Mi4wMS05LjgzLDUuMzctMTQuNjcsMTkuMjlsLTIuNDYsN2gtMy41OXM0Ljc0LTEzLjcyLDQuNzQtMTMuNzJjNS4zOS0xNS44NiwxNC45NS0xOS40OCwyMi42OC0xOS41LDguMzgtLjAzLDEwLjg5LDQuNjYsMTAuOSwxMC45Mi4wMSw0LjctMS40NCwxMC40MS0yLjYyLDE1LjM5bC02LjAxLDIzLjk2YzEzLjUyLTM2Ljg3LDI0LjM0LTUwLjM1LDM5LjA3LTUwLjQsNy0uMDIsMTEuMTYsNC40OCwxMS4xOCwxMC42NVoiLz4KICAgICAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTI5OS4yMSwzMTcuODJjLjkxLTIuNzcsMS4zNi01LjA3LDEuMzYtNi45MS0uMDEtMy4xMy0xLjQtNC43OC00LjA3LTQuNzgtNS44OS4wMi0xMC4wMiw2LjI5LTE0Ljg2LDE5LjI5bC0yLjY1LDcuMDFoLTMuNXM0Ljg0LTEzLjczLDQuODQtMTMuNzNjNS41Ny0xNS44NSwxNS42LTE5LjQ4LDIzLjMzLTE5LjUsOS40OS0uMDMsMTIuNTQsNS4xMiwxMi41NiwxMS43NS4wMSw0LjUxLTEuNDUsOS43Ny0zLjA4LDE0LjU3bC0xOS45OSw1Ny4yM2MtMS4wMSwyLjc3LTEuNDYsNS4wNy0xLjQ1LDYuOTEsMCwzLjA0LDEuNDksNC43OCw0LjUzLDQuNzgsNS4wNy0uMDEsOS4xOS00LjczLDE0LjY3LTE5LjI5bDIuNTYtN2gzLjU5cy00Ljg0LDEzLjgxLTQuODQsMTMuODFjLTUuMiwxNC42Ni0xNC40OSwxOS40OC0yMy4xNSwxOS41LTkuODUuMDMtMTMuMTgtNC43NS0xMy4yLTExLjQ3LS4wMS00LjQyLDEuMzUtOS41OSwzLjI3LTE0LjkzbDIwLjA5LTU3LjI0Wk0zMTguNjMsMjU1LjQxYzUuOC0uMDEsOS41OSw0LjMsOS42MSw5LjgzLjAyLDcuNDYtNi43NywxNC4yOS0xNC4xNCwxNC4zMS01LjYyLjAyLTkuNS00LjIxLTkuNTEtOS42NC0uMDItNy42NCw2Ljg2LTE0LjQ4LDE0LjA0LTE0LjVaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0zNTEuNCwzOTcuNDljMTEuMTQtLjAzLDE5LjA0LTYuODcsMTktMTkuNDktLjAyLTcuNzQtMi41My0xNC45MS05LjkzLTI0LjkzLTUuODMtNy45LTEyLjMtMTUuOC0xMi4zMy0yNy4zMS0uMDUtMTYuMDIsMTMuMTgtMjYuNzUsMjkuMi0yNi44LDEwLjY4LS4wMywyMy4wMywyLjg4LDIzLjA3LDE2LjMzLjAxLDMuNTktMi4yOCw5Ljc2LTguNzIsOS43OS00LjE0LjAxLTcuNTYtMy4xMS03LjU3LTcuOS0uMDEtNC41MSwyLjA5LTguNjUsNS4zLTEyLjYzLTIuNDktMS40Ni01LjcyLTIuMTktOS40OS0yLjE4LTkuMzkuMDMtMTYuMzcsNi41OS0xNi4zMywxNy45MS4wMyw4LjY1LDQsMTIuNjEsMTEuNCwyMy41NSw2LjI5LDkuNjUsMTEuMiwxNy45MiwxMS4yMiwyNy42OC4wNiwxNy41OS0xNC44MywyOS42OS0zMi4zMiwyOS43NS0xMy4wNy4wNC0yNS41Mi01LjA4LTI1LjU2LTE4LjYyLS4wMS0zLjU5LDEuNzItOC40Nyw3LjM0LTguNDksNi4wOC0uMDIsOC4zMSw1Ljc3LDguMzMsMTEuODUuMDEsMy45Ni0uNzIsNy0xLjI2LDkuNzYsMi4wMywxLjAxLDMuOTcsMS43NCw4LjY2LDEuNzNaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik00MzEuMjksMzgyLjMzYy0uNDYsMS41Ny0uNjMsMy4wNC0uNjMsNC4yNC4wMiw1LjI1LDMuNjEsNy40NSw4LjIyLDcuNDQsNS40My0uMDIsMTEuMTMtMy4yNiwxNi43LTE4Ljk0bDIuNjUtNy4zN2gzLjU5cy0zLjkzLDExLjg4LTMuOTMsMTEuODhjLTUuNDcsMTYuNDEtMTQuMywyMS40MS0yNS44MSwyMS40NS0xMS42LjAzLTE2Ljg3LTYuMDMtMTYuOS0xNS42LDAtMy4yMy42Mi02LjgyLDEuNzItMTAuNzlsMTkuNzctNjkuNDktMTYuOTQuMDYuOTEtMy43OCwxNy4xMy0uMDUsOC4xMS0yOC42N2M1Ljk4LS4yLDEyLjA2LS45NSwxNi45My0yLjcybC04LjgzLDMxLjM0LDI0Ljk1LS4wOC0uNTQsMy43Ny0yNS40Mi4wOC0yMS42OCw3Ny4yM1oiLz4KICAgICAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTUwNi41MiwzMTcuMTljLjkxLTIuNzcsMS4zNi01LjA3LDEuMzYtNi45MS0uMDEtMy4xMy0xLjQtNC43OC00LjA3LTQuNzgtNS44OS4wMS0xMC4wMiw2LjI5LTE0Ljg2LDE5LjI5bC0yLjY1LDcuMDFoLTMuNXM0Ljg0LTEzLjczLDQuODQtMTMuNzNjNS41Ny0xNS44NSwxNS42LTE5LjQ4LDIzLjMzLTE5LjUsOS40OS0uMDMsMTIuNTQsNS4xMiwxMi41NiwxMS43NS4wMSw0LjUxLTEuNDUsOS43Ny0zLjA4LDE0LjU3bC0xOS45OSw1Ny4yM2MtMS4wMSwyLjc3LTEuNDYsNS4wNy0xLjQ1LDYuOTEsMCwzLjA0LDEuNDksNC43OCw0LjUzLDQuNzgsNS4wNy0uMDEsOS4xOS00LjczLDE0LjY3LTE5LjI5bDIuNTYtN2gzLjU5cy00Ljg0LDEzLjgxLTQuODQsMTMuODFjLTUuMiwxNC42Ni0xNC40OSwxOS40Ny0yMy4xNSwxOS41LTkuODUuMDMtMTMuMTgtNC43NS0xMy4yLTExLjQ3LS4wMS00LjQyLDEuMzUtOS41OSwzLjI3LTE0LjkzbDIwLjA5LTU3LjI0Wk01MjUuOTQsMjU0Ljc5YzUuOC0uMDEsOS41OSw0LjMsOS42MSw5LjgzLjAyLDcuNDYtNi43NywxNC4yOS0xNC4xNCwxNC4zMS01LjYyLjAyLTkuNS00LjIxLTkuNTEtOS42NC0uMDItNy42NCw2Ljg2LTE0LjQ4LDE0LjA0LTE0LjVaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik02MzQuMDcsMzgwLjk4Yy01LjM5LDE1Ljg2LTE1LjA0LDE5LjQ3LTIyLjc4LDE5LjUtNS45OC4wMS05Ljc3LTIuMDktMTEuODktNS40OS0xLjAyLTEuNjYtMS40OC0zLjc3LTEuNDktNi4xNi0uMDEtNC4wNSwxLjI2LTkuMTIsMy4xOC0xNC43NWwxNy43LTU0LjAxYy44Mi0yLjM5LDEuOTEtNi4wOCwxLjktOS4zLS4wMS0zLjU5LTEuNC02LjUzLTYuMS02LjUyLTE0LjgyLjA1LTM2LjM2LDM0LjgyLTQ5LjM5LDgwLjU0bC0zLjI3LDEzLjE3LTE2LjM5LjA2LDIyLjMyLTgxLjAxYy42NC0yLjEyLDEuMzctNC44LDEuMzYtNy4xLS4wMS0yLjU3LS45NC00LjYtNC4xNi00LjU5LTUuNTIuMDEtOS4yOCw0LjYzLTE0LjQ5LDE5LjI5bC0yLjQ2LDdoLTMuNTlzNC43NC0xMy43Miw0Ljc0LTEzLjcyYzUuMzktMTUuODUsMTQuMjItMTkuNDcsMjIuMzItMTkuNSw4LjY2LS4wMywxMS4xNiw0Ljc1LDExLjE4LDExLjExLjAxLDQuNi0xLjI2LDEwLjE0LTIuNTMsMTUuMmwtNi40NiwyNS44YzE2LjE4LTM4LjcyLDI5Ljk1LTUyLjIxLDQ3LjA4LTUyLjI2LDExLjQyLS4wNCwxNS4yMSw2LjAzLDE1LjI0LDE0LjEzLjAxLDQuNDItMS4xNyw5LjM5LTIuNzIsMTQuMjhsLTE4LjE2LDU1LjEyYy0uOTEsMi43Ny0xLjQ2LDUuMTYtMS40NSw3LjEsMCwyLjg1LDEuMyw0LjYsNC41Myw0LjU5LDQuNy0uMDEsOS4yOC00LjE3LDE0LjQ5LTE5LjI5bDIuNDctN2gzLjVzLTQuNjUsMTMuODItNC42NSwxMy44MloiLz4KICAgICAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTY3NS4zNCwzNTZjLTEuMzYsNS45OC0yLjA4LDEyLjE2LTIuMDYsMTguMjQuMDQsMTIuNzksNS4xMiwxOC4xMSwxMy4wNCwxOC4wOSw5LjEyLS4wMywxOS40Mi00Ljg0LDI5LjA0LTE4Ljk2bDMuMDQsMS40NmMtNy4zMywxMi42NC0yMS44NCwyNS4zOS0zNy44NiwyNS40NC0xNS4yOS4wNS0yNC44OS05LjA0LTI0Ljk0LTI2LjUzLS4wOC0yNy4zNSwyNi4xMS03NS42OCw2MS45Mi03NS43OSw3Ljc0LS4wMiwxNC4wMSw0LjExLDE0LjA0LDEyLjM5LjA3LDIzLjAyLTM0LjUxLDM4LjIyLTU2LjIyLDQ1LjY2Wk02NzYuMTYsMzUyLjRjMTEuMDQtMy45LDIwLjE0LTcuOCwyNS42NS0xMi4yMyw5LjEtNy4xMiwxNC42OC0xNy43MiwxNC42NC0zMC4xNi0uMDItNy4xOC0xLjEzLTguNDctMy4wNi04LjQ2LTEyLjM0LjAzLTMwLjMyLDIzLjc1LTM3LjIzLDUwLjg0WiIvPgogICAgPC9nPgogICAgPGc+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0yMDcuMzgsNTA0LjUzYy0uODktOC4xMS0xLjc4LTE2LjE0LTIuNzYtMjQuMzQtLjcxLTQuOS0xLjE2LTkuOTktMS42LTE0Ljk4LS4yNy0xLjg3LS40NS0zLjc0LS40NS01Ljg4di0uODlsLjE4LS4yN2g3LjA1YzEuNDIsMCwxLjQyLDEuNjksMS40MiwyLjU4LDAsLjI3LjE4LDIuMTQuMTgsMi40MS41MywyLjk0LDEuNiwxMi41NywxLjY5LDEzLjU1LjM2LDYuNiwxLjE2LDEwLjc5LDEuMTYsMTcuMDMsMCwuMjcuMjcsMS40My4yNywxLjYxLDAsLjQ1LjE4LDEuNi44OSwxLjZoLjI3cy4xOC0uNDUuMTgtLjYyYzAtLjI3LjI3LTIuNTkuMjctMi44NS43MS01LjE3LDEuNi0xNi4wNSwyLjMyLTIxLjIyLDAtLjI3LjI3LTEuNi4yNy0xLjg3LDAtLjE4LjE4LTIuNDEuMTgtMi41OCwwLS4yNy41My0yLjU5LjUzLTIuODUsMC0uMTguMTgtMi4wNS4xOC0yLjIzLDAtLjI3LjI3LTEuMjUuMjctMS4yNSwwLS4xOC4xOC0uODkuMjctMS4yNXYtMS43OGwuMTgtLjI3aDcuMDVjMS40MiwwLDEuNDIsMS42OSwxLjQyLDIuNTgsMCwuMjcuMTgsMi4xNC4xOCwyLjQxLjUzLDIuOTQsMS4yNSwxMi41NywxLjUxLDEzLjU1LDAsLjcxLjgsMTIuNzUuOCwxMy40NywwLC4xOC4xOCwyLjk0LjE4LDMuMjFzLjI3LDEuNDIuMjcsMS42YzAsLjUzLjE4LDEuNjkuOTgsMS42OWguMThzLjI3LS40NS4yNy0uNzEuMjctMi41OC4yNy0yLjg1Yy43MS01LjA4LDEuODctMTUuNjksMi41OS0yMC44NiwwLS4yNy4yNy0xLjYuMjctMS44NywwLS4xOC4yNy0yLjQxLjI3LTIuNTgsMC0uMjcuNDUtMi41OS40NS0yLjg1LDAtLjE4LjE4LTIuMDUuMTgtMi4yMywwLS4yNy4yNy0xLjI1LjI3LTEuMjUsMC0uMTguMjctMS4xNi4yNy0xLjQzLDAtLjE4LjE4LS44OS4xOC0uODksMCwwLC4yNy0uNzEuNDUtLjcxaDUuODhjLjcxLDAsLjcxLjcxLjcxLDEuMTYsMCwwLS4yNywxLjY5LS4yNywyLjE0LTEuNDMsMTAuNTItMi41OSwyMS4wNS00LjAxLDMxLjU3LS44OSw2LjMzLTIuMDUsMTIuMzktMi43NywxOC44MSwwLC40NS0uNDUsMy4zOS0uNDUsMy45MiwwLC4xOC0uMjcsMS4xNi0uMjcsMS4xNiwwLC4yNy0uMTgsMS40My0uMTgsMS42OSwwLC40NS0uMjcsMi4wNS0uOTgsMi4wNWgtMi44NWMtMS44NywwLTUuMTcuMTgtNS4xNy4xOGwtLjQ1LS41M2MtLjI3LTUuMzUtMS4xNi0xMC44OC0xLjg3LTE2LjA1bC0uOTgtMTguNzNjLS40NS0yLjE0LTEuMDctMS40Mi0xLjE2LS42Mi0uODksNi4zMy0xLjg3LDIwLjUxLTIuNTksMjYuOTMsMCwuNDUtLjQ1LDMuMzktLjQ1LDMuOTIsMCwuMTgtLjI3LDEuMTYtLjI3LDEuMTYsMCwuMjctLjE4LDEuNDMtLjE4LDEuNjksMCwuNDUtLjI3LDIuMDUtLjk4LDIuMDVoLTMuNDhjLTEuODcsMC02LjA2LS4xOC02LjA2LS4xOGwtLjQ1LS41M2MtLjI3LTUuMzUtLjk4LTEwLjUyLTEuNjktMTUuN1oiLz4KICAgICAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTI3MS44NSw0NTguMTZsLjQ1LS4yN2M1LjYyLDAsMTQuNjIuMDksMTguMS41M2wuNTMuNDV2Ni41MWMtLjE4LjA5LS4yNy41My0uNTMuNzFoLTEwLjA4Yy0uODksMi40MS0uNTMsNS40NC0uNTMsNi43OCwwLDIuOTQtLjA5LDExLjMyLjk4LDExLjMyaDYuMjRjLjUzLDAsMS4xNiwwLDEuMTYuNjJ2Ni4wNmMwLC4yNy0uMTguNTMtLjQ1LjcxLTIuMTQsMC00LjI4LS4xOC02LjMzLS4xOC0uNDUsMC0xLjM0LjE4LTEuMzQuODl2MTguOWMwLC40NSwwLDEuODcuODksMi4xNC45OCwwLDYuNjkuMTgsMTAuMTYuMThsLjUzLjE4djEuNjFjMCwuNjIuNDUsNS44OC0xLjQzLDUuODgtMS4wNywwLTIuMTQtLjE4LTMuMzktLjE4LS40NS0uMTgtMS4xNi0uNjItMS4xNi0uNDUsMC0uMDktLjUzLjA5LS44OS4xOC0zLjgzLjM2LTIuOTQtMS4xNi00LjQ2LTEuMTYtLjQ1LjcxLTUuMDgsMS40My02LjYsMS40My0xLjg3LDAtMS44Ny0yLjU5LTEuODctMy42NnYtNTkuMjFaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0zMTguNjgsNTE4LjUzYzAtLjQ1LS4yNy0xMi45My0uMjctMTcuNzV2LTQyLjE4YzAtLjQ1LjUzLS43MS45OC0uNzFsNy4yMy4yNy44LjcxdjIuMTRjMCwuOTgtLjI3LDUuOC0uMjcsNi42OXY0NC4xNGMwLC4yNy40NS43MS43MS43MWgxMC41MmMuMjcsMCwuNzEuNzEuNzEuOTh2Ny4yMmgtMTkuMjZjLS42MiwwLS44OS0uMjctLjk4LS44OWwtLjE4LTEuMzRaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0zNjUuOTUsNTE4LjUzYzAtLjQ1LS4yNy0xMi45My0uMjctMTcuNzV2LTQyLjE4YzAtLjQ1LjUzLS43MS45OC0uNzFsNy4yMy4yNy44LjcxdjIuMTRjMCwuOTgtLjI3LDUuOC0uMjcsNi42OXY0NC4xNGMwLC4yNy40NS43MS43MS43MWgxMC41MmMuMjcsMCwuNzEuNzEuNzEuOTh2Ny4yMmgtMTkuMjZjLS42MiwwLS44OS0uMjctLjk4LS44OWwtLjE4LTEuMzRaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik00MTMuMTIsNTE1LjY4Yy41My0xOC40Ni41My0zNy4yNy44LTU1LjczLDAtLjUzLjE4LTEuOTYuOTgtMS45NiwyLjY3LDAsNC41NS4xOCw3LjIyLjE4LjI3LDAsMS41MSw0LjksMS42OSw1LjQ0bDIuMjMsOS4xOGMxLjY5LDYuODcsMy42NiwxNCw1LjYyLDIwLjc4LjI3LjQ1LjcxLDIuNC43MSwyLjg1LDAsLjI3LjI3LDEuMjUuMjcsMS41MSwwLC40NS4yNy45OC43MS45OC4yNywwLC41MywwLC41My0uMjd2LTYuNmMwLS45OC4yNy05LjcyLjI3LTEwLjd2LTIyLjM4bC40NS0uNTNoNi43OGMuNzEsMCwuOTguNTMsMS4yNS45OHYyLjIzYzAsNS4zNS0uMjcsMTAuNDMtLjI3LDE1Ljc4LS4yNywxMi45My0uNzEsNDIuOTgtLjcxLDQyLjk4bC0uNDUuNDVoLTEwLjI1cy0uNTMtLjQ1LS43MS0uNzFjLS4yNy0uMjctLjUzLS45OC0uNTMtMS4yNS0xLjI1LTUuMTctMi40MS0xMC4xNi0zLjkzLTE1LjA3bC0uMTgtLjUzYy0uNTMtLjk4LTIuNzYtMTEuNS0zLjQ4LTExLjVoLS4yN2wtLjE4LjI3Yy0uMjcsOC44My0uMjcsMTcuODMtLjI3LDI2LjU3LDAsLjgtLjk4LDEuNzgtMS42OSwxLjc4aC02LjA2bC0uMjctLjI3LS4yNy0uNzF2LTMuNzRaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik00NzEuMDksNDU4LjE2bC40NS0uMjdjNS42MiwwLDE0LjYyLjA5LDE4LjEuNTNsLjUzLjQ1djYuNTFjLS4xOC4wOS0uMjcuNTMtLjUzLjcxaC0xMC4wOGMtLjg5LDIuNDEtLjUzLDUuNDQtLjUzLDYuNzgsMCwyLjk0LS4wOSwxMS4zMi45OCwxMS4zMmg2LjI0Yy41MywwLDEuMTYsMCwxLjE2LjYydjYuMDZjMCwuMjctLjE4LjUzLS40NS43MS0yLjE0LDAtNC4yOC0uMTgtNi4zMy0uMTgtLjQ1LDAtMS4zNC4xOC0xLjM0Ljg5djE4LjljMCwuNDUsMCwxLjg3Ljg5LDIuMTQuOTgsMCw2LjY5LjE4LDEwLjE2LjE4bC41My4xOHYxLjYxYzAsLjYyLjQ1LDUuODgtMS40Myw1Ljg4LTEuMDcsMC0yLjE0LS4xOC0zLjM5LS4xOC0uNDUtLjE4LTEuMTYtLjYyLTEuMTYtLjQ1LDAtLjA5LS41My4wOS0uODkuMTgtMy44My4zNi0yLjk0LTEuMTYtNC40Ni0xLjE2LS40NS43MS01LjA4LDEuNDMtNi42LDEuNDMtMS44NywwLTEuODctMi41OS0xLjg3LTMuNjZ2LTU5LjIxWiIvPgogICAgICA8cGF0aCBjbGFzcz0ic3QxIiBkPSJNNTI2LjQ3LDUyMC42N2MtMS4yNSwwLTIuNzYtLjgtNC4xLTEuMjUtNC4yOC0xLjc4LTQuNzMtNi4yNC01LjE3LTEwLjUyLDAtLjYyLS4xOC0zLjEyLS4xOC0zLjU3di02LjY5bC4xOC0uMThoNy43NmwuMjcuMTh2OC45MmMwLC40NS4xOCwyLjUuMTgsMi45NGwxLjA3LDEuNTFjLjcxLjg5LDIuNDEsMS4xNiwzLjU3LDEuMTZoLjQ1YzIuNTktLjcxLDIuNzctMy44MywyLjc3LTYuMDYsMC0zLjgzLS43MS03LjE0LTMuMjEtOS44MS01LjYyLTYuMDYtMTMuMjgtMTMuOTEtMTMuMjgtMjMuMDksMC0yLjIzLDAtNC4yOC40NS02LjUxLDAtLjE4LjE4LTEuMzQuMTgtMS41MS44OS0zLjEyLDMuMDMtNi4wNyw1Ljg5LTcuNCwxLjY5LS42MiwzLjIxLS44OSw0Ljk5LS44OSwxLjk2LDAsMy42NiwwLDUuMzUuNzEuMjcsMCwxLjM0LjYyLDEuNTEuODkuNTMuNDUsMS43OCwxLjc4LDEuOTYsMS45NiwyLjQxLDIuOTQsMi4yMyw4LjI5LDIuMjMsMTEuODZ2Mi44NWMwLC4xOC0uMTguNzEtLjE4Ljg5LDAsLjI3LS4yNy41My0uMjcuNTNoLTYuOTZjLS4yNywwLS40NS0uNzEtLjQ1LS43MSwwLTIuNjcsMC01LjUzLS4xOC04LjItLjQ1LTEuODctLjgtMi42Ny0yLjY3LTIuNjctMy43NSwwLTMuMzksMy4wMy0zLjM5LDYuMTUsMCwzLjM5LjYyLDUuOCwzLjAzLDguNTYsNC41NSw0LjgyLDEwLjE3LDEwLjk3LDEyLjQ5LDE3Ljc1LjI3LjYyLjk4LDIuNjcuOTgsMi42N3Y5LjM2cy0uMjcuNjItLjI3Ljg5Yy0xLjM0LDQuOTEtNC4xOSw4LjY1LTkuMSw5LjI3aC01Ljg5WiIvPgogICAgICA8cGF0aCBjbGFzcz0ic3QxIiBkPSJNNTc3Ljg0LDUyMC42N2MtMS4yNSwwLTIuNzYtLjgtNC4xLTEuMjUtNC4yOC0xLjc4LTQuNzMtNi4yNC01LjE3LTEwLjUyLDAtLjYyLS4xOC0zLjEyLS4xOC0zLjU3di02LjY5bC4xOC0uMThoNy43NmwuMjcuMTh2OC45MmMwLC40NS4xOCwyLjUuMTgsMi45NGwxLjA3LDEuNTFjLjcxLjg5LDIuNDEsMS4xNiwzLjU3LDEuMTZoLjQ1YzIuNTktLjcxLDIuNzctMy44MywyLjc3LTYuMDYsMC0zLjgzLS43MS03LjE0LTMuMjEtOS44MS01LjYyLTYuMDYtMTMuMjgtMTMuOTEtMTMuMjgtMjMuMDksMC0yLjIzLDAtNC4yOC40NS02LjUxLDAtLjE4LjE4LTEuMzQuMTgtMS41MS44OS0zLjEyLDMuMDMtNi4wNyw1Ljg5LTcuNCwxLjY5LS42MiwzLjIxLS44OSw0Ljk5LS44OSwxLjk2LDAsMy42NiwwLDUuMzUuNzEuMjcsMCwxLjM0LjYyLDEuNTEuODkuNTMuNDUsMS43OCwxLjc4LDEuOTYsMS45NiwyLjQxLDIuOTQsMi4yMyw4LjI5LDIuMjMsMTEuODZ2Mi44NWMwLC4xOC0uMTguNzEtLjE4Ljg5LDAsLjI3LS4yNy41My0uMjcuNTNoLTYuOTZjLS4yNywwLS40NS0uNzEtLjQ1LS43MSwwLTIuNjcsMC01LjUzLS4xOC04LjItLjQ1LTEuODctLjgtMi42Ny0yLjY3LTIuNjctMy43NSwwLTMuMzksMy4wMy0zLjM5LDYuMTUsMCwzLjM5LjYyLDUuOCwzLjAzLDguNTYsNC41NSw0LjgyLDEwLjE3LDEwLjk3LDEyLjQ5LDE3Ljc1LjI3LjYyLjk4LDIuNjcuOTgsMi42N3Y5LjM2cy0uMjcuNjItLjI3Ljg5Yy0xLjM0LDQuOTEtNC4xOSw4LjY1LTkuMSw5LjI3aC01Ljg5WiIvPgogICAgPC9nPgogIDwvZz4KPC9zdmc+';
+var PW_AVATAR = '/images/site/logo.svg';
 var TMPL_RECIPE_TOP = null, TMPL_RECIPE_HERO = null, TMPL_RECIPE_BOTTOM = null;
 var RECIPE_RELATED_HTML = '';
 
@@ -3057,7 +3061,7 @@ async function buildRecipeHTML() {
     if (!path) return '';
     var capEl = document.getElementById('rcaption-' + slotIdx);
     var cap = capEl ? capEl.value.trim() : '';
-    var fig = '    <figure style="margin:1.8rem 0;">\n      <img src="' + path + '" alt="' + escHtml(cap || 'Recipe step image') + '" style="width:100%;border-radius:8px;display:block;">\n';
+    var fig = '    <figure style="margin:1.8rem 0;">\n      <img src="' + path + '" alt="' + escHtml(cap || (recipe.title + ', step photo')) + '" loading="lazy" style="width:100%;border-radius:8px;display:block;">\n';
     if (cap) fig += '      <figcaption style="font-size:12px;color:#888;font-style:italic;margin-top:8px;text-align:center;">' + escHtml(cap) + '</figcaption>\n';
     fig += '    </figure>\n';
     return fig;
@@ -3079,14 +3083,14 @@ async function buildRecipeHTML() {
   var cookNum = parseRecipeMins(d.cook) || 0;
   var totalMin = prepNum + cookNum;
 
-  var seoTitleText = String(recipe.seoTitle || recipe.title).replace(/\s*\|\s*Pristine Wellness\s*$/i, '') + ' | Pristine Wellness';
+  var seoTitleText = pwPageTitle(recipe.seoTitle || recipe.title);
   var pageTitle = '<title>' + seoTitleText + '</title>';
   var metaDescTag = recipe.metaDesc ? '<meta name="description" content="' + recipe.metaDesc.replace(/"/g,'&quot;') + '">' : '';
   var rOgImg = recipeImagePath ? 'https://pristinewellness.com.au/' + recipeImagePath : 'https://pristinewellness.com.au/images/newsletter-bg.jpg';
   var rOgTitle = String(recipe.seoTitle || recipe.title || '').replace(/\s*\|\s*Pristine Wellness\s*$/i,'');
   var rOgDesc = (recipe.metaDesc || recipe.intro || recipe.about || '').replace(/"/g,'&quot;').slice(0,160);
   // Same file name as the publish step builds, so the canonical address matches the page
-  var rCanonFile = 'recipe-' + String(recipe.title || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40) + '.html';
+  var rCanonFile = 'recipe-' + pwSlug(String(recipe.title || '')) + '.html';
   var recipeOgTags = '<link rel="canonical" href="https://pristinewellness.com.au/' + rCanonFile + '">\n'
     + '<meta property="og:title" content="' + rOgTitle.replace(/"/g,'&quot;') + '">\n'
     + '<meta property="og:description" content="' + rOgDesc + '">\n'
@@ -3296,10 +3300,12 @@ async function publishRecipe() {
     var recipe = d.recipe;
     var date = fmtDate(d.dateVal || new Date().toISOString().slice(0,10));
     var tags = selectedRTags.length ? selectedRTags.slice() : (d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : []);
-    var slug = recipe.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40);
+    var slug = pwSlug(recipe.title);
     var filename = 'recipe-' + slug + '.html';
 
     // 1. Upload recipe file
+    // Hidden Google data block (Recipe), read from the finished page
+    try { built.html = pwAddSchema(built.html, filename); } catch(e) {}
     var recipeContent = btoa(unescape(encodeURIComponent(built.html)));
     var existingSHA = await getFileSHA(filename);
     var uploadBody = { message: 'Add recipe: ' + recipe.title, content: recipeContent, branch: GITHUB_BRANCH };
@@ -5478,6 +5484,110 @@ function updateSelectedCount() {
   }
 }
 
+/* ===== SEO HELPERS (shared: web addresses, page titles, Google data blocks) ===== */
+var PW_SITE = 'https://pristinewellness.com.au/';
+var PW_AUTHORS = { 'sig-mr': 'Mr Wellness', 'sig-mrs': 'Mrs Wellness', 'sig-jnr': 'Wellness Jnr' };
+
+// Web address from a title: whole words only, accents kept as plain letters, at most 60 characters
+var PW_SLUG_SMALL_WORDS = /-(a|an|and|or|the|of|for|to|in|on|at|by|with|into|our|your|what|why|how|may|be|is|are|that|this|we|you)$/;
+function pwSlugPart(text) {
+  return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/&/g, ' and ').replace(/['\u2019]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+function pwSlug(title) {
+  var s = pwSlugPart(title);
+  if (s.length <= 60) return s;
+  // Long title with a colon: the part before it usually names the topic best
+  var colon = String(title).indexOf(':');
+  if (colon > 0) { var head = pwSlugPart(String(title).slice(0, colon)); if (head.length >= 25) return head; }
+  var cut = s.slice(0, 61);
+  s = cut.slice(0, Math.max(cut.lastIndexOf('-'), 20));
+  while (PW_SLUG_SMALL_WORDS.test(s)) s = s.replace(PW_SLUG_SMALL_WORDS, '');
+  return s;
+}
+
+// Browser tab and Google title: add the site name only when the whole title still fits in 60 characters
+function pwPageTitle(seoTitle) {
+  var base = String(seoTitle || '').replace(/\s*[|,]\s*Pristine Wellness\s*$/i, '').replace(/\s*[|,]\s*Pristine Wellness\s*$/i, '').trim();
+  var full = base + ' | Pristine Wellness';
+  return full.length <= 60 ? full : base;
+}
+
+// "1 hr 30 min", "4 h 20 min", "45 mins" -> minutes
+function pwMinutes(text) {
+  var t = String(text || '').toLowerCase();
+  var h = t.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours)\b/);
+  var m = t.match(/(\d+)\s*(?:m|min|mins|minute|minutes)\b/);
+  var total = (h ? parseFloat(h[1]) * 60 : 0) + (m ? parseInt(m[1], 10) : 0);
+  if (!h && !m && /^\s*\d+\s*$/.test(t)) total = parseInt(t, 10);
+  return Math.round(total);
+}
+function pwIsoDuration(mins) {
+  if (!mins) return '';
+  var h = Math.floor(mins / 60), m = mins % 60;
+  return 'PT' + (h ? h + 'H' : '') + (m ? m + 'M' : '') + (!h && !m ? '0M' : '');
+}
+function pwIsoDate(text) {
+  var months = { january:1, february:2, march:3, april:4, may:5, june:6, july:7, august:8, september:9, october:10, november:11, december:12,
+    jan:1, feb:2, mar:3, apr:4, jun:6, jul:7, aug:8, sep:9, sept:9, oct:10, nov:11, dec:12 };
+  var m = String(text || '').match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (!m || !months[m[2].toLowerCase()]) return '';
+  return m[3] + '-' + String(months[m[2].toLowerCase()]).padStart(2, '0') + '-' + String(m[1]).padStart(2, '0');
+}
+
+// Build the hidden Google data block (schema.org Article or Recipe) by reading the finished page itself,
+// so the data always matches what visitors see. Returns the page with the block added (or replaced).
+function pwAddSchema(html, fileName) {
+  var doc = new DOMParser().parseFromString(html, 'text/html');
+  var text = function(sel, root) { var e = (root || doc).querySelector(sel); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
+  var meta = function(sel) { var e = doc.querySelector(sel); return e ? (e.getAttribute('content') || '').trim() : ''; };
+  var url = PW_SITE + fileName;
+  var image = meta('meta[property="og:image"]') || (PW_SITE + 'images/newsletter-bg.jpg');
+  var description = meta('meta[name="description"]') || meta('meta[property="og:description"]');
+  var sig = doc.querySelector('.author-signature img');
+  var sigKey = sig ? ((sig.getAttribute('src') || '').match(/(sig-(?:mr|mrs|jnr))\.svg/) || [])[1] : '';
+  var author = PW_AUTHORS[sigKey]
+    ? { '@type': 'Person', name: PW_AUTHORS[sigKey], url: PW_SITE + 'about.html' }
+    : { '@type': 'Organization', name: 'Pristine Wellness', url: PW_SITE };
+  var publisher = { '@type': 'Organization', name: 'Pristine Wellness', url: PW_SITE,
+    logo: { '@type': 'ImageObject', url: PW_SITE + 'images/pw-logo-email.png' } };
+  var data;
+  if (doc.querySelector('.recipe-hero')) {
+    var stats = {};
+    doc.querySelectorAll('.quick-stat').forEach(function(q) { stats[text('.qs-label', q).toLowerCase()] = text('.qs-value', q); });
+    var prep = pwMinutes(stats.prep), cook = pwMinutes(stats.cook), total = pwMinutes(stats.total) || (prep + cook);
+    var ingredients = Array.prototype.map.call(doc.querySelectorAll('.ingredient-item'), function(i) {
+      return [text('.ing-amount', i), text('.ing-name', i)].filter(Boolean).join(' ');
+    }).filter(Boolean);
+    var steps = Array.prototype.map.call(doc.querySelectorAll('.method-step'), function(s) {
+      var st = { '@type': 'HowToStep', text: text('.step-text', s) };
+      var t = text('.step-title', s); if (t) st.name = t;
+      return st;
+    }).filter(function(s) { return s.text; });
+    data = { '@context': 'https://schema.org', '@type': 'Recipe', name: text('h1'), description: description, image: [image], author: author, publisher: publisher, url: url, mainEntityOfPage: url };
+    if (prep) data.prepTime = pwIsoDuration(prep);
+    if (cook) data.cookTime = pwIsoDuration(cook);
+    if (total) data.totalTime = pwIsoDuration(total);
+    if (stats.serves) data.recipeYield = stats.serves + ' servings';
+    var cat = text('.recipe-cat-badge'); if (cat) data.recipeCategory = cat;
+    if (ingredients.length) data.recipeIngredient = ingredients;
+    if (steps.length) data.recipeInstructions = steps;
+  } else if (doc.querySelector('.article-hero, .article-body, article')) {
+    var published = pwIsoDate(text('.article-date'));
+    data = { '@context': 'https://schema.org', '@type': 'Article', headline: text('h1').slice(0, 110), description: description, image: [image], author: author, publisher: publisher, url: url, mainEntityOfPage: url };
+    if (published) { data.datePublished = published; data.dateModified = published; }
+    var section = text('.article-meta-row').split('·')[0].trim(); if (section) data.articleSection = section;
+  } else {
+    return html;
+  }
+  var block = '<script type="application/ld+json" id="pw-schema">' + JSON.stringify(data).replace(/</g, '\\u003c') + '<' + '/script>';
+  var existing = /<script type="application\/ld\+json" id="pw-schema">[\s\S]*?<\/script>/;
+  if (existing.test(html)) return html.replace(existing, function() { return block; });
+  var headEnd = html.indexOf('</head>');
+  return headEnd === -1 ? html : html.slice(0, headEnd) + block + '\n' + html.slice(headEnd);
+}
+
 /* ===== EXPERIMENT PAGE MANAGEMENT ===== */
 var expImgPath = '';
 var expThumbPath = '';
@@ -5617,7 +5727,7 @@ async function publishExpEntry() {
   try {
     var marker = '<!-- EXPERIMENT_LOG -->';
     var id = 'exp' + Date.now();
-    var alt = 'Berry jars on ' + fmtExpDate(dateVal) + (note ? ', ' + note : '') + '. Filtered town water beside MEA structured water.';
+    var alt = 'Berry jars on ' + fmtExpDate(dateVal) + (note ? ', ' + note : '') + '. MEA structured water on the left, filtered town water on the right.';
     var entry = marker + '\n<!-- EXP_ENTRY:' + id + ' -->\n' +
       '<div class="exp-thumb" data-date="' + dateVal + '" onclick="openLightboxSrc(\'' + full + '\')">' +
       '<img class="exp-thumb-img" src="' + thumb + '" data-full="' + full + '" alt="' + escHtml(alt) + '" style="width:100%;aspect-ratio:4/3;object-fit:contain;background:#f4f2ec;display:block;" loading="lazy"/>' +
