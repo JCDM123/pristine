@@ -5727,7 +5727,7 @@ async function publishExpEntry() {
   try {
     var marker = '<!-- EXPERIMENT_LOG -->';
     var id = 'exp' + Date.now();
-    var alt = 'Berry jars on ' + fmtExpDate(dateVal) + (note ? ', ' + note : '') + '. Filtered town water beside MEA structured water.';
+    var alt = 'Berry jars on ' + fmtExpDate(dateVal) + (note ? ', ' + note : '') + '. MEA structured water on the left, filtered town water on the right.';
     var entry = marker + '\n<!-- EXP_ENTRY:' + id + ' -->\n' +
       '<div class="exp-thumb" data-date="' + dateVal + '" onclick="openLightboxSrc(\'' + full + '\')">' +
       '<img class="exp-thumb-img" src="' + thumb + '" data-full="' + full + '" alt="' + escHtml(alt) + '" style="width:100%;aspect-ratio:4/3;object-fit:contain;background:#f4f2ec;display:block;" loading="lazy"/>' +
