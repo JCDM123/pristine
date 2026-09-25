@@ -764,9 +764,17 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
           <div class="preview-actions">
             <button class="action-btn secondary" id="a-copy-btn" onclick="copyArticleHTML()" style="display:none">Copy HTML</button>
             <button class="action-btn primary" id="a-dl-btn" onclick="downloadArticle()" style="display:none">Download File</button>
+            <button class="action-btn secondary" id="a-preview-btn" onclick="previewArticle()" style="display:none" title="Publish to a hidden address to show someone before it goes live">Private preview</button>
             <button class="action-btn primary" id="a-pub-btn" onclick="publishArticle()" style="display:none;background:var(--forest)">Publish to Site</button>
           <button class="action-btn primary" id="a-social-btn" onclick="openSocialGenerator('article')" style="display:none;background:#7B6FAB;">&#9889; Social Content</button>
           </div>
+        </div>
+        <div class="pw-sponsor-bar" style="display:flex;flex-wrap:wrap;gap:0.6rem 1rem;align-items:center;padding:0.7rem 0 0.2rem;font-size:12px;color:var(--muted);">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="a-sponsored" onchange="document.getElementById('a-sponsor-fields').style.display=this.checked?'flex':'none'"> Sponsored story</label>
+          <span id="a-sponsor-fields" style="display:none;gap:0.6rem;flex-wrap:wrap;flex:1;">
+            <input type="text" id="a-sponsor-name" placeholder="Sponsor name" style="flex:1;min-width:140px;padding:6px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:12px;">
+            <input type="text" id="a-sponsor-url" placeholder="Sponsor website (optional)" style="flex:1;min-width:180px;padding:6px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:12px;">
+          </span>
         </div>
         <div class="preview-body" id="a-preview">
           <div class="preview-empty">
@@ -1001,9 +1009,17 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
           <div class="preview-actions">
             <button class="action-btn secondary" id="r-copy-btn" onclick="copyRecipeHTML()" style="display:none">Copy HTML</button>
             <button class="action-btn primary" id="r-dl-btn" onclick="downloadRecipe()" style="display:none">Download File</button>
+            <button class="action-btn secondary" id="r-preview-btn" onclick="previewRecipe()" style="display:none" title="Publish to a hidden address to show someone before it goes live">Private preview</button>
             <button class="action-btn primary" id="r-pub-btn" onclick="publishRecipe()" style="display:none;background:var(--forest)">Publish to Site</button>
           <button class="action-btn primary" id="r-social-btn" onclick="openSocialGenerator('recipe')" style="display:none;background:#7B6FAB;">&#9889; Social Content</button>
           </div>
+        </div>
+        <div class="pw-sponsor-bar" style="display:flex;flex-wrap:wrap;gap:0.6rem 1rem;align-items:center;padding:0.7rem 0 0.2rem;font-size:12px;color:var(--muted);">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="r-sponsored" onchange="document.getElementById('r-sponsor-fields').style.display=this.checked?'flex':'none'"> Sponsored story</label>
+          <span id="r-sponsor-fields" style="display:none;gap:0.6rem;flex-wrap:wrap;flex:1;">
+            <input type="text" id="r-sponsor-name" placeholder="Sponsor name" style="flex:1;min-width:140px;padding:6px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:12px;">
+            <input type="text" id="r-sponsor-url" placeholder="Sponsor website (optional)" style="flex:1;min-width:180px;padding:6px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:12px;">
+          </span>
         </div>
         <div class="preview-body" id="r-preview">
           <div class="preview-empty">
@@ -1142,6 +1158,20 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
 <!-- ===== MANAGE CONTENT TAB ===== -->
 <div id="tab-manage" class="tab-panel">
   <div class="manage-wrap">
+
+    <!-- PRIVATE PREVIEWS -->
+    <div class="manage-section">
+      <div class="manage-section-head">
+        <div>
+          <h2 class="manage-section-title">Private previews</h2>
+          <p class="manage-section-sub">Stories on a hidden address for someone to check (for example an advertiser). Not on The Source or Kitchen, not in search, hidden from Google. Edit them, then press Go live.</p>
+        </div>
+        <div class="manage-status-bar"><div class="status-dot" id="prev-dot"></div><span id="prev-status">Ready</span></div>
+      </div>
+      <div id="manage-preview-list" class="manage-list">
+        <div class="manage-loading">Loading...</div>
+      </div>
+    </div>
 
     <!-- THE SOURCE -->
     <div class="manage-section">
@@ -1957,7 +1987,7 @@ async function generateArticle() {
     wc.style.display = 'inline-block';
     document.getElementById('a-dl-btn').style.display = 'inline-block';
     document.getElementById('a-copy-btn').style.display = 'inline-block';
-    document.getElementById('a-pub-btn').style.display = 'inline-block'; document.getElementById('a-social-btn').style.display = 'inline-block';
+    document.getElementById('a-pub-btn').style.display = 'inline-block'; document.getElementById('a-social-btn').style.display = 'inline-block'; document.getElementById('a-preview-btn').style.display = 'inline-block';
   } catch(err) {
     setStatus('a', 'error', 'Error: ' + err.message);
     document.getElementById('a-preview').innerHTML = '<div class="preview-empty"><p style="color:#c0392b;">Failed: ' + err.message + '</p></div>';
@@ -2437,6 +2467,7 @@ async function generateRecipe() {
     setStatus('r', 'done', 'Recipe ready');
     document.getElementById('r-dl-btn').style.display = 'inline-block';
     document.getElementById('r-pub-btn').style.display = 'inline-block';
+    document.getElementById('r-preview-btn').style.display = 'inline-block';
     document.getElementById('r-social-btn').style.display = 'inline-block';
     document.getElementById('r-copy-btn').style.display = 'inline-block';
   } catch(err) {
@@ -2713,7 +2744,7 @@ async function publishArticle() {
   var btn = document.getElementById('a-pub-btn');
   btn.disabled = true;
   btn.textContent = 'Publishing...';
-  setStatus('a', 'active', 'Publishing to GitHub...');
+  setStatus('a', 'active', PW_PUBLISH_MODE === 'preview' ? 'Creating private preview...' : 'Publishing to GitHub...');
 
   var articleUploaded = false;
   try {
@@ -2758,6 +2789,8 @@ async function publishArticle() {
       });
     }
     var tags = d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
+    var sponsor = PW_PUBLISH_MODE === 'golive' ? null : pwSponsor('a');
+    if (sponsor) tags = ['Sponsored'].concat(tags.filter(function(t) { return t !== 'Sponsored'; }));
     var seoTitleText = pwPageTitle(article.seoTitle || article.title);
     var pageTitle = '<title>' + seoTitleText + '</title>';
     var metaDescTag = article.metaDesc ? '<meta name="description" content="' + article.metaDesc.replace(/"/g,'&quot;') + '">' : '';
@@ -2794,6 +2827,7 @@ async function publishArticle() {
     fullHTML = fullHTML.replace('src="' + authorData.sigPath + '" alt="Signature"', 'src="' + authorData.sigPath + '" alt="' + escHtml(d.author || 'Mr Wellness') + '"');
     // Clean up any legacy placeholders
     fullHTML = fullHTML.replace('AUTHOR_NAME', '').replace('AUTHOR_ROLE', '');
+    if (sponsor) fullHTML = pwAddSponsorNote(fullHTML, sponsor, '<p class="article-intro">');
     // Dynamic sidebar: only show categories that have articles (include this new one)
     try {
       var activeCats = await getActiveCategories();
@@ -2812,6 +2846,14 @@ async function publishArticle() {
       }
     } catch(e) { fullHTML = fullHTML.replace('RELATED_CARDS_PLACEHOLDER', ''); }
 
+
+    if (PW_PUBLISH_MODE === 'preview') {
+      await pwSavePreview('article', filename, fullHTML, { title: article.title, tags: tags, author: d.author || 'Mr Wellness', category: d.category });
+      pwResetSponsor('a');
+      setStatus('a', 'done', 'Private preview ready: ' + PW_SITE + filename + ' (not listed anywhere). Find it under Manage, Private previews.');
+      btn.disabled = false; btn.textContent = 'Publish to Site';
+      return;
+    }
 
     // 3. Fetch current the-source.html
     var sourceData = await githubRequest('the-source.html', 'GET');
@@ -2921,6 +2963,8 @@ async function publishArticle() {
     updatedSource = rebuildFilterPills(updatedSource);
 
     // 2. Upload article file to GitHub (only once The Source update is ready, so a parse failure never leaves an unlinked article live)
+    // Going live from a private preview: publish the preview page exactly as it was checked and edited
+    if (PW_PUBLISH_MODE === 'golive') fullHTML = PW_GOLIVE_HTML;
     // Hidden Google data block (Article), read from the finished page
     try { fullHTML = pwAddSchema(fullHTML, filename); } catch(e) {}
     var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
@@ -2950,6 +2994,8 @@ async function publishArticle() {
       excerpt: String(article.intro || (article.sections && article.sections[0] && article.sections[0].content) || '').slice(0, 140),
       url: filename
     });
+    await pwSitemapAdd(filename);
+    if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('a');
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
     btn.textContent = 'Published!';
     btn.style.background = '#8F9574';
@@ -3057,7 +3103,7 @@ function fmtRecipeMins(n) {
 async function buildRecipeHTML() {
   await loadRecipeTemplates();
   if (!generatedRecipeData) return null;
-  syncRecipeTimeBoxes();
+  if (PW_PUBLISH_MODE !== 'golive') syncRecipeTimeBoxes();
   var d = generatedRecipeData;
   var recipe = d.recipe;
   var date = fmtDate(d.dateVal || new Date().toISOString().slice(0,10));
@@ -3209,7 +3255,7 @@ async function publishRecipe() {
   try { await loadRecipeTemplates(); }
   catch (e) { setStatus('r', 'error', 'Publish failed: ' + e.message); return; }
   if (!generatedRecipeData) return;
-  syncRecipeTimeBoxes();
+  if (PW_PUBLISH_MODE !== 'golive') syncRecipeTimeBoxes();
   var rp = generatedRecipeData.prep, rc = generatedRecipeData.cook;
   if (isNaN(parseRecipeMins(rp)) || (rc && !/^(n\/?a|none|-|0)$/i.test(String(rc).trim()) && isNaN(parseRecipeMins(rc)))) {
     setStatus('r', 'error', 'Check the prep and cook times (for example "20 mins" or "1 hour 20 mins"). Prep: "' + (rp || 'blank') + '", Cook: "' + (rc || 'blank') + '".');
@@ -3259,7 +3305,7 @@ async function publishRecipe() {
   }
 
   // Self-heal method images: recover lost paths from GitHub or re-upload from slot previews
-  for (var hi = 0; hi < 3; hi++) {
+  for (var hi = 0; hi < 3 && PW_PUBLISH_MODE !== 'golive'; hi++) {
     if (recipeBodyImages[hi]) continue;
     var hSlot = document.getElementById('rslot-' + hi);
     var hImg = hSlot ? hSlot.querySelector('img') : null;
@@ -3302,7 +3348,7 @@ async function publishRecipe() {
         toFix.push(capEl ? capEl.value.trim() : '');
       }
       var tagsJoined = selectedRTags.join(', ');
-      if (toFix.some(Boolean) || tagsJoined) {
+      if (PW_PUBLISH_MODE !== 'golive' && (toFix.some(Boolean) || tagsJoined)) {
         setStatus('r', 'active', 'Tidying captions and tags...');
         var fixResp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
           method: 'POST',
@@ -3356,12 +3402,24 @@ async function publishRecipe() {
     var d = generatedRecipeData;
     var recipe = d.recipe;
     var date = fmtDate(d.dateVal || new Date().toISOString().slice(0,10));
-    var tags = selectedRTags.length ? selectedRTags.slice() : (d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : []);
+    var tags = PW_PUBLISH_MODE === 'golive' ? (d.tagsList || []) : (selectedRTags.length ? selectedRTags.slice() : (d.tagsRaw ? d.tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : []));
+    var rSponsor = PW_PUBLISH_MODE === 'golive' ? null : pwSponsor('r');
+    if (rSponsor) {
+      tags = ['Sponsored'].concat(tags.filter(function(t) { return t !== 'Sponsored'; }));
+      built.html = pwAddSponsorNote(built.html, rSponsor, '<div class="recipe-about">');
+    }
     var slug = pwSlug(recipe.title);
     var filename = 'recipe-' + slug + '.html';
 
     if (!(await confirmSafeToReplace(filename, recipe.title))) {
       setStatus('r', 'error', 'Not published. Change the recipe name so it does not replace the other recipe, then publish again.');
+      btn.disabled = false; btn.textContent = 'Publish to Site';
+      return;
+    }
+    if (PW_PUBLISH_MODE === 'preview') {
+      await pwSavePreview('recipe', filename, built.html, { title: recipe.title, tags: tags, author: d.author || 'Mr Wellness', category: d.category, prep: d.prep, cook: d.cook });
+      pwResetSponsor('r');
+      setStatus('r', 'done', 'Private preview ready: ' + PW_SITE + filename + ' (not listed anywhere). Find it under Manage, Private previews.');
       btn.disabled = false; btn.textContent = 'Publish to Site';
       return;
     }
@@ -3478,6 +3536,7 @@ async function publishRecipe() {
     updatedKitchen = rebuildFilterPills(updatedKitchen);
 
     // 5. Upload the recipe page (only now that the Kitchen update is ready, so a problem there never leaves a hidden recipe)
+    if (PW_PUBLISH_MODE === 'golive') built.html = PW_GOLIVE_HTML;
     // Hidden Google data block (Recipe), read from the finished page
     try { built.html = pwAddSchema(built.html, filename); } catch(e) {}
     var recipeContent = btoa(unescape(encodeURIComponent(built.html)));
@@ -3506,6 +3565,8 @@ async function publishRecipe() {
       excerpt: String(recipe.intro || (generatedRecipeData && generatedRecipeData.about) || '').slice(0, 140),
       url: filename
     });
+    await pwSitemapAdd(filename);
+    if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('r');
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
     btn.textContent = 'Published!';
     btn.style.background = '#8F9574';
@@ -4065,7 +4126,7 @@ async function refreshManageData() {
 
 async function loadManageTab() {
   // Always load fresh so the list reflects the current GitHub state
-  await Promise.all([loadSourceForManage(), loadKitchenForManage()]);
+  await Promise.all([loadSourceForManage(), loadKitchenForManage(), loadPreviewsForManage()]);
 }
 
 async function loadSourceForManage() {
@@ -4327,6 +4388,7 @@ async function deleteSourceArticle(i) {
         var sha = await getFileSHA(a.url);
         if (sha) {
           await githubRequest(a.url, 'DELETE', { message: 'Delete article: ' + a.title, sha: sha, branch: GITHUB_BRANCH });
+          await pwSitemapRemove(a.url);
     await updateSearchIndex(null, a.url);
         }
       } catch(fileErr) {
@@ -4365,6 +4427,7 @@ async function deleteKitchenRecipe(i) {
         var sha = await getFileSHA(rec.url);
         if (sha) {
           await githubRequest(rec.url, 'DELETE', { message: 'Delete recipe: ' + rec.title, sha: sha, branch: GITHUB_BRANCH });
+          await pwSitemapRemove(rec.url);
     await updateSearchIndex(null, rec.url);
         }
       } catch(fileErr) {
@@ -7716,6 +7779,206 @@ async function updateAllRecipes() {
 </script>
 
 <script>
+/* ===== PRIVATE PREVIEWS, SPONSORED STORIES AND THE SITEMAP ===== */
+// 'normal' publishes as usual; 'preview' puts the story on a hidden address only;
+// 'golive' takes a checked preview and publishes it exactly as it is.
+var PW_PUBLISH_MODE = 'normal';
+var PW_GOLIVE_HTML = '';
+var PW_PREVIEW_START = '<!-- PW_PREVIEW_START -->', PW_PREVIEW_END = '<!-- PW_PREVIEW_END -->';
+
+async function previewArticle() { PW_PUBLISH_MODE = 'preview'; try { await publishArticle(); } finally { PW_PUBLISH_MODE = 'normal'; } }
+async function previewRecipe() { PW_PUBLISH_MODE = 'preview'; try { await publishRecipe(); } finally { PW_PUBLISH_MODE = 'normal'; } }
+
+// Sponsor details from the form, or null when the story is not sponsored
+// Clear the Sponsored box after publishing, so the next story is never marked sponsored by accident
+function pwResetSponsor(prefix) {
+  var box = document.getElementById(prefix + '-sponsored');
+  if (!box) return;
+  box.checked = false;
+  ['-sponsor-name', '-sponsor-url'].forEach(function(k) { var e = document.getElementById(prefix + k); if (e) e.value = ''; });
+  var fl = document.getElementById(prefix + '-sponsor-fields'); if (fl) fl.style.display = 'none';
+}
+function pwSponsor(prefix) {
+  var box = document.getElementById(prefix + '-sponsored');
+  if (!box || !box.checked) return null;
+  var name = (document.getElementById(prefix + '-sponsor-name').value || '').trim();
+  var url = (document.getElementById(prefix + '-sponsor-url').value || '').trim();
+  if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+  return { name: name, url: url };
+}
+// A clear note at the top of the story: paid content must be obvious to readers,
+// and links to the sponsor are marked "sponsored" as Google asks
+function pwAddSponsorNote(html, sp, beforeMarker) {
+  var who = sp.name ? (sp.url ? '<a href="' + escHtml(sp.url) + '" rel="sponsored noopener" target="_blank" style="color:inherit;text-decoration:underline;">' + escHtml(sp.name) + '</a>' : escHtml(sp.name)) : 'a partner';
+  var note = '<p class="pw-sponsored-note" style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#8F9574;margin:0 0 1.2rem;">Sponsored by ' + who +
+    '<span style="display:block;text-transform:none;letter-spacing:0;color:#888;font-size:13px;margin-top:4px;">Written by Pristine Wellness in partnership with ' + (sp.name ? escHtml(sp.name) : 'our partner') + '. Our views are our own.</span></p>';
+  var i = html.indexOf(beforeMarker);
+  return i === -1 ? html : html.slice(0, i) + note + '\n' + html.slice(i);
+}
+
+// Mark a page as a private preview: hidden from Google, with a banner so nobody mistakes it for the live story
+function pwMarkPreview(html) {
+  html = html.replace(/<head[^>]*>/i, function(m) { return m + '\n' + PW_PREVIEW_START + '<meta name="robots" content="noindex, nofollow">' + PW_PREVIEW_END; });
+  return html.replace(/<body[^>]*>/i, function(m) {
+    return m + '\n' + PW_PREVIEW_START + '<div id="pw-preview-banner" style="position:sticky;top:0;z-index:9999;background:#1a1a1a;color:#fff;text-align:center;font-family:Jost,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 12px;">Private preview &middot; not yet published</div>' + PW_PREVIEW_END;
+  });
+}
+function pwUnmarkPreview(html) {
+  return html.replace(/\n?<!-- PW_PREVIEW_START -->[\s\S]*?<!-- PW_PREVIEW_END -->/g, '');
+}
+
+async function pwLoadPreviews() {
+  try { var p = await githubRequest('data/previews.json', 'GET'); return { list: JSON.parse(decodeURIComponent(escape(atob(p.content.replace(/\n/g, ''))))), sha: p.sha }; }
+  catch (e) { if (e.status === 404) return { list: [], sha: null }; throw e; }
+}
+async function pwSavePreviews(list, sha, message) {
+  var body = { message: message, content: btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), branch: GITHUB_BRANCH };
+  if (sha) body.sha = sha;
+  await githubRequest('data/previews.json', 'PUT', body);
+}
+
+async function pwSavePreview(kind, file, html, meta) {
+  var out = pwMarkPreview(html);
+  try { out = pwAddSchema(out, file); } catch (e) {}
+  var sha = await getFileSHA(file);
+  var body = { message: 'Private preview: ' + meta.title, content: btoa(unescape(encodeURIComponent(out))), branch: GITHUB_BRANCH };
+  if (sha) body.sha = sha;
+  await githubRequest(file, 'PUT', body);
+  var pv = await pwLoadPreviews();
+  var rec = { url: file, kind: kind, title: meta.title, tags: meta.tags || [], author: meta.author, category: meta.category || '', prep: meta.prep || '', cook: meta.cook || '', created: localISODate() };
+  pv.list = pv.list.filter(function(r) { return r.url !== file; });
+  pv.list.unshift(rec);
+  await pwSavePreviews(pv.list, pv.sha, 'Private preview list: add ' + file);
+}
+async function pwForgetPreview(file) {
+  try {
+    var pv = await pwLoadPreviews();
+    var left = pv.list.filter(function(r) { return r.url !== file; });
+    if (left.length !== pv.list.length) await pwSavePreviews(left, pv.sha, 'Private preview list: ' + file + ' is now live');
+  } catch (e) {}
+}
+
+// Sitemap: new stories are added so Google finds them; deleted ones are taken out
+async function pwSitemapAdd(file) {
+  try {
+    var p = await githubRequest('sitemap.xml', 'GET');
+    var xml = decodeURIComponent(escape(atob(p.content.replace(/\n/g, ''))));
+    var loc = '<loc>' + PW_SITE + file + '</loc>';
+    var today = localISODate();
+    if (xml.indexOf(loc) !== -1) xml = xml.replace(new RegExp('(' + loc.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&') + '<lastmod>)[^<]*'), '$1' + today);
+    else xml = xml.replace('</urlset>', '  <url>' + loc + '<lastmod>' + today + '</lastmod></url>\n</urlset>');
+    await githubRequest('sitemap.xml', 'PUT', { message: 'Sitemap: ' + file, content: btoa(unescape(encodeURIComponent(xml))), sha: p.sha, branch: GITHUB_BRANCH });
+  } catch (e) { console.warn('Sitemap not updated:', e.message); }
+}
+async function pwSitemapRemove(file) {
+  try {
+    var p = await githubRequest('sitemap.xml', 'GET');
+    var xml = decodeURIComponent(escape(atob(p.content.replace(/\n/g, ''))));
+    var re = new RegExp('\\s*<url><loc>' + (PW_SITE + file).replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&') + '</loc>[\\s\\S]*?</url>');
+    if (!re.test(xml)) return;
+    await githubRequest('sitemap.xml', 'PUT', { message: 'Sitemap: remove ' + file, content: btoa(unescape(encodeURIComponent(xml.replace(re, '')))), sha: p.sha, branch: GITHUB_BRANCH });
+  } catch (e) { console.warn('Sitemap not updated:', e.message); }
+}
+
+/* ---------- Manage: private previews ---------- */
+var managePreviewData = [];
+async function loadPreviewsForManage() {
+  var el = document.getElementById('manage-preview-list');
+  if (!el) return;
+  el.innerHTML = '<div class="manage-loading">Loading...</div>';
+  try {
+    managePreviewData = (await pwLoadPreviews()).list;
+    if (!managePreviewData.length) { el.innerHTML = '<div class="manage-empty">No private previews. Use "Private preview" instead of "Publish to Site" when someone needs to check a story first.</div>'; return; }
+    var b = function(label, fn, colour) { return '<button onclick="' + fn + '" style="background:' + colour + ';color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">' + label + '</button>'; };
+    el.innerHTML = managePreviewData.map(function(r, i) {
+      return '<div class="manage-row">' +
+        '<div class="manage-row-title">' + escHtml(r.title) + '</div>' +
+        '<span class="manage-row-cat">' + (r.kind === 'recipe' ? 'Recipe' : 'Article') + (r.tags && r.tags.indexOf('Sponsored') !== -1 ? ' &middot; Sponsored' : '') + '</span>' +
+        '<span class="manage-row-meta">' + escHtml(r.created || '') + '</span>' +
+        b('COPY LINK', 'copyPreviewLink(' + i + ', this)', '#7a8163') +
+        b('OPEN', 'window.open(\'' + PW_SITE + r.url + '\', \'_blank\')', '#7a8163') +
+        b('PHOTOS', 'openStoryPhotos(\'' + r.kind + '\', managePreviewData[' + i + '].url)', 'var(--sage)') +
+        b('EDIT TEXT', 'openStoryText(\'' + r.kind + '\', managePreviewData[' + i + '].url)', '#1a1a1a') +
+        b('GO LIVE', 'goLivePreview(' + i + ')', '#C9A96E') +
+        '<button class="manage-del-btn" onclick="deletePreview(' + i + ')" title="Delete preview">&#215;</button>' +
+        '</div>';
+    }).join('');
+  } catch (e) {
+    el.innerHTML = '<div class="manage-empty">Could not load previews: ' + escHtml(e.message) + '</div>';
+  }
+}
+function copyPreviewLink(i, btn) {
+  var link = PW_SITE + managePreviewData[i].url;
+  try { navigator.clipboard.writeText(link); } catch (e) {}
+  btn.textContent = 'COPIED';
+  setTimeout(function() { btn.textContent = 'COPY LINK'; }, 2000);
+}
+
+async function deletePreview(i) {
+  var r = managePreviewData[i];
+  if (!confirm('Delete the private preview "' + r.title + '"?\n\nThe hidden page is removed. This cannot be undone.')) return;
+  setManageStatus('prev', 'Deleting...', true);
+  try {
+    var sha = await getFileSHA(r.url);
+    if (sha) {
+      var pg = await githubRequest(r.url, 'GET');
+      var html = decodeURIComponent(escape(atob(pg.content.replace(/\n/g, ''))));
+      // Safety: only ever delete a page that is still a preview, never a live story
+      if (html.indexOf(PW_PREVIEW_START) === -1) throw new Error('That page is already live, so it was not deleted. Use the delete button under The Source or Ancestral Kitchen instead.');
+      await githubRequest(r.url, 'DELETE', { message: 'Delete private preview: ' + r.title, sha: pg.sha, branch: GITHUB_BRANCH });
+    }
+    await pwForgetPreview(r.url);
+    setManageStatus('prev', 'Deleted.', false);
+  } catch (e) { setManageStatus('prev', 'Error: ' + e.message, false); }
+  loadPreviewsForManage();
+}
+
+async function goLivePreview(i) {
+  var r = managePreviewData[i];
+  if (!confirm('Publish "' + r.title + '" now?\n\nIt goes on ' + (r.kind === 'recipe' ? 'Ancestral Kitchen' : 'The Source') + ' as the latest story, exactly as it looks in the preview.')) return;
+  setManageStatus('prev', 'Publishing...', true);
+  var statusId = r.kind === 'recipe' ? 'r-status' : 'a-status';
+  var saved = { gad: generatedArticleData, grd: generatedRecipeData, aip: articleImagePath, aib: articleImageBase64, abi: articleBodyImages, rip: recipeImagePath, rib: recipeImageBase64, rbi: recipeBodyImages };
+  var catEl = document.getElementById('r-category'), savedCat = catEl ? catEl.value : '';
+  try {
+    var pg = await githubRequest(r.url, 'GET');
+    var html = pwUnmarkPreview(decodeURIComponent(escape(atob(pg.content.replace(/\n/g, '')))));
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var text = function(sel) { var e = doc.querySelector(sel); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
+    var title = text('h1') || r.title;
+    var meta = (doc.querySelector('meta[name="description"]') || {}).content || '';
+    var hero = doc.querySelector(r.kind === 'recipe' ? '.recipe-hero' : '.article-hero');
+    var heroImg = hero ? (((hero.getAttribute('style') || '').match(/url\(['"]?([^'")]+)/) || [])[1] || '') : '';
+    var today = localISODate();
+    if (r.kind === 'article') {
+      // The story is dated the day it goes live
+      html = html.replace(/(<span class="article-date">)[^<]*(<\/span>)/, function(m, a, b) { return a + fmtDate(today) + b; });
+      var rt = (text('.article-meta-row').match(/(\d+)\s*min/) || [])[1];
+      generatedArticleData = { article: { title: title, seoTitle: title, metaDesc: meta, intro: text('.article-intro'), sections: [], pullQuote: '', closing: '', sources: [] },
+        topic: title, category: r.category, readtime: rt ? rt + ' min read' : '', author: r.author, dateVal: today, tagsRaw: (r.tags || []).join(', '), format: 'standard', useCitations: true };
+      articleImagePath = heroImg; articleImageBase64 = ''; articleBodyImages = [null, null, null, null, null, null];
+    } else {
+      generatedRecipeData = { recipe: { title: title, intro: text('.recipe-about p'), about: text('.recipe-about p'), ingredients: [], steps: [], chefNote: '', servingSuggestion: '', seoTitle: title, metaDesc: meta },
+        name: title, about: text('.recipe-about p'), category: r.category, author: r.author, servings: text('#hero-servings') || '4', difficulty: '', prep: r.prep, cook: r.cook, dietary: '', tagsList: r.tags || [], dateVal: today };
+      recipeImagePath = heroImg; recipeImageBase64 = ''; recipeBodyImages = [null, null, null, null, null, null];
+      if (catEl) catEl.value = r.category;
+    }
+    PW_GOLIVE_HTML = html;
+    PW_PUBLISH_MODE = 'golive';
+    if (r.kind === 'recipe') await publishRecipe(); else await publishArticle();
+    var st = (document.getElementById(statusId) || {}).textContent || '';
+    setManageStatus('prev', /Published!/.test(st) ? 'Live! It will appear in 1-2 minutes.' : 'Error: ' + st.replace(/^Publish failed:\s*/, ''), false);
+  } catch (e) {
+    setManageStatus('prev', 'Error: ' + e.message, false);
+  } finally {
+    PW_PUBLISH_MODE = 'normal'; PW_GOLIVE_HTML = '';
+    generatedArticleData = saved.gad; generatedRecipeData = saved.grd; articleImagePath = saved.aip; articleImageBase64 = saved.aib; articleBodyImages = saved.abi;
+    recipeImagePath = saved.rip; recipeImageBase64 = saved.rib; recipeBodyImages = saved.rbi;
+    if (catEl) catEl.value = savedCat;
+  }
+  loadManageTab();
+}
+
 /* ===== EDIT PUBLISHED STORIES: change photos and edit text =====
    Works on a story that is already live. Every save reads the latest version from GitHub first. */
 var SE = { kind: '', url: '', title: '', html: '', sha: '', doc: null, photo: null, text: null };
