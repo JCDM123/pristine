@@ -2160,7 +2160,19 @@ async function downloadArticle() {
     + TMPL_BOTTOM;
 
   var slug = pwSlug(article.title);
-  downloadFile('article-' + slug + '.html', fullHTML);
+  var dlFile = 'article-' + slug + '.html';
+  // Match the published page: description, web address, author box and Google data
+  var dlHead = pageTitle
+    + (article.metaDesc ? '\n<meta name="description" content="' + String(article.metaDesc).replace(/"/g, '&quot;') + '">' : '')
+    + '\n<link rel="canonical" href="' + PW_SITE + dlFile + '">';
+  fullHTML = fullHTML.replace(pageTitle, function() { return dlHead; });
+  var dlAuthor = getAuthorData(d.author);
+  if (dlAuthor) {
+    fullHTML = fullHTML.replace('AUTHOR_SIG_PLACEHOLDER', dlAuthor.sigPath).replace('AUTHOR_BIO', escHtml(dlAuthor.bio));
+    fullHTML = fullHTML.replace('src="' + dlAuthor.sigPath + '" alt="Signature"', 'src="' + dlAuthor.sigPath + '" alt="' + escHtml(d.author || 'Mr Wellness') + '"');
+  }
+  try { fullHTML = pwAddSchema(fullHTML, dlFile); } catch (e) {}
+  downloadFile(dlFile, fullHTML);
 }
 
 function copyArticleHTML() {
@@ -4253,7 +4265,7 @@ function renderSourceList() {
       '<button class="manage-pin-btn' + (a.pinned ? ' pinned' : '') + '" onclick="toggleSourcePin(' + i + ')" title="Toggle Essential Reading">' +
         (a.pinned ? '&#128204; Essential' : '&#128204; Pin') +
       '</button>' +
-      '<button class="manage-del-btn" onclick="deleteSourceArticle(' + i + ')" title="Delete article">&#215;</button>' + '<button onclick="openSocialFromManage(\'article\', manageSourceData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
+      '<button class="manage-del-btn" onclick="deleteSourceArticle(' + i + ')" title="Delete article">&#215;</button>' + '<button onclick="openStoryPhotos(\'article\', manageSourceData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openStoryText(\'article\', manageSourceData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'article\', manageSourceData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
     '</div>';
   });
   html += '<button class="manage-save-btn" id="src-save-btn" onclick="saveSourceChanges()">Save Changes to The Source</button>';
@@ -4275,7 +4287,7 @@ function renderKitchenList() {
       '<button class="manage-pin-btn' + (r.pinned ? ' pinned' : '') + '" onclick="toggleKitchenPin(' + i + ')" title="Toggle pinned recipe">' +
         (r.pinned ? '&#128204; Pinned' : '&#128204; Pin') +
       '</button>' +
-      '<button class="manage-del-btn" onclick="deleteKitchenRecipe(' + i + ')" title="Delete recipe">&#215;</button>' + '<button onclick="openSocialFromManage(\'recipe\', manageKitchenData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
+      '<button class="manage-del-btn" onclick="deleteKitchenRecipe(' + i + ')" title="Delete recipe">&#215;</button>' + '<button onclick="openStoryPhotos(\'recipe\', manageKitchenData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openStoryText(\'recipe\', manageKitchenData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'recipe\', manageKitchenData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
     '</div>';
   });
   html += '<button class="manage-save-btn" id="kit-save-btn" onclick="saveKitchenChanges()">Save Changes to Ancestral Kitchen</button>';
@@ -5633,7 +5645,7 @@ function pwIsoDate(text) {
 
 // Build the hidden Google data block (schema.org Article or Recipe) by reading the finished page itself,
 // so the data always matches what visitors see. Returns the page with the block added (or replaced).
-function pwAddSchema(html, fileName) {
+function pwAddSchema(html, fileName, modified) {
   var doc = new DOMParser().parseFromString(html, 'text/html');
   var text = function(sel, root) { var e = (root || doc).querySelector(sel); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
   var meta = function(sel) { var e = doc.querySelector(sel); return e ? (e.getAttribute('content') || '').trim() : ''; };
@@ -5676,6 +5688,7 @@ function pwAddSchema(html, fileName) {
   } else {
     return html;
   }
+  if (modified && data) data.dateModified = modified;
   var block = '<script type="application/ld+json" id="pw-schema">' + JSON.stringify(data).replace(/</g, '\\u003c') + '<' + '/script>';
   var existing = /<script type="application\/ld\+json" id="pw-schema">[\s\S]*?<\/script>/;
   if (existing.test(html)) return html.replace(existing, function() { return block; });
@@ -7702,5 +7715,449 @@ async function updateAllRecipes() {
 
 </script>
 
+<script>
+/* ===== EDIT PUBLISHED STORIES: change photos and edit text =====
+   Works on a story that is already live. Every save reads the latest version from GitHub first. */
+var SE = { kind: '', url: '', title: '', html: '', sha: '', doc: null, photo: null, text: null };
+
+function seDecode(content) { return decodeURIComponent(escape(atob(String(content).replace(/\n/g, '')))); }
+function seEncode(html) { return btoa(unescape(encodeURIComponent(html))); }
+async function seGet(file) { var p = await githubRequest(file, 'GET'); return { html: seDecode(p.content), sha: p.sha }; }
+async function sePut(file, html, sha, message) {
+  await githubRequest(file, 'PUT', { message: message, content: seEncode(html), sha: sha, branch: GITHUB_BRANCH });
+}
+function seSerialize(doc) { return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML + '\n'; }
+function seToday() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function seSetStatus(msg, isError) {
+  var el = document.getElementById('se-status');
+  if (el) { el.textContent = msg; el.style.color = isError ? '#c0392b' : 'var(--muted)'; }
+}
+
+// Find every card, featured tile, pinned tile or "Keep Reading" card that links to a story,
+// and let fn rewrite it. Works on the page text so nothing else on the page is touched.
+function seUpdateLinkedBlocks(html, file, fn) {
+  var starts = ['<div class="article-card"', '<div class="card"', '<div class="featured"', '<div class="pinned-small"', '<a class="related-card"', '<div class="related-card"'];
+  var blocks = [], seen = {};
+  var needles = ["'" + file + "'", '"' + file + '"'];
+  needles.forEach(function(needle) {
+    var at = html.indexOf(needle);
+    while (at !== -1) {
+      var best = null;
+      starts.forEach(function(st) {
+        var s = html.lastIndexOf(st, at);
+        if (s === -1) return;
+        var e = st.indexOf('<a ') === 0 ? html.indexOf('</a>', s) + 4 : findDivEndJS(html, s);
+        if (e > at && (!best || s > best.s)) best = { s: s, e: e };
+      });
+      if (best && !seen[best.s]) { seen[best.s] = 1; blocks.push(best); }
+      at = html.indexOf(needle, at + 1);
+    }
+  });
+  blocks.sort(function(a, b) { return b.s - a.s; });
+  blocks.forEach(function(b) { html = html.slice(0, b.s) + fn(html.slice(b.s, b.e)) + html.slice(b.e); });
+  return { html: html, count: blocks.length };
+}
+// New main photo on a card: only the background of its picture area changes
+function seSetBlockImage(block, path) {
+  return block.replace(/(class="(?:card-img-inner|feat-img|pinned-small-img-inner|related-img)"[^>]*?style=")([^"]*)"/, function(m, pre, style) {
+    var rest = style.replace(/background-image\s*:\s*url\([^)]*\)\s*;?/gi, '').replace(/background\s*:\s*(?:var\(--forest\)|url\([^)]*\)[^;]*)\s*;?/gi, '').trim();
+    return pre + "background-image:url('" + path + "');background-size:cover;background-position:center;" + rest + '"';
+  });
+}
+// New title on a card
+function seSetBlockTitle(block, title) {
+  var t = escHtml(title);
+  return block.replace(/(class="(?:card-title|feat-title|feat-img-title|pinned-small-title|related-title-card|related-title)"[^>]*>)[^<]*/g, function(m, pre) { return pre + t; });
+}
+
+// Apply a change to The Source or Ancestral Kitchen, and to the "Keep Reading" cards on every other story
+async function seUpdateEverywhere(file, fn, what) {
+  var listing = file.indexOf('recipe-') === 0 ? 'ancestral-kitchen.html' : 'the-source.html';
+  var targets = [listing];
+  var addTarget = function(name) {
+    if (/^(article|recipe)-.*\.html$/.test(name) && !/template/.test(name) && name !== file && targets.indexOf(name) === -1) targets.push(name);
+  };
+  // Every published story: from the site's search list, plus the folder listing as a backup
+  try { JSON.parse((await seGet('data/search-index.json')).html).forEach(function(e) { addTarget(e.url); }); } catch (e) {}
+  try { (await githubRequest('', 'GET') || []).forEach(function(f) { addTarget(f.name); }); } catch (e) {}
+  var changed = 0;
+  for (var i = 0; i < targets.length; i++) {
+    seSetStatus('Updating ' + what + ' (' + (i + 1) + ' of ' + targets.length + ')...');
+    var pg = await seGet(targets[i]);
+    var r = seUpdateLinkedBlocks(pg.html, file, fn);
+    if (r.count && r.html !== pg.html) { await sePut(targets[i], r.html, pg.sha, 'Studio: ' + what + ' for ' + file); changed++; }
+  }
+  return changed;
+}
+
+function seCloseModal() {
+  var m = document.getElementById('se-modal');
+  if (m) m.remove();
+  document.body.style.overflow = '';
+}
+function seOpenModal(title, bodyHTML, footHTML, wide) {
+  seCloseModal();
+  var m = document.createElement('div');
+  m.id = 'se-modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:900;display:flex;align-items:center;justify-content:center;padding:1rem;';
+  m.innerHTML = '<div style="background:#fff;border-radius:12px;width:100%;max-width:' + (wide ? '1100px' : '760px') + ';max-height:94vh;display:flex;flex-direction:column;overflow:hidden;">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;border-bottom:0.5px solid var(--border);">' +
+    '<div style="font-family:Cormorant Garamond,serif;font-style:italic;font-size:24px;">' + title + '</div>' +
+    '<button onclick="seCloseModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#999;">&times;</button></div>' +
+    '<div id="se-body" style="padding:1.2rem 1.4rem;overflow:auto;flex:1;">' + bodyHTML + '</div>' +
+    '<div style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.4rem;border-top:0.5px solid var(--border);">' +
+    '<span id="se-status" style="flex:1;font-size:13px;color:var(--muted);"></span>' + footHTML + '</div></div>';
+  document.body.appendChild(m);
+  document.body.style.overflow = 'hidden';
+}
+
+// Upload a photo from this computer into images/ and return its path
+async function seUploadPhoto(file, maxW, maxH) {
+  var bad = typeof expUnreadableMsg === 'function' ? expUnreadableMsg(file) : '';
+  if (bad) throw new Error(bad);
+  var c = await compressImage(file, maxW, maxH, 0.82, false);
+  var path = 'images/' + pwSlug(SE.title).slice(0, 40) + '-' + Date.now().toString(36) + '.jpg';
+  await githubRequest(path, 'PUT', { message: 'Upload image: ' + path, content: c.base64, branch: GITHUB_BRANCH });
+  return path;
+}
+function sePickFile(cb) {
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/jpeg,image/png,image/webp,.heic,.heif';
+  inp.onchange = function() { if (inp.files[0]) cb(inp.files[0]); };
+  inp.click();
+}
+
+/* ---------- CHANGE PHOTOS ---------- */
+async function openStoryPhotos(kind, url) {
+  if (!url) { alert('This story has no page to edit.'); return; }
+  seOpenModal('Change photos', '<div style="color:var(--muted);font-size:13px;">Loading the story...</div>', '');
+  try {
+    var pg = await seGet(url);
+    var doc = new DOMParser().parseFromString(pg.html, 'text/html');
+    var h1 = doc.querySelector('h1');
+    SE = { kind: kind, url: url, title: h1 ? h1.textContent.trim() : url, html: pg.html, sha: pg.sha, doc: doc, photo: null, text: null };
+    var hero = doc.querySelector(kind === 'recipe' ? '.recipe-hero' : '.article-hero');
+    var heroUrl = hero ? ((hero.getAttribute('style') || '').match(/url\(['"]?([^'")]+)/) || [])[1] || '' : '';
+    var imgSel = kind === 'recipe' ? '.method-section figure img' : '.article-text img';
+    var body = Array.prototype.map.call(doc.querySelectorAll(imgSel), function(img, i) {
+      var fig = img.closest('figure'), cap = fig && fig.querySelector('figcaption');
+      return { i: i, src: img.getAttribute('src'), caption: cap ? cap.textContent.trim() : '', remove: false, changed: false };
+    });
+    var spots = kind === 'recipe'
+      ? Array.prototype.map.call(doc.querySelectorAll('.method-step'), function(s, i) { return 'After step ' + (i + 1); })
+      : Array.prototype.map.call(doc.querySelectorAll('.article-text h2'), function(h) { return 'End of: ' + h.textContent.trim().slice(0, 60); });
+    SE.photo = { hero: heroUrl, heroNew: '', body: body, add: [], spots: spots };
+    seRenderPhotos();
+  } catch (e) {
+    document.getElementById('se-body').innerHTML = '<div style="color:#c0392b;font-size:14px;">Could not load the story: ' + escHtml(e.message) + '</div>';
+  }
+}
+
+function seThumb(src) {
+  // Shown straight from GitHub, so a photo uploaded a moment ago appears before the site has updated
+  var u = /^https?:/.test(src || '') ? src : 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + String(src || '').replace(/^\/+/, '');
+  return src ? '<div style="width:150px;height:100px;border-radius:6px;background:#f4f2ec url(\'' + u + '\') center/cover no-repeat;flex-shrink:0;"></div>'
+             : '<div style="width:150px;height:100px;border-radius:6px;background:#8F9574;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;">No photo</div>';
+}
+function seBtn(label, onclick, colour) {
+  return '<button onclick="' + onclick + '" style="background:' + (colour || 'var(--sage)') + ';color:#fff;border:none;border-radius:4px;padding:6px 12px;font-size:11px;letter-spacing:0.5px;cursor:pointer;margin:0 6px 6px 0;">' + label + '</button>';
+}
+
+function seRenderPhotos() {
+  var P = SE.photo, h = '';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">' + escHtml(SE.title) + '</p>';
+  h += '<h3 style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:0.6rem;">Main photo</h3>';
+  h += '<div style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:0.4rem;">' + seThumb(P.heroNew || P.hero) + '<div>' +
+    seBtn('Pick from Library', 'seChooseHero(\'library\')') + seBtn('Upload new', 'seChooseHero(\'upload\')', '#7a8163') +
+    '<div style="font-size:12px;color:var(--muted);margin-top:4px;">Used at the top of the story, on its card, in "Keep Reading" boxes and when shared.' + (P.heroNew ? ' <b style="color:var(--sage);">New photo chosen.</b>' : '') + '</div></div></div>';
+  h += '<h3 style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin:1.6rem 0 0.6rem;">Photos in the story</h3>';
+  if (!P.body.length) h += '<div style="font-size:13px;color:var(--muted);margin-bottom:0.6rem;">None yet.</div>';
+  P.body.forEach(function(b, i) {
+    h += '<div style="display:flex;gap:1rem;align-items:flex-start;padding:0.7rem 0;border-bottom:0.5px solid var(--border);' + (b.remove ? 'opacity:0.4;' : '') + '">' + seThumb(b.src) + '<div style="flex:1;">' +
+      '<input type="text" value="' + escHtml(b.caption).replace(/"/g, '&quot;') + '" placeholder="Caption (optional)" oninput="SE.photo.body[' + i + '].caption=this.value;SE.photo.body[' + i + '].changed=true" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:13px;margin-bottom:6px;">' +
+      seBtn('Replace from Library', 'seChooseBody(' + i + ',\'library\')') + seBtn('Upload replacement', 'seChooseBody(' + i + ',\'upload\')', '#7a8163') +
+      seBtn(b.remove ? 'Keep' : 'Remove', 'SE.photo.body[' + i + '].remove=!SE.photo.body[' + i + '].remove;seRenderPhotos()', '#b35a4a') + '</div></div>';
+  });
+  h += '<h3 style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin:1.6rem 0 0.6rem;">Add a photo</h3>';
+  P.add.forEach(function(a, i) {
+    h += '<div style="display:flex;gap:1rem;align-items:flex-start;padding:0.7rem 0;border-bottom:0.5px solid var(--border);">' + seThumb(a.src) + '<div style="flex:1;">' +
+      '<select onchange="SE.photo.add[' + i + '].spot=+this.value" style="width:100%;padding:7px;border:0.5px solid var(--border);border-radius:4px;font-size:13px;margin-bottom:6px;">' +
+      P.spots.map(function(s, k) { return '<option value="' + k + '"' + (k === a.spot ? ' selected' : '') + '>' + escHtml(s) + '</option>'; }).join('') + '</select>' +
+      '<input type="text" value="' + escHtml(a.caption).replace(/"/g, '&quot;') + '" placeholder="Caption (optional)" oninput="SE.photo.add[' + i + '].caption=this.value" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:13px;margin-bottom:6px;">' +
+      seBtn('Remove', 'SE.photo.add.splice(' + i + ',1);seRenderPhotos()', '#b35a4a') + '</div></div>';
+  });
+  if (P.spots.length) h += '<div style="margin-top:0.6rem;">' + seBtn('+ Add from Library', 'seAddPhoto(\'library\')') + seBtn('+ Upload and add', 'seAddPhoto(\'upload\')', '#7a8163') + '</div>';
+  else h += '<div style="font-size:13px;color:var(--muted);">This story has no sections to add photos to.</div>';
+  document.getElementById('se-body').innerHTML = h;
+  var foot = document.querySelector('#se-modal [data-se-save]');
+  if (!foot) {
+    var bar = document.getElementById('se-status').parentNode;
+    var b = document.createElement('button');
+    b.setAttribute('data-se-save', '1'); b.className = 'gen-btn'; b.style.cssText = 'margin:0;'; b.textContent = 'Save photos'; b.onclick = seSavePhotos;
+    bar.appendChild(b);
+  }
+}
+
+function seGetPhoto(mode, maxW, maxH, done) {
+  if (mode === 'library') {
+    openImgPicker(function(p) { done(String(p).replace(/^\/+/, '')); });
+    return;
+  }
+  sePickFile(async function(file) {
+    seSetStatus('Uploading photo...');
+    try { var p = await seUploadPhoto(file, maxW, maxH); seSetStatus('Photo uploaded. Press Save photos when ready.'); done(p); }
+    catch (e) { seSetStatus('Photo not uploaded: ' + e.message, true); }
+  });
+}
+function seChooseHero(mode) { seGetPhoto(mode, 1600, 1000, function(p) { SE.photo.heroNew = p; seRenderPhotos(); }); }
+function seChooseBody(i, mode) { seGetPhoto(mode, 1600, 1600, function(p) { SE.photo.body[i].src = p; SE.photo.body[i].changed = true; SE.photo.body[i].remove = false; seRenderPhotos(); }); }
+function seAddPhoto(mode) { seGetPhoto(mode, 1600, 1600, function(p) { SE.photo.add.push({ src: p, caption: '', spot: Math.max(0, SE.photo.spots.length - 1) }); seRenderPhotos(); }); }
+
+function seFigure(doc, src, caption, kind) {
+  var fig = doc.createElement('figure');
+  fig.setAttribute('style', kind === 'recipe' ? 'margin:1.8rem 0;' : 'margin:1.5rem 0;');
+  var img = doc.createElement('img');
+  img.setAttribute('src', src);
+  img.setAttribute('alt', caption || (kind === 'recipe' ? SE.title + ', step photo' : SE.title));
+  img.setAttribute('loading', 'lazy');
+  img.setAttribute('style', 'width:100%;border-radius:' + (kind === 'recipe' ? '8px' : '2px') + ';display:block;');
+  fig.appendChild(img);
+  if (caption) {
+    var fc = doc.createElement('figcaption');
+    fc.setAttribute('style', 'font-size:12px;color:#888;font-style:italic;margin-top:6px;text-align:center;');
+    fc.textContent = caption;
+    fig.appendChild(fc);
+  }
+  return fig;
+}
+
+async function seSavePhotos() {
+  var P = SE.photo, kind = SE.kind, file = SE.url;
+  var btn = document.querySelector('#se-modal [data-se-save]');
+  if (btn) btn.disabled = true;
+  try {
+    seSetStatus('Saving the story...');
+    // Always start from the live page, in case it changed while this window was open
+    var pg = await seGet(file);
+    var doc = new DOMParser().parseFromString(pg.html, 'text/html');
+    if (P.heroNew) {
+      var hero = doc.querySelector(kind === 'recipe' ? '.recipe-hero' : '.article-hero');
+      if (hero) {
+        var st = (hero.getAttribute('style') || '').replace(/background-image\s*:\s*url\([^)]*\)\s*;?/gi, '').replace(/background\s*:\s*(?:var\(--forest\)|url\([^)]*\)[^;]*)\s*;?/gi, '').trim();
+        hero.setAttribute('style', 'background-image:url(' + P.heroNew + ');' + st);
+      }
+      ['meta[property="og:image"]', 'meta[name="twitter:image"]'].forEach(function(sel) {
+        var m = doc.querySelector(sel); if (m) m.setAttribute('content', PW_SITE + P.heroNew);
+      });
+    }
+    var imgSel = kind === 'recipe' ? '.method-section figure img' : '.article-text img';
+    var imgs = Array.prototype.slice.call(doc.querySelectorAll(imgSel));
+    P.body.forEach(function(b, i) {
+      var img = imgs[i]; if (!img) return;
+      var holder = img.closest('figure') || img;
+      if (b.remove) { holder.remove(); return; }
+      if (!b.changed) return;
+      var fresh = seFigure(doc, b.src, b.caption.trim(), kind);
+      holder.parentNode.replaceChild(fresh, holder);
+    });
+    // New photos go at the end of the chosen section (articles) or after the chosen step (recipes)
+    P.add.slice().forEach(function(a) {
+      var fig = seFigure(doc, a.src, (a.caption || '').trim(), kind);
+      if (kind === 'recipe') {
+        var step = doc.querySelectorAll('.method-step')[a.spot];
+        if (step) step.parentNode.insertBefore(fig, step.nextSibling);
+      } else {
+        var h2 = doc.querySelectorAll('.article-text h2')[a.spot];
+        if (!h2) return;
+        var n = h2.nextElementSibling, last = h2;
+        while (n && n.tagName !== 'H2') { last = n; n = n.nextElementSibling; }
+        last.parentNode.insertBefore(fig, last.nextSibling);
+      }
+    });
+    var out = pwAddSchema(seSerialize(doc), file, seToday());
+    await sePut(file, out, pg.sha, 'Studio: change photos on ' + file);
+    var extra = 0;
+    if (P.heroNew) extra = await seUpdateEverywhere(file, function(block) { return seSetBlockImage(block, P.heroNew); }, 'main photo');
+    seSetStatus('Saved! Live in 1-2 minutes' + (extra ? ' (story and ' + extra + ' other page' + (extra === 1 ? '' : 's') + ' updated).' : '.'));
+    SE.photo.hero = P.heroNew || P.hero; SE.photo.heroNew = '';
+    setTimeout(function() { if (document.getElementById('se-modal') && SE.url === file && SE.photo) openStoryPhotos(kind, file); }, 1200);
+  } catch (e) {
+    seSetStatus('Not saved: ' + e.message, true);
+  }
+  if (btn) btn.disabled = false;
+}
+
+/* ---------- EDIT TEXT ---------- */
+var SE_EDIT_SELECTORS = {
+  article: 'h1, .article-intro, .article-text h2, .article-text p, .article-text li, .article-text blockquote, .article-text figcaption, .pull-quote blockquote',
+  recipe: 'h1, .recipe-about p, .chef-tip p, .step-title, .step-text, .ing-amount, .ing-name, .method-section figcaption'
+};
+var SE_SINGLE_LINE = /^(H1|H2|FIGCAPTION)$|step-title|ing-amount|ing-name/;
+
+async function openStoryText(kind, url) {
+  if (!url) { alert('This story has no page to edit.'); return; }
+  seOpenModal('Edit text', '<div style="color:var(--muted);font-size:13px;">Loading the story...</div>',
+    '<button class="gen-btn" data-se-textsave="1" style="margin:0;" onclick="seSaveText()">Save text</button>', true);
+  try {
+    var pg = await seGet(url);
+    var doc = new DOMParser().parseFromString(pg.html, 'text/html');
+    var h1 = doc.querySelector('h1');
+    SE = { kind: kind, url: url, title: h1 ? h1.textContent.trim() : url, html: pg.html, sha: pg.sha, doc: doc, photo: null, text: null };
+    // A copy of the page with its scripts removed, so it shows exactly as published but nothing runs
+    var view = pg.html.replace(/<script\b[\s\S]*?<\/script>/gi, '');
+    document.getElementById('se-body').innerHTML =
+      '<p style="font-size:13px;color:var(--muted);margin-bottom:0.8rem;">Click any outlined text and type. Enter starts a new paragraph. The web address stays the same even if you change the title.</p>' +
+      '<iframe id="se-frame" style="width:100%;height:70vh;border:0.5px solid var(--border);border-radius:6px;background:#fff;"></iframe>';
+    var frame = document.getElementById('se-frame');
+    frame.onload = function() { seMarkEditable(frame.contentDocument); };
+    frame.srcdoc = view;
+  } catch (e) {
+    document.getElementById('se-body').innerHTML = '<div style="color:#c0392b;font-size:14px;">Could not load the story: ' + escHtml(e.message) + '</div>';
+  }
+}
+
+function seMarkEditable(fd) {
+  var st = fd.createElement('style');
+  st.textContent = '[data-se]{outline:1px dashed rgba(143,149,116,0.7);outline-offset:2px;cursor:text;}[data-se]:focus{outline:2px solid #8F9574;background:#fffdf5;}' +
+    '.nav,.mobile-drawer,.share-bar,#search-overlay,.contact-modal,.modal-overlay{pointer-events:none;}';
+  fd.head.appendChild(st);
+  var els = fd.querySelectorAll(SE_EDIT_SELECTORS[SE.kind]);
+  Array.prototype.forEach.call(els, function(el, i) {
+    el.setAttribute('data-se', String(i));
+    el.setAttribute('contenteditable', 'true');
+    el.setAttribute('spellcheck', 'true');
+  });
+  // Links do not navigate while editing
+  fd.addEventListener('click', function(e) { var a = e.target.closest && e.target.closest('a'); if (a) e.preventDefault(); }, true);
+  // Paste as plain text so no outside formatting comes in
+  fd.addEventListener('paste', function(e) {
+    if (!e.target.closest || !e.target.closest('[data-se]')) return;
+    e.preventDefault();
+    var t = (e.clipboardData || window.clipboardData).getData('text/plain');
+    fd.execCommand('insertText', false, t);
+  });
+  fd.addEventListener('keydown', function(e) {
+    var el = e.target.closest && e.target.closest('[data-se]');
+    if (!el || e.key !== 'Enter') return;
+    e.preventDefault();
+    if (SE_SINGLE_LINE.test(el.tagName) || SE_SINGLE_LINE.test(el.className)) return;
+    fd.execCommand('insertHTML', false, '<br><br>');
+  });
+  SE.text = { count: els.length };
+  seSetStatus(els.length + ' editable text areas.');
+}
+
+// Keep only simple formatting (links, citations, bold, italics, line breaks) from what the browser produced
+function seCleanHTML(html) {
+  var box = document.createElement('div');
+  box.innerHTML = html;
+  (function walk(node) {
+    Array.prototype.slice.call(node.childNodes).forEach(function(c) {
+      if (c.nodeType !== 1) return;
+      walk(c);
+      var tag = c.tagName;
+      if (tag === 'DIV' || tag === 'P') { c.insertAdjacentHTML('beforebegin', '<br>'); while (c.firstChild) c.parentNode.insertBefore(c.firstChild, c); c.remove(); return; }
+      if (/^(A|SUP|EM|STRONG|I|B|BR)$/.test(tag)) { if (tag !== 'A' && tag !== 'SUP') c.removeAttribute('style'); return; }
+      while (c.firstChild) c.parentNode.insertBefore(c.firstChild, c);
+      c.remove();
+    });
+  })(box);
+  return box.innerHTML.replace(/^(\s*<br>)+/, '').replace(/(<br>\s*)+$/, '').replace(/&nbsp;/g, ' ').replace(/ /g, ' ').trim();
+}
+
+// "1 1/2 cups" -> base 1.5, unit "cups", so the serving adjuster keeps working after an edit
+function seParseAmount(text) {
+  var t = String(text || '').trim().replace(/½/g, ' 1/2').replace(/¼/g, ' 1/4').replace(/¾/g, ' 3/4').replace(/⅓/g, ' 1/3').replace(/⅔/g, ' 2/3').replace(/⅛/g, ' 1/8').trim();
+  var m = t.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)\s*(.*)$/);
+  if (!m) return null;
+  var n = m[1].trim(), val;
+  if (/\s/.test(n)) { var p = n.split(/\s+/), f = p[1].split('/'); val = +p[0] + f[0] / f[1]; }
+  else if (n.indexOf('/') !== -1) { var q = n.split('/'); val = q[0] / q[1]; }
+  else val = parseFloat(n);
+  return isNaN(val) ? null : { base: val, unit: m[2].trim() };
+}
+
+async function seSaveText() {
+  var frame = document.getElementById('se-frame');
+  if (!frame || !SE.text) return;
+  var btn = document.querySelector('#se-modal [data-se-textsave]');
+  if (btn) btn.disabled = true;
+  try {
+    seSetStatus('Saving...');
+    var fd = frame.contentDocument, file = SE.url, kind = SE.kind;
+    var pg = await seGet(file);
+    if (pg.sha !== SE.sha) throw new Error('This story was changed somewhere else since you opened it. Close this window and open Edit text again so you do not undo that change.');
+    var doc = new DOMParser().parseFromString(pg.html, 'text/html');
+    var targets = doc.querySelectorAll(SE_EDIT_SELECTORS[kind]);
+    if (targets.length !== SE.text.count) throw new Error('The story layout changed while you were editing. Close and open Edit text again.');
+    var changes = 0, newTitle = '';
+    Array.prototype.forEach.call(fd.querySelectorAll('[data-se]'), function(el) {
+      var t = targets[+el.getAttribute('data-se')];
+      if (!t) return;
+      var cleaned = seCleanHTML(el.innerHTML);
+      var norm = function(x) { return String(x).replace(/\s+/g, ' ').replace(/&nbsp;| /g, ' ').trim(); };
+      var before = seCleanHTML(t.innerHTML);
+      if (norm(cleaned) === norm(before)) return;
+      changes++;
+      if (t.tagName === 'H1') {
+        if (!el.textContent.trim()) throw new Error('The title cannot be empty.');
+        t.textContent = el.textContent.replace(/\s+/g, ' ').trim();
+        newTitle = t.textContent;
+        return;
+      }
+      if (!el.textContent.trim()) {
+        // Emptied: remove paragraphs, list items and captions; keep headings and recipe parts in place
+        if (/^(P|LI|FIGCAPTION|BLOCKQUOTE)$/.test(t.tagName) && !t.classList.contains('step-text')) { t.remove(); return; }
+        t.innerHTML = ''; return;
+      }
+      if (t.classList.contains('ing-amount')) {
+        var amt = el.textContent.replace(/\s+/g, ' ').trim();
+        t.textContent = amt;
+        var pa = seParseAmount(amt);
+        if (pa) { t.setAttribute('data-base', String(pa.base)); t.setAttribute('data-unit', pa.unit); }
+        else { t.removeAttribute('data-base'); t.removeAttribute('data-unit'); }
+        return;
+      }
+      if (SE_SINGLE_LINE.test(t.tagName) || SE_SINGLE_LINE.test(t.className)) { t.textContent = el.textContent.replace(/\s+/g, ' ').trim(); return; }
+      // A blank line (Enter) inside a paragraph becomes a new paragraph
+      var parts = cleaned.split(/(?:<br>\s*){2,}/).map(function(x) { return x.trim(); }).filter(Boolean);
+      // Only plain paragraphs split in two; styled ones (intro, recipe steps) keep a line gap instead
+      if (t.tagName !== 'P' || (t.className && !/^$/.test(t.className))) { t.innerHTML = parts.join('<br><br>'); return; }
+      t.innerHTML = parts[0] || '';
+      var after = t;
+      parts.slice(1).forEach(function(part) {
+        var np = doc.createElement(t.tagName);
+        np.innerHTML = part;
+        after.parentNode.insertBefore(np, after.nextSibling);
+        after = np;
+      });
+    });
+    if (!changes) { seSetStatus('No changes to save.'); if (btn) btn.disabled = false; return; }
+    if (newTitle) {
+      var tt = doc.querySelector('title'); if (tt) tt.textContent = pwPageTitle(newTitle);
+      ['meta[property="og:title"]', 'meta[name="twitter:title"]'].forEach(function(sel) { var m = doc.querySelector(sel); if (m) m.setAttribute('content', newTitle); });
+    }
+    var out = pwAddSchema(seSerialize(doc), file, seToday());
+    await sePut(file, out, pg.sha, 'Studio: edit text on ' + file);
+    SE.sha = null;
+    var extra = 0;
+    if (newTitle) {
+      extra = await seUpdateEverywhere(file, function(block) { return seSetBlockTitle(block, newTitle); }, 'title');
+      try {
+        var ix = await seGet('data/search-index.json');
+        var list = JSON.parse(ix.html);
+        var hit = false;
+        list.forEach(function(e) { if (e.url === file) { e.title = newTitle; hit = true; } });
+        if (hit) await sePut('data/search-index.json', JSON.stringify(list, null, 2), ix.sha, 'Search index: new title for ' + file);
+      } catch (e) {}
+    }
+    seSetStatus('Saved ' + changes + ' change' + (changes === 1 ? '' : 's') + '! Live in 1-2 minutes' + (extra ? ' (title also updated on ' + extra + ' other page' + (extra === 1 ? '' : 's') + ').' : '.'));
+    setTimeout(function() { if (document.getElementById('se-modal') && SE.url === file && SE.text && SE.sha === null) openStoryText(kind, file); }, 1500);
+  } catch (e) {
+    seSetStatus('Not saved: ' + e.message, true);
+  }
+  if (btn) btn.disabled = false;
+}
+</script>
 </body>
 </html>
