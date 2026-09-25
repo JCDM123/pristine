@@ -9,6 +9,9 @@ if (location.protocol === 'http:' && location.hostname !== 'localhost' && locati
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio | Pristine Wellness</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -2722,7 +2725,8 @@ async function publishArticle() {
     var aOgImg = articleImagePath ? 'https://pristinewellness.com.au/' + articleImagePath : 'https://pristinewellness.com.au/images/newsletter-bg.jpg';
     var aOgTitle = seoTitleText.replace(/\s*\|\s*Pristine Wellness\s*$/i,'').replace(/"/g,'&quot;');
     var aOgDesc = String(article.metaDesc || article.intro || '').replace(/<[^>]+>/g,'').replace(/"/g,'&quot;').slice(0,160);
-    var articleOgTags = '<meta property="og:title" content="' + aOgTitle + '">\n'
+    var articleOgTags = '<link rel="canonical" href="https://pristinewellness.com.au/' + filename + '">\n'
+      + '<meta property="og:title" content="' + aOgTitle + '">\n'
       + '<meta property="og:description" content="' + aOgDesc + '">\n'
       + '<meta property="og:image" content="' + aOgImg + '">\n'
       + '<meta property="og:url" content="https://pristinewellness.com.au/' + filename + '">\n'
@@ -3081,7 +3085,10 @@ async function buildRecipeHTML() {
   var rOgImg = recipeImagePath ? 'https://pristinewellness.com.au/' + recipeImagePath : 'https://pristinewellness.com.au/images/newsletter-bg.jpg';
   var rOgTitle = String(recipe.seoTitle || recipe.title || '').replace(/\s*\|\s*Pristine Wellness\s*$/i,'');
   var rOgDesc = (recipe.metaDesc || recipe.intro || recipe.about || '').replace(/"/g,'&quot;').slice(0,160);
-  var recipeOgTags = '<meta property="og:title" content="' + rOgTitle.replace(/"/g,'&quot;') + '">\n'
+  // Same file name as the publish step builds, so the canonical address matches the page
+  var rCanonFile = 'recipe-' + String(recipe.title || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40) + '.html';
+  var recipeOgTags = '<link rel="canonical" href="https://pristinewellness.com.au/' + rCanonFile + '">\n'
+    + '<meta property="og:title" content="' + rOgTitle.replace(/"/g,'&quot;') + '">\n'
     + '<meta property="og:description" content="' + rOgDesc + '">\n'
     + '<meta property="og:image" content="' + rOgImg + '">\n'
     + '<meta property="og:type" content="website">\n'
@@ -3196,7 +3203,10 @@ async function publishRecipe() {
     var hSlot = document.getElementById('rslot-' + hi);
     var hImg = hSlot ? hSlot.querySelector('img') : null;
     var hNm = document.getElementById('r-name').value.trim();
-    var hSlug = hNm ? hNm.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,26) : 'recipe';
+    // Without a recipe name the file name would be the generic "recipe-step-N.jpg", which belongs to another recipe. Never guess.
+    if (!hNm) break;
+    var hSlug = hNm.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,26);
+    if (!hSlug.replace(/-/g,'')) break;
     var hPath = 'images/' + hSlug + '-step-' + (hi+1) + '.jpg';
     // 1. Already on GitHub under this name?
     try {
@@ -3701,7 +3711,9 @@ async function uploadRecipeBodyImg(file, idx) {
   try {
     var compressed = await compressImage(file, 1200, 800, 0.8, false);
     var name = document.getElementById('r-name').value.trim();
-    var slugBase = name ? name.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,26) : 'recipe';
+    var slugBase = name ? name.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,26) : '';
+    // No recipe name yet: use a unique name so another recipe's photo is never overwritten
+    if (!slugBase.replace(/-/g,'')) slugBase = 'recipe-' + Date.now().toString(36);
     var imgPath = 'images/' + slugBase + '-step-' + (idx+1) + '.jpg';
     var existing = null;
     try {

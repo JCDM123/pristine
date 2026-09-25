@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pristine Wellness, Live the way you were designed to.</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta name="description" content="Evidence-based wellness and wholefood living rooted in ancestral wisdom. Pure water, nutrient dense food, grounding and nature, for your family."/>
 <meta name="robots" content="index, follow"/>
 <link rel="canonical" href="https://pristinewellness.com.au/"/>
@@ -808,6 +810,24 @@ html { scrollbar-gutter: stable; }
 /* Locked menu: every link has the same height and underline slot on every page, so the menu never shifts between pages */
 html body #main-nav .nav-links a{display:block !important;line-height:20px !important;padding:0 0 3px !important;border-bottom-width:1px !important;border-bottom-style:solid !important;}
 html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !important;}
+</style>
+<style>
+/* Contact pop-up: the same look as every other page (these two pages only had the show and hide rules) */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;padding:2rem;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:#fff;border-radius:16px;padding:3rem;max-width:500px;width:100%;position:relative;transform:translateY(20px);transition:transform 0.3s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-close{position:absolute;top:1.2rem;right:1.5rem;font-size:24px;color:#bbb;cursor:pointer;background:none;border:none;}
+.modal h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:34px;font-weight:400;color:var(--text);margin-bottom:8px;}
+.modal p{font-size:14px;color:#aaa;margin-bottom:1.5rem;font-weight:300;}
+.mfg{margin-bottom:1rem;}
+.mi{width:100%;padding:12px 16px;border:0.5px solid var(--border);border-radius:4px;font-size:14px;color:var(--text);font-family:'Jost',sans-serif;font-weight:300;background:#fff;outline:none;transition:border-color 0.2s;}
+.mt{width:100%;padding:12px 16px;border:0.5px solid var(--border);border-radius:4px;font-size:14px;font-family:'Jost',sans-serif;font-weight:300;background:#fff;outline:none;resize:vertical;min-height:100px;transition:border-color 0.2s;}
+.mn{font-size:12px;color:#bbb;margin:0.8rem 0;font-weight:300;}
+.ms{width:100%;padding:13px;background:var(--sage);border:none;color:#fff;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;font-weight:500;border-radius:4px;transition:background 0.2s;margin-top:0.5rem;}
+.mi:focus{border-color:var(--sage);}
+.mt:focus{border-color:var(--sage);}
+.ms:hover{background:var(--sage-dark);}
 </style>
 </head>
 <body>
