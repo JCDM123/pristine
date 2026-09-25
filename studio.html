@@ -506,9 +506,9 @@ sup.cite:hover { text-decoration:underline; }
           <div class="body-img-slot" id="exp-img-slot" onclick="document.getElementById('exp-img-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');expImgUpload(event.dataTransfer.files[0])" style="aspect-ratio:4/3;max-width:320px;">
             <span class="slot-label">Drag or click to upload</span>
           </div>
-          <input type="file" id="exp-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="expImgUpload(this.files[0]);this.value=''">
+          <input type="file" id="exp-img-input" accept="image/jpeg,image/jpg,image/png,image/webp,.heic,.heif" style="display:none" onchange="expImgUpload(this.files[0]);this.value=''">
         </div>
-        <button class="gen-btn" onclick="publishExpEntry()">Publish photo update</button>
+        <button class="gen-btn" id="exp-pub-btn" onclick="publishExpEntry()">Publish photo update</button>
         <div id="exp-status" style="margin-top:0.8rem;font-size:13px;color:var(--muted);"></div>
 
         <h2 style="margin-top:2.5rem;">Add before &amp; after</h2>
@@ -533,7 +533,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
             <input type="file" id="ba-after-input" accept="image/*" style="display:none" onchange="baImgUpload(this.files[0],'after');this.value=''">
           </div>
         </div>
-        <button class="gen-btn" onclick="publishBAEntry()">Publish before &amp; after</button>
+        <button class="gen-btn" id="ba-pub-btn" onclick="publishBAEntry()">Publish before &amp; after</button>
         <div id="ba-status" style="margin-top:0.8rem;font-size:13px;color:var(--muted);"></div>
       </div>
 
@@ -2280,7 +2280,7 @@ async function handleRecipeImage(event) {
       if (label) label.innerHTML = '<span style="color:#c0392b;font-weight:600;">&#9888; Image upload FAILED (' + uploadErr.message + '). Drag it in again.</span>';
       alert('Hero image upload failed: ' + uploadErr.message + '\n\nThe image is NOT on GitHub. Please drag it in again before publishing.');
     }
-  });
+  }).catch(function(e) { if (label) label.textContent = e.message; alert(e.message); });
 }
 
 function clearRecipeImage(event) {
@@ -3852,7 +3852,7 @@ function cropImageToRatio(file, targetW, targetH, quality) {
 }
 
 function compressImage(file, maxWidth, maxHeight, quality, applyWatermark) {
-  return new Promise(function(resolve) {
+  return new Promise(function(resolve, reject) {
     var reader = new FileReader();
     reader.onload = function(e) {
       var img = new Image();
@@ -3885,8 +3885,10 @@ function compressImage(file, maxWidth, maxHeight, quality, applyWatermark) {
         var dataUrl = canvas.toDataURL('image/jpeg', quality || 0.82);
         resolve({ dataUrl: dataUrl, base64: dataUrl.split(',')[1], width: w, height: h });
       };
+      img.onerror = function() { reject(new Error('The browser could not read this photo. Please save it as a JPEG and try again.')); };
       img.src = e.target.result;
     };
+    reader.onerror = function() { reject(new Error('The photo could not be opened.')); };
     reader.readAsDataURL(file);
   });
 }
@@ -3943,7 +3945,7 @@ async function handleArticleImage(event) {
       document.getElementById('a-img-preview-wrap').style.display = 'block';
       document.getElementById('a-img-placeholder').style.display = 'none';
     }
-  });
+  }).catch(function(e) { if (label) label.textContent = e.message; alert(e.message); });
 }
 
 function clearArticleImage(event) {
@@ -5478,45 +5480,118 @@ function updateSelectedCount() {
 
 /* ===== EXPERIMENT PAGE MANAGEMENT ===== */
 var expImgPath = '';
+var expThumbPath = '';
+var expUploading = false;
+var expPublishing = false;
 var baImgPaths = { before: '', after: '' };
+var baPublishing = false;
 
-async function expImgUpload(file) {
-  if (!file || !file.type.startsWith('image/')) return;
-  var token = getToken();
-  if (!token) { alert('Enter your GitHub token first.'); return; }
-  var slot = document.getElementById('exp-img-slot');
-  slot.innerHTML = '<span class="slot-label">Uploading...</span>';
-  try {
-    var compressed = await compressImage(file, 1200, 900, 0.8, false);
-    var dateVal = document.getElementById('exp-date').value || new Date().toISOString().slice(0,10);
-    var imgPath = 'images/exp-log-' + dateVal.replace(/-/g,'') + '-' + Date.now().toString().slice(-4) + '.jpg';
-    var body = { message: 'Experiment photo: ' + imgPath, content: compressed.base64, branch: GITHUB_BRANCH };
-    await githubRequest(imgPath, 'PUT', body);
-    expImgPath = imgPath;
-    slot.innerHTML = '<img src="' + compressed.dataUrl + '" style="width:100%;height:100%;object-fit:cover;">';
-  } catch(e) {
-    expImgPath = '';
-    slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Failed - try again</span>';
-    alert('Image upload failed: ' + e.message);
+// Today's date on this computer (Sydney time), not UTC
+function localISODate(d) {
+  d = d || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// Unique file names, even for two uploads in the same second
+function expUniqueId() {
+  return Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+}
+
+// Photos the browser cannot read (iPhone HEIC on a computer, RAW files) get a clear message instead of hanging
+function expUnreadableMsg(file) {
+  if (!file) return 'No photo was received. Try again.';
+  if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name || '')) {
+    return 'This is an iPhone HEIC photo, which the browser cannot read. Save it as a JPEG first (on iPhone: Settings, Camera, Formats, Most Compatible), then upload it again.';
+  }
+  if (file.type && !/^image\/(jpeg|jpg|png|webp)$/i.test(file.type)) {
+    return 'This photo type is not supported. Please use a JPEG, PNG or WebP photo.';
+  }
+  return '';
+}
+
+// Resize a photo, giving up with a clear message if the browser cannot read it
+function expCompress(file, maxW, maxH, quality) {
+  return Promise.race([
+    compressImage(file, maxW, maxH, quality, false),
+    new Promise(function(_, reject) { setTimeout(function() { reject(new Error('The browser could not read this photo. Please save it as a JPEG and try again.')); }, 30000); })
+  ]);
+}
+
+// Put text into the page at a marker. A function is used so "$" in notes or captions is kept exactly as typed.
+function expInsertAtMarker(html, marker, text) {
+  return html.replace(marker, function() { return text; });
+}
+
+// Save experiment.html. If it changed since we read it, read it again and re-apply the change once.
+async function expSavePage(message, change) {
+  for (var attempt = 0; attempt < 2; attempt++) {
+    var page = await githubRequest('experiment.html', 'GET');
+    var html = decodeURIComponent(escape(atob(page.content.replace(/\n/g,''))));
+    var updated = change(html);
+    if (updated === null) return 'unchanged';
+    try {
+      await githubRequest('experiment.html', 'PUT', {
+        message: message,
+        content: btoa(unescape(encodeURIComponent(updated))),
+        sha: page.sha, branch: GITHUB_BRANCH
+      });
+      return 'saved';
+    } catch(e) {
+      if (attempt === 0 && /does not match|conflict|409/i.test(e.message)) continue;
+      throw e;
+    }
   }
 }
 
-async function baImgUpload(file, which) {
-  if (!file || !file.type.startsWith('image/')) return;
+async function expImgUpload(file) {
+  var slot = document.getElementById('exp-img-slot');
+  var status = document.getElementById('exp-status');
+  var bad = expUnreadableMsg(file);
+  if (bad) { slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Photo not uploaded</span>'; status.textContent = bad; return; }
   var token = getToken();
   if (!token) { alert('Enter your GitHub token first.'); return; }
-  var slot = document.getElementById('ba-' + which + '-slot');
   slot.innerHTML = '<span class="slot-label">Uploading...</span>';
+  status.textContent = '';
+  expUploading = true;
+  expImgPath = ''; expThumbPath = '';
   try {
-    var compressed = await compressImage(file, 900, 900, 0.8, false);
-    var imgPath = 'images/ba-' + which + '-' + Date.now() + '.jpg';
+    // Full size for the enlarged view, and a small copy so the grid loads quickly
+    var full = await expCompress(file, 1600, 1600, 0.82);
+    var thumb = await expCompress(file, 600, 600, 0.78);
+    var dateVal = document.getElementById('exp-date').value || localISODate();
+    var base = 'images/exp-log-' + dateVal.replace(/-/g,'') + '-' + expUniqueId();
+    await githubRequest(base + '.jpg', 'PUT', { message: 'Experiment photo: ' + base + '.jpg', content: full.base64, branch: GITHUB_BRANCH });
+    await githubRequest(base + '-thumb.jpg', 'PUT', { message: 'Experiment photo (small): ' + base + '-thumb.jpg', content: thumb.base64, branch: GITHUB_BRANCH });
+    expImgPath = base + '.jpg';
+    expThumbPath = base + '-thumb.jpg';
+    slot.innerHTML = '<img src="' + full.dataUrl + '" style="width:100%;height:100%;object-fit:contain;background:#f4f2ec;">';
+  } catch(e) {
+    expImgPath = ''; expThumbPath = '';
+    slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Failed - try again</span>';
+    status.textContent = 'Photo upload failed: ' + e.message;
+  }
+  expUploading = false;
+}
+
+async function baImgUpload(file, which) {
+  var slot = document.getElementById('ba-' + which + '-slot');
+  var status = document.getElementById('ba-status');
+  var bad = expUnreadableMsg(file);
+  if (bad) { slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Photo not uploaded</span>'; status.textContent = bad; return; }
+  var token = getToken();
+  if (!token) { alert('Enter your GitHub token first.'); return; }
+  slot.innerHTML = '<span class="slot-label">Uploading...</span>';
+  status.textContent = '';
+  try {
+    var compressed = await expCompress(file, 1200, 1200, 0.8);
+    var imgPath = 'images/ba-' + which + '-' + expUniqueId() + '.jpg';
     await githubRequest(imgPath, 'PUT', { message: 'Before/after photo: ' + imgPath, content: compressed.base64, branch: GITHUB_BRANCH });
     baImgPaths[which] = imgPath;
     slot.innerHTML = '<img src="' + compressed.dataUrl + '" style="width:100%;height:100%;object-fit:cover;">';
   } catch(e) {
     baImgPaths[which] = '';
     slot.innerHTML = '<span class="slot-label" style="color:#c0392b;">Failed - try again</span>';
-    alert('Image upload failed: ' + e.message);
+    status.textContent = 'Photo upload failed: ' + e.message;
   }
 }
 
@@ -5530,66 +5605,73 @@ async function publishExpEntry() {
   var dateVal = document.getElementById('exp-date').value;
   var note = document.getElementById('exp-note').value.trim();
   var status = document.getElementById('exp-status');
+  var btn = document.getElementById('exp-pub-btn');
+  if (expPublishing) return;
+  if (expUploading) { status.textContent = 'The photo is still uploading. One moment.'; return; }
   if (!dateVal) { status.textContent = 'Pick the date the photo was taken.'; return; }
   if (!expImgPath) { status.textContent = 'Upload the photo first.'; return; }
+  expPublishing = true;
+  if (btn) btn.disabled = true;
   status.textContent = 'Publishing...';
+  var full = expImgPath, thumb = expThumbPath || expImgPath;
   try {
-    var page = await githubRequest('experiment.html', 'GET');
-    var html = decodeURIComponent(escape(atob(page.content.replace(/\n/g,''))));
     var marker = '<!-- EXPERIMENT_LOG -->';
-    if (html.indexOf(marker) === -1) throw new Error('Experiment page is missing the log marker. Upload the new experiment.html first.');
     var id = 'exp' + Date.now();
+    var alt = 'Berry jars on ' + fmtExpDate(dateVal) + (note ? ', ' + note : '') + '. Filtered town water beside MEA structured water.';
     var entry = marker + '\n<!-- EXP_ENTRY:' + id + ' -->\n' +
-      '<div class="exp-thumb" onclick="openLightboxSrc(\'' + expImgPath + '\')">' +
-      '<img class="exp-thumb-img" src="' + expImgPath + '" alt="' + fmtExpDate(dateVal) + '" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;" loading="lazy"/>' +
+      '<div class="exp-thumb" data-date="' + dateVal + '" onclick="openLightboxSrc(\'' + full + '\')">' +
+      '<img class="exp-thumb-img" src="' + thumb + '" data-full="' + full + '" alt="' + escHtml(alt) + '" style="width:100%;aspect-ratio:4/3;object-fit:contain;background:#f4f2ec;display:block;" loading="lazy"/>' +
       '<div class="exp-thumb-footer"><span class="exp-thumb-date">' + fmtExpDate(dateVal) + '</span>' +
       (note ? '<span class="exp-thumb-week">' + escHtml(note) + '</span>' : '') +
       '</div></div>\n<!-- /EXP_ENTRY:' + id + ' -->';
-    html = html.replace(marker, entry);
-    await githubRequest('experiment.html', 'PUT', {
-      message: 'Experiment update: ' + fmtExpDate(dateVal),
-      content: btoa(unescape(encodeURIComponent(html))),
-      sha: page.sha, branch: GITHUB_BRANCH
+    await expSavePage('Experiment update: ' + fmtExpDate(dateVal), function(html) {
+      if (html.indexOf(marker) === -1) throw new Error('The Experiment page is missing its photo log marker, so nothing was changed.');
+      // Already there (for example a retry after a slow connection): do not add it twice
+      if (html.indexOf('"' + full + '"') !== -1 || html.indexOf("'" + full + "'") !== -1) return null;
+      return expInsertAtMarker(html, marker, entry);
     });
     status.textContent = 'Published! Live in 1-2 minutes.';
-    expImgPath = '';
+    expImgPath = ''; expThumbPath = '';
     document.getElementById('exp-img-slot').innerHTML = '<span class="slot-label">Drag or click to upload</span>';
     document.getElementById('exp-note').value = '';
     loadExperimentEntries();
   } catch(e) {
-    status.textContent = 'Failed: ' + e.message;
+    status.textContent = 'Not published: ' + e.message + ' Your photo is kept, so you can press Publish again.';
   }
+  expPublishing = false;
+  if (btn) btn.disabled = false;
 }
 
 async function publishBAEntry() {
   var title = document.getElementById('ba-title').value.trim();
   var caption = document.getElementById('ba-caption').value.trim();
   var status = document.getElementById('ba-status');
+  var btn = document.getElementById('ba-pub-btn');
+  if (baPublishing) return;
   if (!title || !caption) { status.textContent = 'Title and caption are required.'; return; }
   if (!baImgPaths.before || !baImgPaths.after) { status.textContent = 'Upload both photos first.'; return; }
+  baPublishing = true;
+  if (btn) btn.disabled = true;
   status.textContent = 'Publishing...';
   try {
-    var page = await githubRequest('experiment.html', 'GET');
-    var html = decodeURIComponent(escape(atob(page.content.replace(/\n/g,''))));
     var marker = '<!-- BEFORE_AFTER -->';
-    if (html.indexOf(marker) === -1) throw new Error('Experiment page is missing the before/after marker. Upload the new experiment.html first.');
     var id = 'ba' + Date.now();
-    var today = new Date().toISOString().slice(0,10);
+    var today = localISODate();
     var card = marker + '\n<!-- BA_ENTRY:' + id + ' -->\n' +
       '<div class="ba-card">' +
       '<div class="ba-pair">' +
-      '<div class="ba-half"><img src="' + baImgPaths.before + '" alt="Before" loading="lazy" onclick="openLightboxSrc(\'' + baImgPaths.before + '\')"><span class="ba-tag">Before</span></div>' +
-      '<div class="ba-half"><img src="' + baImgPaths.after + '" alt="After" loading="lazy" onclick="openLightboxSrc(\'' + baImgPaths.after + '\')"><span class="ba-tag after">After</span></div>' +
+      '<div class="ba-half"><img src="' + baImgPaths.before + '" alt="Before: ' + escHtml(title) + '" loading="lazy" onclick="openLightboxSrc(\'' + baImgPaths.before + '\')"><span class="ba-tag">Before</span></div>' +
+      '<div class="ba-half"><img src="' + baImgPaths.after + '" alt="After: ' + escHtml(title) + '" loading="lazy" onclick="openLightboxSrc(\'' + baImgPaths.after + '\')"><span class="ba-tag after">After</span></div>' +
       '</div>' +
       '<div class="ba-body"><h3 class="ba-title">' + escHtml(title) + '</h3>' +
       '<div class="ba-caption">' + caption.split(/\n\s*\n|\n/).filter(function(p){return p.trim();}).map(function(p){return '<p>' + escHtml(p.trim()) + '</p>';}).join('') + '</div>' +
       '<span class="ba-date">' + fmtExpDate(today) + '</span></div>' +
       '</div>\n<!-- /BA_ENTRY:' + id + ' -->';
-    html = html.replace(marker, card);
-    await githubRequest('experiment.html', 'PUT', {
-      message: 'Before/after: ' + title,
-      content: btoa(unescape(encodeURIComponent(html))),
-      sha: page.sha, branch: GITHUB_BRANCH
+    var before = baImgPaths.before;
+    await expSavePage('Before/after: ' + title, function(html) {
+      if (html.indexOf(marker) === -1) throw new Error('The Experiment page is missing its before and after marker, so nothing was changed.');
+      if (html.indexOf('"' + before + '"') !== -1) return null;
+      return expInsertAtMarker(html, marker, card);
     });
     status.textContent = 'Published! Live in 1-2 minutes.';
     baImgPaths = { before: '', after: '' };
@@ -5599,8 +5681,10 @@ async function publishBAEntry() {
     document.getElementById('ba-caption').value = '';
     loadExperimentEntries();
   } catch(e) {
-    status.textContent = 'Failed: ' + e.message;
+    status.textContent = 'Not published: ' + e.message + ' Your photos are kept, so you can press Publish again.';
   }
+  baPublishing = false;
+  if (btn) btn.disabled = false;
 }
 
 async function loadExperimentEntries() {
@@ -5611,8 +5695,6 @@ async function loadExperimentEntries() {
   try {
     var page = await githubRequest('experiment.html', 'GET');
     var html = decodeURIComponent(escape(atob(page.content.replace(/\n/g,''))));
-    window._expSHA = page.sha;
-    window._expHTML = html;
 
     function parseEntries(prefix) {
       var out = [];
@@ -5624,8 +5706,13 @@ async function loadExperimentEntries() {
         if (dm) label = dm[1];
         var nm = m[2].match(/exp-thumb-week">([^<]+)</);
         if (nm) label += ' - ' + nm[1];
-        out.push({ id: m[1], label: label || m[1] });
+        var sd = m[2].match(/data-date="([^"]+)"/);
+        // The page stores text HTML-escaped; turn it back into plain text before listing it
+        var tx = document.createElement('textarea'); tx.innerHTML = label;
+        out.push({ id: m[1], label: tx.value || m[1], sort: sd ? sd[1] : '' });
       }
+      // Photo log in the order taken, newest first (same order as the page)
+      if (prefix === 'EXP_ENTRY') out.sort(function(a, b) { return b.sort.localeCompare(a.sort); });
       return out;
     }
 
@@ -5653,15 +5740,28 @@ async function loadExperimentEntries() {
 async function deleteExpEntry(prefix, id) {
   if (!confirm('Remove this entry from the experiment page?')) return;
   try {
-    var html = window._expHTML;
-    var re = new RegExp('\\n?<!-- ' + prefix + ':' + id + ' -->[\\s\\S]*?<!-- /' + prefix + ':' + id + ' -->', '');
-    if (!re.test(html)) throw new Error('Entry not found');
-    html = html.replace(re, '');
-    await githubRequest('experiment.html', 'PUT', {
-      message: 'Remove experiment entry',
-      content: btoa(unescape(encodeURIComponent(html))),
-      sha: window._expSHA, branch: GITHUB_BRANCH
+    var removed = '';
+    // Always works from the latest version of the page, so newer entries are never lost
+    var result = await expSavePage('Remove experiment entry', function(html) {
+      var re = new RegExp('\\n?<!-- ' + prefix + ':' + id + ' -->[\\s\\S]*?<!-- /' + prefix + ':' + id + ' -->', '');
+      var m = html.match(re);
+      if (!m) return null;
+      removed = m[0];
+      return html.replace(re, function() { return ''; });
     });
+    if (result === 'saved' && removed) {
+      // Tidy up: delete the entry's photos too, unless another entry still uses them
+      var page = await githubRequest('experiment.html', 'GET');
+      var live = decodeURIComponent(escape(atob(page.content.replace(/\n/g,''))));
+      var paths = (removed.match(/images\/(?:exp-log|ba)-[A-Za-z0-9._-]+\.jpg/g) || []).filter(function(p, i, a) { return a.indexOf(p) === i; });
+      for (var i = 0; i < paths.length; i++) {
+        if (live.indexOf(paths[i]) !== -1) continue;
+        try {
+          var sha = await getFileSHA(paths[i]);
+          if (sha) await githubRequest(paths[i], 'DELETE', { message: 'Remove unused experiment photo: ' + paths[i], sha: sha, branch: GITHUB_BRANCH });
+        } catch(e) {}
+      }
+    }
     loadExperimentEntries();
   } catch(e) {
     alert('Could not remove: ' + e.message);
@@ -5670,7 +5770,7 @@ async function deleteExpEntry(prefix, id) {
 }
 
 var _expDateEl = document.getElementById('exp-date');
-if (_expDateEl) _expDateEl.value = new Date().toISOString().slice(0,10);
+if (_expDateEl) _expDateEl.value = localISODate();
 
 /* ===== SEARCH INDEX MAINTENANCE ===== */
 async function updateSearchIndex(entry, removeUrl) {
