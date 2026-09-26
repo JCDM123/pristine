@@ -1180,7 +1180,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">The Source</h2>
-          <p class="manage-section-sub">Articles on the live site. Toggle Essential Reading to pin stories; delete to remove from the grid.</p>
+          <p class="manage-section-sub">Articles on the live site. Pin up to three stories for Essential Reading. They show in the order you pin them. Delete removes a story from the grid.</p>
         </div>
         <div class="manage-status-bar"><div class="status-dot" id="src-dot"></div><span id="src-status">Ready</span></div>
       </div>
@@ -1194,7 +1194,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">Ancestral Kitchen</h2>
-          <p class="manage-section-sub">Recipes on the live site. Toggle pinned to feature in the pinned section; delete to remove from the grid.</p>
+          <p class="manage-section-sub">Recipes on the live site. Pin up to three recipes for Essential Recipes. They show in the order you pin them. Delete removes a recipe from the grid.</p>
         </div>
         <div class="manage-status-bar"><div class="status-dot" id="kit-dot"></div><span id="kit-status">Ready</span></div>
       </div>
@@ -4212,7 +4212,8 @@ function parseSourceArticles(html) {
       var fCat = (featHtml.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
       var fHref = (featHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
       var fMeta = (featHtml.match(/feat-meta[^>]*>([^&<]+)/) || ['',''])[1];
-      if (fTitle) articles.push({ title: fTitle, cat: fCat, date: (fMeta||'').trim(), url: fHref, rawCard: '', pinned: false, featured: true });
+      var fImg = (featHtml.match(/background-image:url\('([^']+)'\)/) || ['',''])[1];
+      if (fTitle) articles.push({ title: fTitle, cat: fCat, date: (fMeta||'').trim(), url: fHref, img: fImg, rawCard: '', pinned: false, featured: true });
     }
   }
 
@@ -4248,7 +4249,8 @@ function parseSourceArticles(html) {
     if (erEnd !== -1) {
       var erHtml = html.slice(erDivStart, erEnd);
       articles.forEach(function(a) {
-        if (a.url && erHtml.indexOf("window.location='" + a.url + "'") !== -1) a.pinned = true;
+        var at = a.url ? erHtml.indexOf("window.location='" + a.url + "'") : -1;
+        if (at !== -1) { a.pinned = true; a.pinOrder = at; }
       });
     }
   }
@@ -4267,7 +4269,7 @@ function parseKitchenRecipes(html) {
       var kfTitle = (kfHtml.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
       var kfCat = (kfHtml.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
       var kfHref = (kfHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
-      var kfMeta = (kfHtml.match(/feat-meta[^>]*>([^&<]+)/) || ['',''])[1];
+      var kfMeta = (kfHtml.match(/feat-meta[^>]*>([^<]+)/) || ['',''])[1];
       var kfImg = (kfHtml.match(/background-image:url\('([^']+)'\)/) || ['',''])[1];
       if (kfTitle) recipes.push({ title: kfTitle, cat: kfCat, date: (kfMeta||'').trim(), url: kfHref, img: kfImg, rawCard: '', pinned: false, featured: true });
     }
@@ -4306,7 +4308,8 @@ function parseKitchenRecipes(html) {
     if (prEnd !== -1) {
       var prHtml = html.slice(prDivStart, prEnd);
       recipes.forEach(function(r) {
-        if (r.url && prHtml.indexOf("window.location='" + r.url + "'") !== -1) r.pinned = true;
+        var at = r.url ? prHtml.indexOf("window.location='" + r.url + "'") : -1;
+        if (at !== -1) { r.pinned = true; r.pinOrder = at; }
       });
     }
   }
@@ -4347,8 +4350,8 @@ function renderKitchenList() {
       '<div class="manage-row-title">' + (r.featured ? '<span style="background:#C9A96E;color:#fff;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:3px;margin-right:8px;vertical-align:middle;">FEATURED</span>' : '') + escHtml(r.title) + '</div>' +
       '<span class="manage-row-cat">' + escHtml(r.cat || 'Uncategorised') + '</span>' +
       '<span class="manage-row-meta">' + escHtml(r.date) + '</span>' +
-      '<button class="manage-pin-btn' + (r.pinned ? ' pinned' : '') + '" onclick="toggleKitchenPin(' + i + ')" title="Toggle pinned recipe">' +
-        (r.pinned ? '&#128204; Pinned' : '&#128204; Pin') +
+      '<button class="manage-pin-btn' + (r.pinned ? ' pinned' : '') + '" onclick="toggleKitchenPin(' + i + ')" title="Toggle Essential Recipes">' +
+        (r.pinned ? '&#128204; Essential' : '&#128204; Pin') +
       '</button>' +
       '<button class="manage-del-btn" onclick="deleteKitchenRecipe(' + i + ')" title="Delete recipe">&#215;</button>' + '<button onclick="openStoryPhotos(\'recipe\', manageKitchenData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openStoryText(\'recipe\', manageKitchenData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'recipe\', manageKitchenData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
     '</div>';
@@ -4359,8 +4362,18 @@ function renderKitchenList() {
   el.innerHTML = html;
 }
 
+/* Essential sections hold three. New picks go to the end, in the order you pin them. */
+var PW_ESSENTIAL_MAX = 3;
+function pwCanPin(list, i, label) {
+  if (list[i].pinned) return true;
+  if (list.filter(function(x) { return x.pinned; }).length < PW_ESSENTIAL_MAX) return true;
+  alert(label + ' shows ' + PW_ESSENTIAL_MAX + ' at a time. Unpin one first, then pin this one.');
+  return false;
+}
 function toggleSourcePin(i) {
+  if (!pwCanPin(manageSourceData, i, 'Essential Reading')) return;
   manageSourceData[i].pinned = !manageSourceData[i].pinned;
+  if (manageSourceData[i].pinned) manageSourceData[i].pinOrder = 1e12 + Date.now();
   var btn = document.querySelector('#src-row-' + i + ' .manage-pin-btn');
   if (btn) {
     btn.classList.toggle('pinned', manageSourceData[i].pinned);
@@ -4369,11 +4382,13 @@ function toggleSourcePin(i) {
 }
 
 function toggleKitchenPin(i) {
+  if (!pwCanPin(manageKitchenData, i, 'Essential Recipes')) return;
   manageKitchenData[i].pinned = !manageKitchenData[i].pinned;
+  if (manageKitchenData[i].pinned) manageKitchenData[i].pinOrder = 1e12 + Date.now();
   var btn = document.querySelector('#kit-row-' + i + ' .manage-pin-btn');
   if (btn) {
     btn.classList.toggle('pinned', manageKitchenData[i].pinned);
-    btn.innerHTML = manageKitchenData[i].pinned ? '&#128204; Pinned' : '&#128204; Pin';
+    btn.innerHTML = manageKitchenData[i].pinned ? '&#128204; Essential' : '&#128204; Pin';
   }
 }
 
@@ -4539,6 +4554,24 @@ function rebuildFilterPills(sourceHTML) {
   return sourceHTML.slice(0, pillsStart + 26) + '\n' + pillsHTML + sourceHTML.slice(pillsEnd);
 }
 
+function pwPlain(s) { var t = document.createElement('textarea'); t.innerHTML = s || ''; return t.value.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim(); }
+function pwPinnedPicks(list) {
+  return list.filter(function(x) { return x.pinned && x.url; })
+    .sort(function(a, b) { return (a.pinOrder || 0) - (b.pinOrder || 0); })
+    .slice(0, PW_ESSENTIAL_MAX);
+}
+function pwPinnedCard(p) {
+  var bg = p.img ? "background-image:url('" + p.img + "')" : 'background:var(--forest)';
+  return '<div class="pinned-small" onclick="window.location=\'' + p.url + '\'">' +
+    '<div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span>' +
+    '<div class="pinned-small-img-inner" style="' + bg + '"></div></div>' +
+    '<div class="pinned-small-body">' +
+    '<span class="pinned-small-cat">' + escHtml(pwPlain(p.cat)) + '</span>' +
+    '<div class="pinned-small-title">' + escHtml(pwPlain(p.title)) + '</div>' +
+    '<div class="pinned-small-meta">' + escHtml(pwPlain(p.date)) + '</div>' +
+    '</div></div>\n';
+}
+
 function rebuildSourceGrid(html) {
   // 1. Handle featured: if the featured article was deleted from the list, restore the placeholder
   var featStart = html.indexOf('<div class="featured"');
@@ -4573,25 +4606,16 @@ function rebuildSourceGrid(html) {
   if (erIdx !== -1) {
     var erStart = html.lastIndexOf('<div', erIdx);
     var erEnd = findDivEndJS(html, erStart);
-    var pinnedArr = manageSourceData.filter(function(a) { return a.pinned && a.url; });
+    var pinnedArr = pwPinnedPicks(manageSourceData);
     var erHtml;
     if (pinnedArr.length === 0) {
       erHtml = '<div id="essential-reading" style="display:none"></div>';
     } else {
-      var smalls = pinnedArr.slice(0, 3);
+      var smalls = pinnedArr;
       erHtml = '<div id="essential-reading">\n';
       erHtml += '<div class="pinned-intro"><span class="pinned-intro-eyebrow">Curated by us</span><div class="pinned-intro-title">Essential Reading</div></div>\n';
       erHtml += '<div class="pinned-section"><div class="pinned-grid">\n';
-      smalls.forEach(function(p) {
-        erHtml += '<div class="pinned-small" onclick="window.location=\'' + p.url + '\'">' +
-          '<div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span>' +
-          '<div class="pinned-small-img-inner" style="background-image:url(\'' + (p.img||'') + '\')"></div></div>' +
-          '<div class="pinned-small-body">' +
-          '<span class="pinned-small-cat">' + escHtml(p.cat||'') + '</span>' +
-          '<div class="pinned-small-title">' + escHtml(p.title) + '</div>' +
-          '<div class="pinned-small-meta">' + escHtml(p.date||'') + '</div>' +
-          '</div></div>\n';
-      });
+      smalls.forEach(function(p) { erHtml += pwPinnedCard(p); });
       erHtml += '</div></div>\n</div>';
     }
     html = html.slice(0, erStart) + erHtml + html.slice(erEnd);
@@ -4634,25 +4658,16 @@ function rebuildKitchenGrid(html) {
   if (prIdx !== -1) {
     var prStart = html.lastIndexOf('<div', prIdx);
     var prEnd = findDivEndJS(html, prStart);
-    var pinnedArr = manageKitchenData.filter(function(r) { return r.pinned && r.url; });
+    var pinnedArr = pwPinnedPicks(manageKitchenData);
     var prHtml;
     if (pinnedArr.length === 0) {
       prHtml = '<div id="pinned-recipes" style="display:none"></div>';
     } else {
-      var picks = pinnedArr.slice(0, 3);
+      var picks = pinnedArr;
       prHtml = '<div id="pinned-recipes">\n';
       prHtml += '<div class="pinned-intro"><span class="pinned-intro-eyebrow">Curated by us</span><div class="pinned-intro-title">Essential Recipes</div></div>\n';
       prHtml += '<div class="pinned-section"><div class="pinned-grid">\n';
-      picks.forEach(function(p) {
-        prHtml += '<div class="pinned-small" onclick="window.location=\'' + p.url + '\'">' +
-          '<div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span>' +
-          '<div class="pinned-small-img-inner" style="background-image:url(\'' + (p.img||'') + '\')"></div></div>' +
-          '<div class="pinned-small-body">' +
-          '<span class="pinned-small-cat">' + escHtml(p.cat||'') + '</span>' +
-          '<div class="pinned-small-title">' + escHtml(p.title) + '</div>' +
-          '<div class="pinned-small-meta">' + escHtml(p.date||'') + '</div>' +
-          '</div></div>\n';
-      });
+      picks.forEach(function(p) { prHtml += pwPinnedCard(p); });
       prHtml += '</div></div>\n</div>';
     }
     html = html.slice(0, prStart) + prHtml + html.slice(prEnd);
