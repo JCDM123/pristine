@@ -3016,6 +3016,7 @@ async function publishArticle() {
     await pwSitemapAdd(filename);
     if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('a');
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
+    pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
     btn.style.background = '#8F9574';
     for (var bi = 0; bi < articleBodyImages.length; bi++) { if (articleBodyImages[bi]) clearBodyImg(bi, 'article'); }
@@ -3587,6 +3588,7 @@ async function publishRecipe() {
     await pwSitemapAdd(filename);
     if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('r');
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
+    pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
     btn.style.background = '#8F9574';
 
@@ -4427,7 +4429,9 @@ function renderKitchenList() {
   });
   html += '<button class="manage-save-btn" id="kit-save-btn" onclick="saveKitchenChanges()">Save Changes to Ancestral Kitchen</button>';
   html += '<button class="manage-save-btn" id="update-all-recipes-btn" onclick="updateAllRecipes()" style="background:var(--forest);margin-left:0.5rem;">Update All Recipes</button>';
+  html += '<button class="manage-save-btn" id="share-all-btn" onclick="pwRefreshAllShareImages()" style="background:var(--sage);margin-left:0.5rem;">Make X preview pictures</button>';
   html += '<div id="update-all-status" style="font-size:12px;color:var(--muted);margin-top:0.5rem;"></div>';
+  html += '<div id="share-all-status" style="font-size:12px;color:var(--muted);margin-top:0.3rem;"></div>';
   el.innerHTML = html;
 }
 
@@ -7490,6 +7494,131 @@ async function sfMaybeAutoFetch(url) {
   }
 }
 
+/* ===== BRANDED SHARE PICTURE: photo, title and logo, 1200 x 675 (the size X shows) ===== */
+async function pwLoadPhoto(path) {
+  path = String(path || '').replace(/^https?:\/\/(?:www\.)?pristinewellness\.com\.au\//, '').replace(/^\//, '');
+  try { return await sfLoadImage('/' + path); }
+  catch (e) {
+    // A photo uploaded moments ago may not be on the site yet; GitHub has it straight away
+    return await new Promise(function(resolve, reject) {
+      var img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = function() { resolve(img); }; img.onerror = function() { reject(new Error('photo not found')); };
+      img.src = 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + path;
+    });
+  }
+}
+async function pwDrawShareCard(o) {
+  var title = o.title || '', eyebrow = o.eyebrow || '', photo = o.photo || '';
+    try { await Promise.all([document.fonts.load('italic 64px "Cormorant Garamond"'), document.fonts.load('500 20px "Jost"')]); } catch (e) {}
+
+    var W = 1200, H = 675;
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var x = c.getContext('2d');
+    x.fillStyle = '#8F9574'; x.fillRect(0, 0, W, H);
+    if (photo) {
+      try {
+        var img = await pwLoadPhoto(photo);
+        var sc = Math.max(W / img.width, H / img.height);
+        var dw = img.width * sc, dh = img.height * sc;
+        x.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      } catch (e) { /* no photo: the sage background stays */ }
+    }
+    // Soft shade from the left so the words read over any photo
+    var g = x.createLinearGradient(0, 0, W * 0.75, 0);
+    g.addColorStop(0, 'rgba(20,16,10,0.78)'); g.addColorStop(0.55, 'rgba(20,16,10,0.45)'); g.addColorStop(1, 'rgba(20,16,10,0.05)');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+
+    try { var logo = await sfLoadImage('/images/site/logo.svg'); x.drawImage(logo, 64, 52, 118, 118); } catch (e) {}
+
+    var left = 72, maxW = 640;
+    x.fillStyle = 'rgba(241,234,223,0.92)';
+    x.font = '500 19px "Jost", Helvetica, Arial, sans-serif';
+    if ('letterSpacing' in x) x.letterSpacing = '4px';
+    x.fillText(eyebrow.toUpperCase(), left, 262);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+
+    // Title: largest size that fits in four lines
+    var size = 66, lines = [];
+    for (; size >= 40; size -= 2) {
+      x.font = 'italic 400 ' + size + 'px "Cormorant Garamond", Georgia, serif';
+      lines = []; var line = '';
+      title.split(/\s+/).forEach(function(w) {
+        var t = line ? line + ' ' + w : w;
+        if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
+      });
+      if (line) lines.push(line);
+      if (lines.length <= 4) break;
+    }
+    x.fillStyle = '#ffffff';
+    x.shadowColor = 'rgba(0,0,0,0.35)'; x.shadowBlur = 12;
+    lines.slice(0, 4).forEach(function(l, i) { x.fillText(l, left, 330 + i * size * 1.12); });
+    x.shadowBlur = 0;
+
+    x.fillStyle = 'rgba(241,234,223,0.85)';
+    x.font = '400 18px "Jost", Helvetica, Arial, sans-serif';
+    if ('letterSpacing' in x) x.letterSpacing = '3px';
+    x.fillText('PRISTINEWELLNESS.COM.AU', left, H - 56);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+
+    return c.toDataURL('image/jpeg', 0.88);
+}
+
+/* After a story is published or edited: make its branded picture and point X's link preview at it.
+   The page only changes once the picture is saved, so a failure leaves the normal photo in place. */
+var pwShareIndex = null;
+async function pwRefreshShareImage(file) {
+  if (!/^(article|recipe)-[a-z0-9-]+\.html$/.test(file || '') || /-template\.html$/.test(file)) return 'skipped';
+  var readPage = async function() { var f = await githubRequest(file, 'GET'); return { sha: f.sha, html: decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, '')))) }; };
+  var pg = await readPage();
+  if (/<!-- PW_PREVIEW_START -->/.test(pg.html)) return 'skipped';
+  var plain = function(x) { var t = document.createElement('textarea'); t.innerHTML = x || ''; return t.value; };
+  var title = plain((pg.html.match(/<meta property="og:title" content="([^"]*)"/) || pg.html.match(/<h1[^>]*>([^<]*)</) || ['', ''])[1]).trim();
+  var photo = (pg.html.match(/<meta property="og:image" content="([^"]*)"/) || ['', ''])[1];
+  if (/newsletter-bg\.jpg$/.test(photo)) photo = '';
+  if (!pwShareIndex) {
+    try { var si = await githubRequest('data/search-index.json', 'GET'); pwShareIndex = JSON.parse(decodeURIComponent(escape(atob((si.content || '').replace(/\s/g, ''))))); } catch (e) { pwShareIndex = []; }
+  }
+  var entry = (pwShareIndex || []).filter(function(e) { return e.url === file; })[0];
+  var eyebrow = (/^recipe-/.test(file) ? 'Ancestral Kitchen' : 'The Source') + (entry && entry.cat ? ' \u00b7 ' + entry.cat.replace(/^Recipes\s*\u00b7\s*/, '') : '');
+  var dataUrl = await pwDrawShareCard({ title: title, eyebrow: eyebrow, photo: photo });
+  var imgPath = 'images/share/' + file.replace(/\.html$/, '') + '.jpg';
+  var imgSha = await getFileSHA(imgPath);
+  var body = { message: 'Share picture: ' + imgPath, content: dataUrl.split(',')[1], branch: GITHUB_BRANCH };
+  if (imgSha) body.sha = imgSha;
+  await githubRequest(imgPath, 'PUT', body);
+  // Point X at it (the page may have changed meanwhile, so read it again)
+  var url = PW_SITE + imgPath + '?v=' + Date.now().toString(36);
+  pg = await readPage();
+  var html = pg.html;
+  if (/<meta name="twitter:image" content="[^"]*"/.test(html)) html = html.replace(/<meta name="twitter:image" content="[^"]*"/, '<meta name="twitter:image" content="' + url + '"');
+  else if (/<meta name="twitter:card"[^>]*>/.test(html)) html = html.replace(/(<meta name="twitter:card"[^>]*>)/, '$1\n<meta name="twitter:image" content="' + url + '">');
+  else return 'no-tag';
+  if (html === pg.html) return 'same';
+  await githubRequest(file, 'PUT', { message: 'Share picture for X: ' + file, content: btoa(unescape(encodeURIComponent(html))), sha: pg.sha, branch: GITHUB_BRANCH });
+  return 'done';
+}
+function pwRefreshShareQuietly(file, statusFn) {
+  pwRefreshShareImage(file).then(function(r) { if (r === 'done' && statusFn) statusFn('X link preview picture made.'); })
+    .catch(function(e) { console.warn('Share picture not made for ' + file + ': ' + e.message); });
+}
+
+/* Manage: make pictures for every story at once */
+async function pwRefreshAllShareImages() {
+  var btn = document.getElementById('share-all-btn'), st = document.getElementById('share-all-status');
+  var files = (manageSourceData || []).concat(manageKitchenData || []).map(function(x) { return x.url; }).filter(function(u) { return /^(article|recipe)-/.test(u || ''); });
+  if (!files.length) { if (st) st.textContent = 'Open Manage Content first so the stories are loaded.'; return; }
+  if (!confirm('Make the X link preview picture for all ' + files.length + ' stories and recipes?')) return;
+  if (btn) btn.disabled = true;
+  pwShareIndex = null;
+  var ok = 0, fail = [];
+  for (var i = 0; i < files.length; i++) {
+    if (st) st.textContent = 'Making ' + (i + 1) + ' of ' + files.length + '...';
+    try { await pwRefreshShareImage(files[i]); ok++; } catch (e) { fail.push(files[i]); }
+  }
+  if (st) st.textContent = 'Done. ' + ok + ' made' + (fail.length ? ', ' + fail.length + ' failed: ' + fail.join(', ') : '.') ;
+  if (btn) btn.disabled = false;
+}
+
 /* ===== BRANDED IMAGE FOR A STORY (for X posts and anything without its own photo) ===== */
 var sfStories = [];
 async function sfLoadStoryList() {
@@ -7547,58 +7676,7 @@ async function sfMakeBrandedImage() {
     var eyebrow = (/^recipe-/.test(file) ? 'Ancestral Kitchen' : 'The Source') +
       (entry && entry.cat ? ' · ' + entry.cat.replace(/^Recipes\s*·\s*/, '') : '');
 
-    try { await Promise.all([document.fonts.load('italic 64px "Cormorant Garamond"'), document.fonts.load('500 20px "Jost"')]); } catch (e) {}
-
-    var W = 1200, H = 675;
-    var c = document.createElement('canvas'); c.width = W; c.height = H;
-    var x = c.getContext('2d');
-    x.fillStyle = '#8F9574'; x.fillRect(0, 0, W, H);
-    if (photo) {
-      try {
-        var img = await sfLoadImage('/' + photo);
-        var sc = Math.max(W / img.width, H / img.height);
-        var dw = img.width * sc, dh = img.height * sc;
-        x.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
-      } catch (e) { /* no photo: the sage background stays */ }
-    }
-    // Soft shade from the left so the words read over any photo
-    var g = x.createLinearGradient(0, 0, W * 0.75, 0);
-    g.addColorStop(0, 'rgba(20,16,10,0.78)'); g.addColorStop(0.55, 'rgba(20,16,10,0.45)'); g.addColorStop(1, 'rgba(20,16,10,0.05)');
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-
-    try { var logo = await sfLoadImage('/images/site/logo.svg'); x.drawImage(logo, 64, 52, 118, 118); } catch (e) {}
-
-    var left = 72, maxW = 640;
-    x.fillStyle = 'rgba(241,234,223,0.92)';
-    x.font = '500 19px "Jost", Helvetica, Arial, sans-serif';
-    if ('letterSpacing' in x) x.letterSpacing = '4px';
-    x.fillText(eyebrow.toUpperCase(), left, 262);
-    if ('letterSpacing' in x) x.letterSpacing = '0px';
-
-    // Title: largest size that fits in four lines
-    var size = 66, lines = [];
-    for (; size >= 40; size -= 2) {
-      x.font = 'italic 400 ' + size + 'px "Cormorant Garamond", Georgia, serif';
-      lines = []; var line = '';
-      title.split(/\s+/).forEach(function(w) {
-        var t = line ? line + ' ' + w : w;
-        if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
-      });
-      if (line) lines.push(line);
-      if (lines.length <= 4) break;
-    }
-    x.fillStyle = '#ffffff';
-    x.shadowColor = 'rgba(0,0,0,0.35)'; x.shadowBlur = 12;
-    lines.slice(0, 4).forEach(function(l, i) { x.fillText(l, left, 330 + i * size * 1.12); });
-    x.shadowBlur = 0;
-
-    x.fillStyle = 'rgba(241,234,223,0.85)';
-    x.font = '400 18px "Jost", Helvetica, Arial, sans-serif';
-    if ('letterSpacing' in x) x.letterSpacing = '3px';
-    x.fillText('PRISTINEWELLNESS.COM.AU', left, H - 56);
-    if ('letterSpacing' in x) x.letterSpacing = '0px';
-
-    var dataUrl = c.toDataURL('image/jpeg', 0.88);
+    var dataUrl = await pwDrawShareCard({ title: title, eyebrow: eyebrow, photo: photo });
     var path = 'images/social-x-' + Date.now() + '-' + file.replace(/^(article|recipe)-/, '').replace(/\.html$/, '').slice(0, 30) + '.jpg';
     await githubRequest(path, 'PUT', { message: 'Branded social image: ' + path, content: dataUrl.split(',')[1], branch: GITHUB_BRANCH });
     sfImagePath = path;
@@ -8489,6 +8567,7 @@ async function seSavePhotos() {
     var extra = 0;
     if (P.heroNew) extra = await seUpdateEverywhere(file, function(block) { return seSetBlockImage(block, P.heroNew); }, 'main photo');
     seSetStatus('Saved! Live in 1-2 minutes' + (extra ? ' (story and ' + extra + ' other page' + (extra === 1 ? '' : 's') + ' updated).' : '.'));
+    if (P.heroNew) await pwRefreshShareImage(file).catch(function() {});
     SE.photo.hero = P.heroNew || P.hero; SE.photo.heroNew = '';
     setTimeout(function() { if (document.getElementById('se-modal') && SE.url === file && SE.photo) openStoryPhotos(kind, file); }, 1200);
   } catch (e) {
@@ -8662,6 +8741,7 @@ async function seSaveText() {
       } catch (e) {}
     }
     seSetStatus('Saved ' + changes + ' change' + (changes === 1 ? '' : 's') + '! Live in 1-2 minutes' + (extra ? ' (title also updated on ' + extra + ' other page' + (extra === 1 ? '' : 's') + ').' : '.'));
+    if (extra) await pwRefreshShareImage(SE.url).catch(function() {});
     setTimeout(function() { if (document.getElementById('se-modal') && SE.url === file && SE.text && SE.sha === null) openStoryText(kind, file); }, 1500);
   } catch (e) {
     seSetStatus('Not saved: ' + e.message, true);
