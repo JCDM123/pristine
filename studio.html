@@ -1386,12 +1386,21 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
             <p style="font-size:11px;color:var(--muted);margin-top:4px;">Paste a pristinewellness.com.au link and we will auto-fetch the image and caption.</p>
           </div>
           <div class="field">
+            <label>Or pick one of our stories</label>
+            <select id="sf-story" onchange="sfPickStory(this.value)" style="padding:8px 12px;border:0.5px solid var(--border);border-radius:4px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">
+              <option value="">Choose a story or recipe...</option>
+            </select>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px;">Then press Make branded image: the story's photo with its title and our logo, sized for X (1200 x 675). No design work needed.</p>
+          </div>
+          <div class="field">
             <label>Image</label>
             <div style="display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:start;">
               <div>
                 <div class="img-upload-zone" id="sf-img-zone" onclick="document.getElementById('sf-img-input').click()" style="height:120px;"><span class="slot-label">Upload image</span></div>
                 <input type="file" id="sf-img-input" accept="image/*" style="display:none" onchange="handleSocialFeedImage(this)">
                 <button class="gen-btn" style="background:var(--forest);margin-top:6px;font-size:10px;padding:5px 10px;" onclick="openImgPicker(function(p){setSocialFeedImageFromPath(p)})">Pick from Library</button>
+                <button class="gen-btn" id="sf-brand-btn" style="background:var(--sage);margin-top:6px;font-size:10px;padding:5px 10px;" onclick="sfMakeBrandedImage()">Make branded image</button>
+                <a id="sf-brand-dl" download="pristine-wellness-x.jpg" style="display:none;margin-top:8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--sage);">Download for posting on X</a>
               </div>
               <div>
                 <label style="font-size:11px;display:block;margin-bottom:4px;">Caption</label>
@@ -7412,6 +7421,7 @@ async function loadSocialFeed() {
     if (!Array.isArray(sfPosts)) sfPosts = [];
     renderSocialFeedList();
     sfSetStatus('Loaded ' + sfPosts.length + ' posts.', true);
+    sfLoadStoryList();
   } catch(e) {
     sfPosts = [];
     renderSocialFeedList();
@@ -7479,6 +7489,135 @@ async function sfMaybeAutoFetch(url) {
     sfSetStatus('Could not auto-fetch. Add details manually.', false);
   }
 }
+
+/* ===== BRANDED IMAGE FOR A STORY (for X posts and anything without its own photo) ===== */
+var sfStories = [];
+async function sfLoadStoryList() {
+  var sel = document.getElementById('sf-story');
+  if (!sel) return;
+  try {
+    var f = await githubRequest('data/search-index.json', 'GET');
+    var list = JSON.parse(decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, '')))));
+    sfStories = (Array.isArray(list) ? list : []).filter(function(e) { return e && /^(article|recipe)-.+\.html$/.test(e.url || ''); });
+    sel.innerHTML = '<option value="">Choose a story or recipe...</option>' + sfStories.map(function(e, i) {
+      return '<option value="' + i + '">' + escHtml(e.title) + '</option>';
+    }).join('');
+  } catch (e) { /* the list is a convenience; pasting a link still works */ }
+}
+
+function sfPickStory(i) {
+  var e = sfStories[i];
+  if (!e) return;
+  document.getElementById('sf-link').value = 'https://pristinewellness.com.au/' + e.url;
+  var cap = document.getElementById('sf-caption');
+  if (cap && !cap.value.trim()) cap.value = e.title + (e.excerpt ? '\n\n' + e.excerpt : '');
+  sfSetStatus('Story chosen. Press Make branded image.', true);
+}
+
+/* Which story is this post about? From the link box, or the caption if the link is empty */
+function sfStoryFileFromForm() {
+  var text = (document.getElementById('sf-link').value || '') + ' ' + (document.getElementById('sf-caption').value || '');
+  var m = text.match(/pristinewellness\.com\.au\/((?:article|recipe)-[a-z0-9-]+?)(?:\.html)?(?=[\s?#"'\/]|$)/i);
+  return m ? m[1].toLowerCase() + '.html' : '';
+}
+
+function sfLoadImage(src) {
+  return new Promise(function(resolve, reject) {
+    var img = new Image();
+    img.onload = function() { resolve(img); };
+    img.onerror = function() { reject(new Error('Could not load ' + src)); };
+    img.src = src;
+  });
+}
+
+async function sfMakeBrandedImage() {
+  var file = sfStoryFileFromForm();
+  if (!file) { sfSetStatus('Pick a story, or paste one of our story links first.', false); return; }
+  var btn = document.getElementById('sf-brand-btn');
+  if (btn) btn.disabled = true;
+  sfSetStatus('Making the image...', null);
+  try {
+    var f = await githubRequest(file, 'GET');
+    var html = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+    var plain = function(x) { var t = document.createElement('textarea'); t.innerHTML = x || ''; return t.value; };
+    var title = plain((html.match(/<meta property="og:title" content="([^"]*)"/) || html.match(/<h1[^>]*>([^<]*)</) || ['', ''])[1]).trim();
+    var ogImg = (html.match(/<meta property="og:image" content="([^"]*)"/) || ['', ''])[1];
+    var photo = ogImg.replace(/^https?:\/\/(?:www\.)?pristinewellness\.com\.au\//, '').replace(/^\//, '');
+    var entry = sfStories.filter(function(e) { return e.url === file; })[0];
+    var eyebrow = (/^recipe-/.test(file) ? 'Ancestral Kitchen' : 'The Source') +
+      (entry && entry.cat ? ' · ' + entry.cat.replace(/^Recipes\s*·\s*/, '') : '');
+
+    try { await Promise.all([document.fonts.load('italic 64px "Cormorant Garamond"'), document.fonts.load('500 20px "Jost"')]); } catch (e) {}
+
+    var W = 1200, H = 675;
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var x = c.getContext('2d');
+    x.fillStyle = '#8F9574'; x.fillRect(0, 0, W, H);
+    if (photo) {
+      try {
+        var img = await sfLoadImage('/' + photo);
+        var sc = Math.max(W / img.width, H / img.height);
+        var dw = img.width * sc, dh = img.height * sc;
+        x.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      } catch (e) { /* no photo: the sage background stays */ }
+    }
+    // Soft shade from the left so the words read over any photo
+    var g = x.createLinearGradient(0, 0, W * 0.75, 0);
+    g.addColorStop(0, 'rgba(20,16,10,0.78)'); g.addColorStop(0.55, 'rgba(20,16,10,0.45)'); g.addColorStop(1, 'rgba(20,16,10,0.05)');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+
+    try { var logo = await sfLoadImage('/images/site/logo.svg'); x.drawImage(logo, 64, 52, 118, 118); } catch (e) {}
+
+    var left = 72, maxW = 640;
+    x.fillStyle = 'rgba(241,234,223,0.92)';
+    x.font = '500 19px "Jost", Helvetica, Arial, sans-serif';
+    if ('letterSpacing' in x) x.letterSpacing = '4px';
+    x.fillText(eyebrow.toUpperCase(), left, 262);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+
+    // Title: largest size that fits in four lines
+    var size = 66, lines = [];
+    for (; size >= 40; size -= 2) {
+      x.font = 'italic 400 ' + size + 'px "Cormorant Garamond", Georgia, serif';
+      lines = []; var line = '';
+      title.split(/\s+/).forEach(function(w) {
+        var t = line ? line + ' ' + w : w;
+        if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
+      });
+      if (line) lines.push(line);
+      if (lines.length <= 4) break;
+    }
+    x.fillStyle = '#ffffff';
+    x.shadowColor = 'rgba(0,0,0,0.35)'; x.shadowBlur = 12;
+    lines.slice(0, 4).forEach(function(l, i) { x.fillText(l, left, 330 + i * size * 1.12); });
+    x.shadowBlur = 0;
+
+    x.fillStyle = 'rgba(241,234,223,0.85)';
+    x.font = '400 18px "Jost", Helvetica, Arial, sans-serif';
+    if ('letterSpacing' in x) x.letterSpacing = '3px';
+    x.fillText('PRISTINEWELLNESS.COM.AU', left, H - 56);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+
+    var dataUrl = c.toDataURL('image/jpeg', 0.88);
+    var path = 'images/social-x-' + Date.now() + '-' + file.replace(/^(article|recipe)-/, '').replace(/\.html$/, '').slice(0, 30) + '.jpg';
+    await githubRequest(path, 'PUT', { message: 'Branded social image: ' + path, content: dataUrl.split(',')[1], branch: GITHUB_BRANCH });
+    sfImagePath = path;
+    var zone = document.getElementById('sf-img-zone');
+    if (zone) { zone.style.backgroundImage = 'url(' + dataUrl + ')'; zone.style.backgroundSize = 'cover'; zone.style.backgroundPosition = 'center'; }
+    var link = document.getElementById('sf-link');
+    if (link && !link.value.trim()) link.value = 'https://pristinewellness.com.au/' + file;
+    var cap = document.getElementById('sf-caption');
+    if (cap && !cap.value.trim()) cap.value = title;
+    sfLastBrandedDataUrl = dataUrl;
+    var dl = document.getElementById('sf-brand-dl');
+    if (dl) { dl.href = dataUrl; dl.download = path.split('/').pop(); dl.style.display = 'block'; }
+    sfSetStatus('Branded image ready and saved. Download it to post on X, then press Add to Feed.', true);
+  } catch (e) {
+    sfSetStatus('Could not make the image: ' + e.message, false);
+  }
+  if (btn) btn.disabled = false;
+}
+var sfLastBrandedDataUrl = '';
 
 async function handleSocialFeedImage(input) {
   if (!input.files || !input.files[0]) return;
