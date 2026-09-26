@@ -1153,6 +1153,21 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
 <div id="tab-manage" class="tab-panel">
   <div class="manage-wrap">
 
+    <!-- MAINTENANCE MODE -->
+    <div class="manage-section">
+      <div class="manage-section-head">
+        <div>
+          <h2 class="manage-section-title">Maintenance mode</h2>
+          <p class="manage-section-sub">When on, visitors see a "Back very soon" page instead of the site. You still see the full site on any device where you have opened the studio. Changes take up to 10 minutes to reach everyone.</p>
+        </div>
+        <div class="manage-status-bar"><div class="status-dot" id="maint-dot"></div><span id="maint-status">Checking...</span></div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:1rem;">
+        <button class="gen-btn" id="maint-btn" onclick="toggleMaintenance()" disabled style="background:var(--forest);">Loading...</button>
+        <a href="/maintenance.html" target="_blank" rel="noopener" style="font-size:12px;color:var(--sage);letter-spacing:1px;text-transform:uppercase;">See the maintenance page</a>
+      </div>
+    </div>
+
     <!-- PRIVATE PREVIEWS -->
     <div class="manage-section">
       <div class="manage-section-head">
@@ -1407,6 +1422,7 @@ function checkPassword() {
     document.getElementById('lock-screen').style.display = 'none';
     document.getElementById('studio').style.display = 'block';
     sessionStorage.setItem('studio_auth', '1');
+    try { localStorage.setItem('pw_owner', '1'); } catch (e) {}
   } else {
     document.getElementById('pw-error').textContent = 'Incorrect password.';
     document.getElementById('pw-input').value = '';
@@ -4120,7 +4136,59 @@ async function refreshManageData() {
 
 async function loadManageTab() {
   // Always load fresh so the list reflects the current GitHub state
-  await Promise.all([loadSourceForManage(), loadKitchenForManage(), loadPreviewsForManage()]);
+  await Promise.all([loadMaintenanceState(), loadSourceForManage(), loadKitchenForManage(), loadPreviewsForManage()]);
+}
+
+/* ===== MAINTENANCE MODE: one line in site-status.js turns it on or off ===== */
+var pwMaintOn = null;
+function setMaintStatus(msg, ok) {
+  var dot = document.getElementById('maint-dot'), st = document.getElementById('maint-status');
+  if (dot) dot.style.background = ok === true ? '#27ae60' : ok === false ? '#e74c3c' : '#f39c12';
+  if (st) st.textContent = msg;
+}
+function renderMaintButton() {
+  var btn = document.getElementById('maint-btn');
+  if (!btn) return;
+  btn.disabled = pwMaintOn === null;
+  btn.textContent = pwMaintOn === null ? 'Unavailable' : pwMaintOn ? 'Turn maintenance off (show the site)' : 'Turn maintenance on';
+  btn.style.background = pwMaintOn ? '#c0392b' : 'var(--forest)';
+}
+async function loadMaintenanceState() {
+  try {
+    var f = await githubRequest('site-status.js', 'GET');
+    var js = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+    var m = js.match(/var MAINTENANCE = (true|false);/);
+    if (!m) throw new Error('The switch file is not in the expected format.');
+    pwMaintOn = m[1] === 'true';
+    setMaintStatus(pwMaintOn ? 'ON: visitors see the maintenance page' : 'Off: the site is live', !pwMaintOn);
+  } catch (e) {
+    pwMaintOn = null;
+    setMaintStatus('Could not read the switch: ' + e.message, false);
+  }
+  renderMaintButton();
+}
+async function toggleMaintenance() {
+  if (pwMaintOn === null) return;
+  var turnOn = !pwMaintOn;
+  if (!confirm(turnOn ? 'Turn maintenance mode ON? Visitors will see the "Back very soon" page until you turn it off.' : 'Turn maintenance mode OFF and show the site to everyone?')) return;
+  var btn = document.getElementById('maint-btn');
+  if (btn) btn.disabled = true;
+  setMaintStatus('Saving...', null);
+  try {
+    var f = await githubRequest('site-status.js', 'GET');
+    var js = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+    var updated = js.replace(/var MAINTENANCE = (true|false);/, 'var MAINTENANCE = ' + turnOn + ';');
+    if (updated === js && js.indexOf('var MAINTENANCE = ' + turnOn + ';') === -1) throw new Error('The switch file is not in the expected format.');
+    if (updated !== js) {
+      await githubRequest('site-status.js', 'PUT', { message: turnOn ? 'Maintenance mode on' : 'Maintenance mode off', content: btoa(unescape(encodeURIComponent(updated))), sha: f.sha, branch: GITHUB_BRANCH });
+    }
+    pwMaintOn = turnOn;
+    try { localStorage.setItem('pw_owner', '1'); } catch (e) {}
+    setMaintStatus(turnOn ? 'ON. Visitors see the maintenance page within 10 minutes.' : 'Off. The site is back for everyone within 10 minutes.', !turnOn);
+  } catch (e) {
+    setMaintStatus('Not changed: ' + e.message, false);
+  }
+  renderMaintButton();
 }
 
 async function loadSourceForManage() {
@@ -4677,12 +4745,12 @@ async function loadSlidesTab() {
   if (!token) { setSlideStatus('No GitHub token set.', false); return; }
   setSlideStatus('Loading...', null);
   try {
-    var data = await githubRequest('home.html', 'GET');
+    var data = await githubRequest('index.html', 'GET');
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     slidesData = parseSlidesFromHTML(html);
     renderSlidesEditor();
     loadExplorePanelValues(html);
-    setSlideStatus('Loaded ' + slidesData.length + ' slide(s) from home.html.', true);
+    setSlideStatus('Loaded ' + slidesData.length + ' slide(s) from the homepage.', true);
   } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
   }
@@ -4876,16 +4944,16 @@ async function publishSlides() {
   if (!token) { setSlideStatus('No GitHub token.', false); return; }
   if (!slidesData.length) { setSlideStatus('No slides to publish.', false); return; }
   collectSlideTextFields();
-  setSlideStatus('Fetching home.html...', null);
+  setSlideStatus('Fetching the homepage...', null);
   try {
-    var data = await githubRequest('home.html', 'GET');
+    var data = await githubRequest('index.html', 'GET');
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     var sha = data.sha;
     html = rebuildSlidesInHTML(html);
     if (html.length < 10000) { throw new Error('Safety check failed: rebuilt HTML is too short (' + html.length + ' chars). Aborting to prevent data loss.'); }
     var encoded = btoa(unescape(encodeURIComponent(html)));
     if (!encoded || encoded.length < 1000) { throw new Error('Safety check failed: encoded content is empty. Aborting.'); }
-    await githubRequest('home.html', 'PUT', { message: 'Update homepage slides via Studio', content: encoded, sha: sha });
+    await githubRequest('index.html', 'PUT', { message: 'Update homepage slides via Studio', content: encoded, sha: sha });
     setSlideStatus('Published! Changes live within 60 seconds.', true);
   } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
@@ -6509,9 +6577,9 @@ async function publishExplorePanels() {
     if (statusEl) statusEl.textContent = 'Please enter at least one image path.';
     return;
   }
-  if (statusEl) statusEl.textContent = 'Fetching home.html...';
+  if (statusEl) statusEl.textContent = 'Fetching the homepage...';
   try {
-    var data = await githubRequest('home.html', 'GET');
+    var data = await githubRequest('index.html', 'GET');
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     var sha = data.sha;
     // Update explore panel images
@@ -6519,7 +6587,7 @@ async function publishExplorePanels() {
     html = rebuildExplorePanelsInHTML(html, imgs);
     if (html === before) { if (statusEl) statusEl.textContent = 'No change: those are already the photos on the homepage.'; return; }
     var encoded = btoa(unescape(encodeURIComponent(html)));
-    await githubRequest('home.html', 'PUT', { message: 'Update explore panel images via studio', content: encoded, sha: sha });
+    await githubRequest('index.html', 'PUT', { message: 'Update explore panel images via studio', content: encoded, sha: sha });
     if (statusEl) statusEl.textContent = 'Published! Explore panel images updated.';
   } catch(e) {
     if (statusEl) statusEl.textContent = 'Error: ' + e.message;
