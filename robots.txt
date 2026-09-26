@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /downloads/
+Disallow: /preview-site.html
 Disallow: /article-template.html
 Disallow: /recipe-template.html
 
