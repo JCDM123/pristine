@@ -6552,6 +6552,7 @@ function rebuildExplorePanelsInHTML(html, imgs) {
 
 function loadExplorePanelValues(html) {
   // Show the photos the homepage uses now
+  if (!html) return;
   [['source', 'The Source'], ['kitchen', 'Ancestral Kitchen']].forEach(function(pair) {
     var box = pwExplorePanelAt(html, pair[1]);
     var src = box ? (html.slice(box.start, box.end).match(/<img\b[^>]*?\bsrc="([^"]*)"/) || ['', ''])[1] : '';
