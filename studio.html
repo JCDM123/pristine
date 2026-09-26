@@ -1121,31 +1121,23 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">Explore Panels</h2>
-          <p class="manage-section-sub">The two panels below the hero , The Source and Ancestral Kitchen. Each fades between 2 images. Upload images then paste their paths below.</p>
+          <p class="manage-section-sub">The two panels below the hero: The Source and Ancestral Kitchen. Each shows one photo. Pick or upload a new one, then publish.</p>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem;">
         <div>
           <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);font-weight:600;margin-bottom:1rem;">The Source</div>
-          <div class="field"><label>Image 1 path</label><input type="text" id="exp-source-img1" placeholder="images/source-panel-1.jpg" oninput="updateExpPreview('source',1,this.value)"></div>
+          <div class="field"><label>Photo</label><input type="text" id="exp-source-img1" placeholder="images/source-panel-1.jpg" oninput="updateExpPreview('source',1,this.value)"></div>
           <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-source-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
           <input type="file" accept="image/*" id="exp-source-file1" style="display:none" onchange="uploadExpImage('source',1,this)">
           <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img1').value=p;updateExpPreview('source',1,p);})">Pick from Library</button></div>
-          <div class="field" style="margin-top:1rem;"><label>Image 2 path</label><input type="text" id="exp-source-img2" placeholder="images/source-panel-2.jpg" oninput="updateExpPreview('source',2,this.value)"></div>
-          <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-source-prev2"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
-          <input type="file" accept="image/*" id="exp-source-file2" style="display:none" onchange="uploadExpImage('source',2,this)">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file2').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img2').value=p;updateExpPreview('source',2,p);})">Pick from Library</button></div>
         </div>
         <div>
           <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);font-weight:600;margin-bottom:1rem;">Ancestral Kitchen</div>
-          <div class="field"><label>Image 1 path</label><input type="text" id="exp-kitchen-img1" placeholder="images/kitchen-panel-1.jpg" oninput="updateExpPreview('kitchen',1,this.value)"></div>
+          <div class="field"><label>Photo</label><input type="text" id="exp-kitchen-img1" placeholder="images/kitchen-panel-1.jpg" oninput="updateExpPreview('kitchen',1,this.value)"></div>
           <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-kitchen-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
           <input type="file" accept="image/*" id="exp-kitchen-file1" style="display:none" onchange="uploadExpImage('kitchen',1,this)">
           <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img1').value=p;updateExpPreview('kitchen',1,p);})">Pick from Library</button></div>
-          <div class="field" style="margin-top:1rem;"><label>Image 2 path</label><input type="text" id="exp-kitchen-img2" placeholder="images/kitchen-panel-2.jpg" oninput="updateExpPreview('kitchen',2,this.value)"></div>
-          <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-kitchen-prev2"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
-          <input type="file" accept="image/*" id="exp-kitchen-file2" style="display:none" onchange="uploadExpImage('kitchen',2,this)">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file2').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img2').value=p;updateExpPreview('kitchen',2,p);})">Pick from Library</button></div>
         </div>
       </div>
       <div style="margin-top:1.5rem;">
@@ -4689,6 +4681,7 @@ async function loadSlidesTab() {
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     slidesData = parseSlidesFromHTML(html);
     renderSlidesEditor();
+    loadExplorePanelValues(html);
     setSlideStatus('Loaded ' + slidesData.length + ' slide(s) from home.html.', true);
   } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
@@ -4716,7 +4709,8 @@ function parseSlidesFromHTML(html) {
     // Extract the background-image URL
     var urlMatch = tagContent.match(/background-image:url\(\\'([^\\']+)\\'/) || tagContent.match(/background-image:url\('([^']+)'/);
     if (urlMatch) {
-      slides.push({ image: urlMatch[1], bgpos: '' });
+      var posMatch = tagContent.match(/background-position:([^;"]+)/);
+      slides.push({ image: urlMatch[1], bgpos: posMatch ? posMatch[1].trim() : '' });
     }
     pos = tagEnd + 7;
   }
@@ -4726,13 +4720,14 @@ function parseSlidesFromHTML(html) {
   var subM = html.match(/<p class="hero-sub">([^<]*)<\/p>/);
   var cta1M = html.match(/<a class="hero-cta-primary"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/);
   var cta2M = html.match(/<a class="hero-cta-secondary"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/);
+  var plainText = function(x) { var t = document.createElement('textarea'); t.innerHTML = x; return t.value; };
   var sharedText = {
-    eyebrow: eyebrowM ? eyebrowM[1] : 'Pristine Wellness',
-    headline: headlineM ? headlineM[1].replace(/<br>/g,'\n').replace(/<[^>]+>/g,'') : 'Live the way\nyou were\ndesigned to.',
-    sub: subM ? subM[1] : '',
-    cta1text: cta1M ? cta1M[2].trim() : 'Read The Source',
+    eyebrow: eyebrowM ? plainText(eyebrowM[1]) : 'Pristine Wellness',
+    headline: headlineM ? plainText(headlineM[1].replace(/<br\s*\/?>/g,'\n').replace(/<[^>]+>/g,'')) : 'Live the way\nyou were\ndesigned to.',
+    sub: subM ? plainText(subM[1]) : '',
+    cta1text: cta1M ? plainText(cta1M[2].trim()) : 'Read The Source',
     cta1href: cta1M ? cta1M[1] : 'the-source.html',
-    cta2text: cta2M ? cta2M[2].trim() : 'Our story',
+    cta2text: cta2M ? plainText(cta2M[2].trim()) : 'Our story',
     cta2href: cta2M ? cta2M[1] : 'about.html'
   };
   // Apply shared text to each slide
@@ -4839,12 +4834,14 @@ async function onSlideImageChange(idx, input) {
 }
 
 function deleteSlide(idx) {
+  collectSlideTextFields();
   if (!confirm('Remove slide ' + (idx+1) + '? This cannot be undone until you publish.')) return;
   slidesData.splice(idx, 1);
   renderSlidesEditor();
 }
 
 function addSlide() {
+  collectSlideTextFields();
   var base = slidesData.length ? Object.assign({}, slidesData[0]) : {
     eyebrow: 'Pristine Wellness',
     headline: 'Live the way\nyou were\ndesigned to.',
@@ -4853,6 +4850,7 @@ function addSlide() {
     cta2text: 'Our story', cta2href: 'about.html'
   };
   base.image = '';
+  base.bgpos = '';
   slidesData.push(base);
   renderSlidesEditor();
   setSlideStatus('New slide added. Upload an image then publish.', true);
@@ -4898,13 +4896,13 @@ function rebuildSlidesInHTML(html) {
   // 1. Replace slide divs
   var newSlideDivs = slidesData.map(function(s, i) {
     var cls = i === 0 ? 'slide active' : 'slide';
-    return '  <div class="' + cls + '" style="background-image:url(\'' + s.image + '\');"></div>';
+    return '  <div class="' + cls + '" style="background-image:url(\'' + s.image + '\');' + (s.bgpos ? 'background-position:' + s.bgpos + ';' : '') + '"></div>';
   }).join('\n');
 
   // Replace all existing slide divs block
-  html = html.replace(/<div class="slide(?:\s+active)?"\s+style="background-image:url[\s\S]*?><\/div>/g, '');
+  html = html.replace(/[ \t]*<div class="slide(?:\s+active)?"\s+style="background-image:url[\s\S]*?><\/div>\n?/g, '');
   // Insert new slides before slide-overlay
-  html = html.replace('<div class="slide-overlay">', newSlideDivs + '\n  <div class="slide-overlay">');
+  html = html.replace(/[ \t]*<div class="slide-overlay">/, newSlideDivs + '\n  <div class="slide-overlay">');
 
   // 2. Update dot nav count
   var dots = slidesData.map(function(s, i) {
@@ -4919,7 +4917,7 @@ function rebuildSlidesInHTML(html) {
   // eyebrow
   html = html.replace(/<span class="hero-eyebrow">[^<]*<\/span>/, '<span class="hero-eyebrow">' + escHtml(sd.eyebrow) + '</span>');
   // headline - convert \n to <br>
-  var headlineHtml = sd.headline.replace(/\n/g,'<br>');
+  var headlineHtml = escHtml(sd.headline).replace(/\n/g,'<br>');
   html = html.replace(/<h1 class="hero-headline">[\s\S]*?<\/h1>/, '<h1 class="hero-headline">' + headlineHtml + '</h1>');
   // sub
   html = html.replace(/<p class="hero-sub">[^<]*<\/p>/, '<p class="hero-sub">' + escHtml(sd.sub) + '</p>');
@@ -6429,7 +6427,7 @@ function updateExpPreview(panel, num, url) {
   var prev = document.getElementById('exp-' + panel + '-prev' + num);
   if (!prev) return;
   if (!url) { prev.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div>'; return; }
-  var fullUrl = url.indexOf('http') === 0 ? url : 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + url + '?cb=' + Date.now();
+  var fullUrl = url.indexOf('http') === 0 ? url : 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + url.replace(/^\//, '') + '?cb=' + Date.now();
   prev.innerHTML = '<img src="' + fullUrl + '" style="width:100%;height:100%;object-fit:cover;">';
 }
 
@@ -6438,7 +6436,7 @@ async function uploadExpImage(panel, num, input) {
   var file = input.files[0];
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token first.'); return; }
-  var statusEl = document.getElementById('exp-status');
+  var statusEl = document.getElementById('explore-status');
   if (statusEl) statusEl.textContent = 'Uploading...';
   try {
     var compressed = await compressImage(file, 1200, 900, 0.85, false);
@@ -6478,10 +6476,8 @@ async function publishExplorePanels() {
   if (!token) { alert('Please enter your GitHub token first.'); return; }
   var statusEl = document.getElementById('explore-status');
   var imgs = {
-    source1: (document.getElementById('exp-source-img1') || {}).value || '',
-    source2: (document.getElementById('exp-source-img2') || {}).value || '',
-    kitchen1: (document.getElementById('exp-kitchen-img1') || {}).value || '',
-    kitchen2: (document.getElementById('exp-kitchen-img2') || {}).value || ''
+    source1: ((document.getElementById('exp-source-img1') || {}).value || '').trim(),
+    kitchen1: ((document.getElementById('exp-kitchen-img1') || {}).value || '').trim()
   };
   if (!imgs.source1 && !imgs.kitchen1) {
     if (statusEl) statusEl.textContent = 'Please enter at least one image path.';
@@ -6495,7 +6491,7 @@ async function publishExplorePanels() {
     // Update explore panel images
     var before = html;
     html = rebuildExplorePanelsInHTML(html, imgs);
-    if (html === before) throw new Error('The explore panels on home.html are not set up for studio editing, so nothing was published.');
+    if (html === before) { if (statusEl) statusEl.textContent = 'No change: those are already the photos on the homepage.'; return; }
     var encoded = btoa(unescape(encodeURIComponent(html)));
     await githubRequest('home.html', 'PUT', { message: 'Update explore panel images via studio', content: encoded, sha: sha });
     if (statusEl) statusEl.textContent = 'Published! Explore panel images updated.';
@@ -6504,50 +6500,38 @@ async function publishExplorePanels() {
   }
 }
 
-function rebuildExplorePanelsInHTML(html, imgs) {
-  // Each panel: <div class="explore-panel-img" id="exp-source-panel" data-img1="X" data-img2="Y">
-  //   <img class="exp-img exp-img-1" src="X" ...><img class="exp-img exp-img-2" src="Y" ...>
-  // We update the panel's data-img1/data-img2 AND the child img src values.
-
-  function updatePanel(html, panelId, img1, img2) {
-    // Find the panel div opening tag
-    var panelRe = new RegExp('(<div class="explore-panel-img" id="' + panelId + '"[^>]*>)([\\s\\S]*?)(</div>)');
-    var m = html.match(panelRe);
-    if (!m) return html;
-    var openTag = m[1];
-    var inner = m[2];
-
-    // Update data-img1 / data-img2 on the opening tag
-    if (img1) {
-      if (/data-img1="[^"]*"/.test(openTag)) openTag = openTag.replace(/data-img1="[^"]*"/, 'data-img1="' + img1 + '"');
-      else openTag = openTag.replace('>', ' data-img1="' + img1 + '">');
-    }
-    if (img2) {
-      if (/data-img2="[^"]*"/.test(openTag)) openTag = openTag.replace(/data-img2="[^"]*"/, 'data-img2="' + img2 + '"');
-      else openTag = openTag.replace('>', ' data-img2="' + img2 + '">');
-    }
-
-    // Update child img src + show them
-    if (img1) {
-      inner = inner.replace(/(<img class="exp-img exp-img-1"[^>]*?)src="[^"]*"/, '$1src="' + img1 + '"');
-      inner = inner.replace(/(<img class="exp-img exp-img-1"[^>]*?)style="display:none[^"]*"/, '$1style=""');
-    }
-    if (img2) {
-      inner = inner.replace(/(<img class="exp-img exp-img-2"[^>]*?)src="[^"]*"/, '$1src="' + img2 + '"');
-      inner = inner.replace(/(<img class="exp-img exp-img-2"[^>]*?)style="display:none;opacity:0[^"]*"/, '$1style="opacity:0;"');
-    }
-
-    return html.replace(panelRe, openTag + inner + '</div>');
+/* The homepage has two panels, each with one photo. Find a panel by the title that follows its photo. */
+function pwExplorePanelAt(html, title) {
+  var at = html.indexOf('<div class="explore-panel-img"');
+  while (at !== -1) {
+    var end = findDivEndJS(html, at);
+    if (end === -1) return null;
+    var next = html.indexOf('<div class="explore-panel-img"', end);
+    var titleAt = html.indexOf('class="explore-panel-title">' + title + '<', end);
+    if (titleAt !== -1 && (next === -1 || titleAt < next)) return { start: at, end: end };
+    at = next;
   }
-
-  html = updatePanel(html, 'exp-source-panel', imgs.source1, imgs.source2);
-  html = updatePanel(html, 'exp-kitchen-panel', imgs.kitchen1, imgs.kitchen2);
+  return null;
+}
+function rebuildExplorePanelsInHTML(html, imgs) {
+  [['The Source', imgs.source1], ['Ancestral Kitchen', imgs.kitchen1]].forEach(function(pair) {
+    if (!pair[1]) return;
+    var box = pwExplorePanelAt(html, pair[0]);
+    if (!box) return;
+    var block = html.slice(box.start, box.end).replace(/(<img\b[^>]*?\bsrc=")[^"]*"/, function(m, pre) { return pre + pair[1].replace(/"/g, '') + '"'; });
+    html = html.slice(0, box.start) + block + html.slice(box.end);
+  });
   return html;
 }
 
-function loadExplorePanelValues() {
-  // When slides tab loads, also pre-fill explore panel inputs from home.html content
-  // This is called after loadSlidesTab completes
+function loadExplorePanelValues(html) {
+  // Show the photos the homepage uses now
+  [['source', 'The Source'], ['kitchen', 'Ancestral Kitchen']].forEach(function(pair) {
+    var box = pwExplorePanelAt(html, pair[1]);
+    var src = box ? (html.slice(box.start, box.end).match(/<img\b[^>]*?\bsrc="([^"]*)"/) || ['', ''])[1] : '';
+    var inp = document.getElementById('exp-' + pair[0] + '-img1');
+    if (inp && src) { inp.value = src; updateExpPreview(pair[0], 1, src); }
+  });
 }
 
 /* ===== IMAGE PICKER MODAL ===== */
