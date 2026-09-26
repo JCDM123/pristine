@@ -879,6 +879,41 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
 html body .related-section .related-body .related-cat{position:static !important;display:block !important;background:none !important;padding:0 !important;font-size:10px !important;letter-spacing:2px !important;text-transform:uppercase !important;color:#8F9574 !important;margin-bottom:6px !important;font-weight:500 !important;}
 html body .related-section .related-title{font-family:'Cormorant Garamond',serif !important;font-style:italic !important;font-size:19px !important;font-weight:400 !important;color:#111 !important;line-height:1.3 !important;}
 </style>
+<style>
+/* Jump to recipe and Print recipe buttons */
+html body .share-bar .pw-recipe-action{background:#8F9574 !important;border-color:#8F9574 !important;color:#fff !important;}
+html body .share-bar .pw-recipe-action:hover{background:#7a8163 !important;border-color:#7a8163 !important;}
+html body .share-bar .pw-recipe-action svg{stroke:#fff !important;}
+html body .share-bar .pw-share-gap{flex:0 0 100% !important;height:0 !important;margin:-4px 0 !important;}
+@media(max-width:700px){html body .share-bar .pw-recipe-action{padding:9px 13px !important;font-size:11px !important;letter-spacing:1px !important;}}
+#pw-print-card{display:none;}
+@media print{
+  @page{margin:14mm;}
+  html body{background:#fff !important;}
+  html body.pw-printing > *:not(#pw-print-card){display:none !important;}
+  html body.pw-printing #pw-print-card{display:block !important;}
+  #pw-print-card{font-family:'Jost',Arial,sans-serif;color:#1a1a1a;font-size:11pt;line-height:1.5;}
+  #pw-print-card .pc-brand{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15pt;color:#8F9574;border-bottom:1px solid #8F9574;padding-bottom:6px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline;}
+  #pw-print-card .pc-brand small{font-family:'Jost',Arial,sans-serif;font-style:normal;font-size:8pt;letter-spacing:1.5px;text-transform:uppercase;color:#888;}
+  #pw-print-card h1{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:400;font-size:24pt;line-height:1.15;margin:0 0 6px;}
+  #pw-print-card .pc-about{color:#555;margin:0 0 10px;}
+  #pw-print-card .pc-stats{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:9pt;letter-spacing:0.5px;margin:0 0 16px;padding:8px 0;border-top:0.5px solid #ddd;border-bottom:0.5px solid #ddd;}
+  #pw-print-card .pc-stats b{color:#8F9574;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;font-size:7.5pt;margin-right:4px;}
+  #pw-print-card .pc-cols{display:flex;gap:22px;align-items:flex-start;}
+  #pw-print-card .pc-ing{flex:0 0 34%;}
+  #pw-print-card .pc-method{flex:1;}
+  #pw-print-card h2{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:400;font-size:15pt;margin:0 0 8px;color:#1a1a1a;}
+  #pw-print-card ul{list-style:none;padding:0;margin:0;}
+  #pw-print-card li{padding:4px 0;border-bottom:0.5px solid #eee;break-inside:avoid;}
+  #pw-print-card li .pc-amt{font-weight:500;margin-right:6px;}
+  #pw-print-card ol{padding-left:18px;margin:0;}
+  #pw-print-card ol li{border:none;padding:0 0 8px;}
+  #pw-print-card ol li b{display:block;font-weight:500;}
+  #pw-print-card .pc-note{margin-top:12px;padding:8px 10px;background:#f6f5f0;border-left:2px solid #8F9574;font-size:10pt;break-inside:avoid;}
+  #pw-print-card .pc-note b{display:block;font-size:7.5pt;letter-spacing:1.5px;text-transform:uppercase;color:#8F9574;font-weight:500;margin-bottom:2px;}
+  #pw-print-card .pc-foot{margin-top:18px;padding-top:6px;border-top:0.5px solid #ddd;font-size:8pt;color:#888;display:flex;justify-content:space-between;}
+}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -936,6 +971,9 @@ html body .related-section .related-title{font-family:'Cormorant Garamond',serif
 
 
 <div class="share-bar">
+  <button class="share-btn pw-recipe-action" onclick="pwJumpToRecipe()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M12 5v14M5 12l7 7 7-7"/></svg> Jump to recipe</button>
+  <button class="share-btn pw-recipe-action" onclick="pwPrintRecipe()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print recipe</button>
+  <span class="pw-share-gap"></span>
   <span class="share-label">Share</span>
   <button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);var t=encodeURIComponent(document.title);window.open('https://twitter.com/intent/tweet?url='+u+'&text='+t,'_blank','width=600,height=400');})()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M4 4l16 16M4 20L20 4"/></svg> Share on X</button>
   <button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);var t=encodeURIComponent(document.title);window.open('https://pinterest.com/pin/create/button/?url='+u+'&description='+t,'_blank','width=750,height=550');})()"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Pin this</button>
@@ -1580,6 +1618,78 @@ function doDrawerSearch(q) {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
 })();
+</script>
+<script>
+/* Jump to recipe, and a clean printable recipe card (also used when the reader presses Ctrl+P) */
+function pwJumpToRecipe() {
+  var t = document.querySelector('.recipe-wrap') || document.querySelector('.ingredients-panel');
+  if (!t) return;
+  var nav = document.querySelector('.nav');
+  var off = nav ? nav.getBoundingClientRect().height + 16 : 90;
+  window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - off, behavior: 'smooth' });
+}
+function pwBuildPrintCard() {
+  var old = document.getElementById('pw-print-card');
+  if (old) old.remove();
+  var txt = function(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; };
+  var mk = function(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+  var card = mk('div'); card.id = 'pw-print-card';
+  var brand = mk('div', 'pc-brand', 'Pristine Wellness');
+  brand.appendChild(mk('small', '', 'Ancestral Kitchen'));
+  card.appendChild(brand);
+  card.appendChild(mk('h1', '', txt(document.querySelector('h1'))));
+  var about = txt(document.querySelector('.recipe-about p'));
+  if (about) card.appendChild(mk('p', 'pc-about', about));
+  var stats = mk('div', 'pc-stats');
+  document.querySelectorAll('.quick-stat').forEach(function(q) {
+    var label = txt(q.querySelector('.qs-label')), value = txt(q.querySelector('.qs-value'));
+    if (!label || !value) return;
+    if (/serves/i.test(label) && document.getElementById('serving-count')) value = txt(document.getElementById('serving-count'));
+    var s = mk('span'); s.appendChild(mk('b', '', label)); s.appendChild(document.createTextNode(value)); stats.appendChild(s);
+  });
+  if (stats.children.length) card.appendChild(stats);
+  var cols = mk('div', 'pc-cols');
+  var ing = mk('div', 'pc-ing'); ing.appendChild(mk('h2', '', 'Ingredients'));
+  var ul = mk('ul');
+  document.querySelectorAll('.ingredient-item').forEach(function(i) {
+    var li = mk('li'); var a = txt(i.querySelector('.ing-amount'));
+    if (a) li.appendChild(mk('span', 'pc-amt', a));
+    li.appendChild(document.createTextNode(txt(i.querySelector('.ing-name'))));
+    ul.appendChild(li);
+  });
+  ing.appendChild(ul);
+  var meth = mk('div', 'pc-method'); meth.appendChild(mk('h2', '', 'Method'));
+  var ol = mk('ol');
+  document.querySelectorAll('.method-step').forEach(function(s) {
+    var li = mk('li'); var t = txt(s.querySelector('.step-title'));
+    if (t) li.appendChild(mk('b', '', t));
+    li.appendChild(document.createTextNode(txt(s.querySelector('.step-text'))));
+    ol.appendChild(li);
+  });
+  meth.appendChild(ol);
+  document.querySelectorAll('.chef-tip').forEach(function(c) {
+    var n = mk('div', 'pc-note'); n.appendChild(mk('b', '', txt(c.querySelector('.chef-tip-label')) || 'Note'));
+    n.appendChild(document.createTextNode(txt(c.querySelector('p')))); meth.appendChild(n);
+  });
+  cols.appendChild(ing); cols.appendChild(meth); card.appendChild(cols);
+  var foot = mk('div', 'pc-foot');
+  foot.appendChild(mk('span', '', window.location.hostname + window.location.pathname));
+  foot.appendChild(mk('span', '', '© Pristine Wellness'));
+  card.appendChild(foot);
+  document.body.appendChild(card);
+  document.body.classList.add('pw-printing');
+}
+function pwClearPrintCard() {
+  document.body.classList.remove('pw-printing');
+  var c = document.getElementById('pw-print-card'); if (c) c.remove();
+}
+function pwPrintRecipe() {
+  pwBuildPrintCard();
+  window.print();
+  setTimeout(pwClearPrintCard, 1500);
+}
+window.addEventListener('beforeprint', function() { if (!document.getElementById('pw-print-card')) pwBuildPrintCard(); });
+window.addEventListener('afterprint', pwClearPrintCard);
 </script>
 </body>
 </html>
