@@ -5,7 +5,7 @@
   window.PW_MAINTENANCE = MAINTENANCE;
   try {
     if (!MAINTENANCE) return;
-    if (/\/(maintenance|studio)\.html$/.test(location.pathname)) return;
+    if (/\/(maintenance|studio|preview-site)(\.html)?$/.test(location.pathname)) return;
     if (localStorage.getItem('pw_owner') === '1') return;
     location.replace('/maintenance.html');
   } catch (e) {}

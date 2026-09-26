@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pristine Wellness, preview</title>
+<script>
+/* Private preview link: this browser sees the full site while maintenance mode is on.
+   Add ?stop to the address to go back to seeing the maintenance page. */
+(function () {
+  try {
+    if (/[?&]stop\b/.test(location.search)) { localStorage.removeItem('pw_owner'); location.replace('/'); return; }
+    localStorage.setItem('pw_owner', '1');
+  } catch (e) {}
+  location.replace('/');
+})();
+</script>
+</head>
+<body style="font-family:Georgia,serif;text-align:center;padding:3rem;">
+<p>Opening the site preview...</p>
+<p><a href="/">Continue to Pristine Wellness</a></p>
+</body>
+</html>

@@ -1450,6 +1450,7 @@ function signOut() {
 if (sessionStorage.getItem('studio_auth') === '1') {
   document.getElementById('lock-screen').style.display = 'none';
   document.getElementById('studio').style.display = 'block';
+  try { localStorage.setItem('pw_owner', '1'); } catch (e) {}
 }
 
 document.getElementById('pw-input').addEventListener('keydown', function(e) {
