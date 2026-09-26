@@ -446,7 +446,7 @@ sup.cite:hover { text-decoration:underline; }
     <div class="studio-grid">
       <div class="form-card">
         <h2>New Email</h2>
-        <p class="subtitle">Simple, clean, in the site design. Sent to all active subscribers.</p>
+        <p class="subtitle">Marble and cream, in the site design. Sent to all active subscribers.</p>
         <div class="field"><label>Send to</label><select id="em-recipients"><option value="all">All active subscribers</option><option value="selected">Only selected (0)</option></select></div>
         <div class="field">
   <label>Email layout</label>
@@ -461,7 +461,7 @@ sup.cite:hover { text-decoration:underline; }
     </div>
     <div id="tpl-3" onclick="setEmailTemplate(3)" style="border:0.5px solid var(--border);border-radius:6px;padding:10px;cursor:pointer;text-align:center;">
       <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#888;font-weight:600;">Editorial</div>
-      <div style="font-size:11px;color:#888;margin-top:3px;">Text-first, no hero.<br>Personal, newsletter feel</div>
+      <div style="font-size:11px;color:#888;margin-top:3px;">Text-first, marble top.<br>Personal, newsletter feel</div>
     </div>
   </div>
 </div>
@@ -478,6 +478,8 @@ sup.cite:hover { text-decoration:underline; }
         <div class="field"><label>Blurb *</label><textarea id="em-blurb" rows="6" placeholder="A few short paragraphs. Blank line for a new paragraph."></textarea></div>
         <div class="field"><label>Button text</label><input type="text" id="em-btn-text" placeholder="Read the recipe" value="Read more"></div>
         <div class="field"><label>Button link</label><input type="text" id="em-btn-link" placeholder="https://pristinewellness.com.au/..."></div>
+        <div class="field"><label>Sign off</label><input type="text" id="em-signoff" value="With love from our kitchen table," placeholder="With love from our kitchen table,"></div>
+        <div class="field"><label>Signed by</label><select id="em-signed"><option value="both">Mrs and Mr Wellness</option><option value="mrs">Mrs Wellness</option><option value="mr">Mr Wellness</option><option value="none">No signature</option></select></div>
         <button class="gen-btn" onclick="previewEmail()">Preview</button>
         <button class="gen-btn" id="em-send-btn" onclick="sendEmailCampaign()" style="display:none;background:#8F9574;">Send to subscribers</button>
         <div id="em-status" style="margin-top:0.8rem;font-size:13px;color:var(--muted);"></div>
@@ -5375,6 +5377,8 @@ async function buildEmailHTML(tplNum) {
   var blurb = document.getElementById('em-blurb').value.trim();
   var btnText = document.getElementById('em-btn-text').value.trim();
   var btnLink = document.getElementById('em-btn-link').value.trim();
+  var signoff = ((document.getElementById('em-signoff') || {}).value || '').trim();
+  var signed = (document.getElementById('em-signed') || {}).value || 'both';
   if (!subject || !heading || !blurb) return null;
   var tpl = tplNum || window._emailTemplate || 1;
 
@@ -5386,64 +5390,70 @@ async function buildEmailHTML(tplNum) {
     var _aspect = await getImageAspect(imgUrl);
     if (_aspect > 0) heroH = Math.max(240, Math.min(520, Math.round(600 / _aspect)));
   }
+  var SITE = 'https://pristinewellness.com.au/';
+  var SANS = "font-family:'Jost',Helvetica,Arial,sans-serif;";
+  var SERIF = "font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;";
+  var MARBLE = SITE + 'images/site/paper-texture.jpg';
   var paras = blurb.split(/\n\s*\n/).map(function(p) {
-    return '<p style="margin:0 0 18px;font-size:15px;line-height:1.8;color:#555555;font-family:Arial,Helvetica,sans-serif;">' + escHtml(p.trim()).replace(/\n/g,'<br>') + '</p>';
+    return '<p style="margin:0 0 20px;font-size:16px;line-height:1.85;color:#444444;font-weight:300;' + SANS + '">' + escHtml(p.trim()).replace(/\n/g,'<br>') + '</p>';
   }).join('');
 
-  // ── LOGO HEADER (all templates) ──
-  var logoHeader = '<tr><td style="padding:28px 40px 20px;text-align:left;background:#ffffff;border-bottom:0.5px solid #e8e4dc;">' +
-    '<img src="https://pristinewellness.com.au/images/pw-logo-email.png" alt="Pristine Wellness" width="96" height="96" style="border-radius:50%;display:block;" onerror="this.style.display=\'none\'">' +
+  // Logo floats straight on the hero (photo or marble), no white box
+  var logoImg = '<a href="' + SITE + '"><img src="' + SITE + 'images/pw-logo-email.png" alt="Pristine Wellness" width="116" height="116" style="display:block;border:0;width:116px;height:116px;"></a>';
+  function bgHero(img, h, inner) {
+    return '<tr><td background="' + img + '" bgcolor="#F5F0E8" valign="top" align="center" height="' + h + '" style="background-image:url(\'' + img + '\');background-size:cover;background-position:center;background-color:#F5F0E8;height:' + h + 'px;">'
+      + '<!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' + h + 'px;"><v:fill type="frame" src="' + img + '" color="#F5F0E8" /><v:textbox inset="0,0,0,0"><![endif]-->'
+      + '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td align="center" style="padding:36px 20px 0;">' + logoImg + '</td></tr>' + (inner || '') + '</table>'
+      + '<!--[if gte mso 9]></v:textbox></v:rect><![endif]-->'
+      + '</td></tr>';
+  }
+  var marbleHero = bgHero(MARBLE, 200, '<tr><td style="padding:0 0 40px;"></td></tr>');
+  var heroWithLogo = imgUrl ? bgHero(imgUrl, Math.max(heroH, 300)) : marbleHero;
+
+  var headingBlock = function(eyebrow, align) {
+    return '<tr><td style="padding:34px 28px 4px;text-align:' + align + ';">'
+      + (eyebrow ? '<p style="margin:0 0 12px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#8F9574;font-weight:500;' + SANS + '">' + eyebrow + '</p>' : '')
+      + '<h1 style="margin:0;font-size:38px;line-height:1.15;font-weight:400;font-style:italic;color:#111111;' + SERIF + '">' + escHtml(heading) + '</h1></td></tr>';
+  };
+  var button = (btnLink && btnText)
+    ? '<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:8px auto 30px;"><tr><td bgcolor="#8F9574" style="background:#8F9574;border-radius:3px;padding:15px 34px;text-align:center;"><a href="' + btnLink + '" style="color:#ffffff;text-decoration:none;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;' + SANS + '">' + escHtml(btnText) + '</a></td></tr></table>'
+    : '';
+
+  // Handwritten signatures (PNG so Gmail and Outlook show them)
+  var sigImg = function(who) {
+    return who === 'mrs'
+      ? '<img src="' + SITE + 'images/site/sig-mrs-email.png" alt="Mrs Wellness" width="200" height="43" style="display:block;border:0;width:200px;height:43px;margin:0 0 10px;">'
+      : '<img src="' + SITE + 'images/site/sig-mr-email.png" alt="Mr Wellness" width="189" height="46" style="display:block;border:0;width:189px;height:46px;margin:0 0 10px;">';
+  };
+  var signature = signed === 'none' ? '' :
+    '<tr><td style="padding:10px 28px 34px;">' +
+    (signoff ? '<p style="margin:0 0 14px;font-size:16px;line-height:1.7;color:#444444;font-weight:300;' + SANS + '">' + escHtml(signoff) + '</p>' : '') +
+    (signed === 'both' ? sigImg('mrs') + sigImg('mr') : sigImg(signed)) +
     '</td></tr>';
 
-    // Logo floats over hero image (email-safe). Falls back to white logo header if no image.
-    var _emLogoImg = '<img src="https://pristinewellness.com.au/images/pw-logo-email.png" alt="Pristine Wellness" width="96" height="96" style="border-radius:50%;display:block;" onerror="this.style.display=\'none\'">';
-    var heroWithLogo;
-    if (imgUrl) {
-      heroWithLogo = '<tr><td background="' + imgUrl + '" valign="top" style="background-image:url(\'' + imgUrl + '\');background-size:cover;background-position:center;height:' + heroH + 'px;">'
-        + '<!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' + heroH + 'px;"><v:fill type="frame" src="' + imgUrl + '" /><v:textbox inset="0,0,0,0"><![endif]-->'
-        + '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="padding:20px 0 0 28px;">'
-        + _emLogoImg
-        + '</td></tr></table>'
-        + '<!--[if gte mso 9]></v:textbox></v:rect><![endif]-->'
-        + '</td></tr>';
-    } else {
-      heroWithLogo = '<tr><td style="padding:28px 40px 20px;background:#ffffff;border-bottom:0.5px solid #e8e4dc;">'
-        + '<img src="https://pristinewellness.com.au/images/pw-logo-email.png" alt="Pristine Wellness" width="96" height="96" style="border-radius:50%;display:block;" onerror="this.style.display=\'none\'">'
-        + '</td></tr>';
-    }
-
-
-  // ── SOCIAL FOOTER ──
+  // Quiet footer on cream
   var socialFooter =
-    '<tr><td style="padding:18px 40px;background:#8F9574;text-align:center;">' +
-    '<p style="margin:0 0 12px;font-size:12px;color:#F1EADF;font-family:Arial,Helvetica,sans-serif;letter-spacing:1px;">FOLLOW ALONG</p>' +
-    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 16px;"><tr>' +
-    '<td style="padding:0 10px;"><a href="https://x.com/getpristinewell" style="text-decoration:none;">' +
-    '<img src="https://pristinewellness.com.au/images/icon-x.png" width="22" height="22" alt="X" style="display:block;border:0;">' +
-    '</a></td>' +
-    '<td style="padding:0 10px;"><a href="https://instagram.com/getpristinewell" style="text-decoration:none;">' +
-    '<img src="https://pristinewellness.com.au/images/icon-instagram.png" width="22" height="22" alt="Instagram" style="display:block;border:0;">' +
-    '</a></td>' +
-    '<td style="padding:0 10px;"><a href="https://pinterest.com/getpristinewell" style="text-decoration:none;">' +
-    '<img src="https://pristinewellness.com.au/images/icon-pinterest.png" width="22" height="22" alt="Pinterest" style="display:block;border:0;">' +
-    '</a></td>' +
-    '</tr></table>' +
-    '<p style="margin:0 0 6px;font-size:12px;color:#F1EADF;font-family:Arial,Helvetica,sans-serif;">Pristine Wellness &middot; Wholefood wisdom for real families &middot; Australia</p>' +
-    '<p style="margin:0;font-size:11px;font-family:Arial,Helvetica,sans-serif;"><a href="UNSUB_URL" style="color:#F1EADF;">Unsubscribe</a> &nbsp;&middot;&nbsp; <a href="https://pristinewellness.com.au" style="color:#F1EADF;">pristinewellness.com.au</a></p>' +
-    '</td></tr>';
+    '<tr><td style="padding:0 28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-top:1px solid #ddd6c8;padding:26px 0 30px;text-align:center;">' +
+    '<p style="margin:0 0 10px;font-size:12px;letter-spacing:2px;text-transform:uppercase;' + SANS + '">' +
+    '<a href="https://instagram.com/getpristinewell" style="color:#8F9574;text-decoration:none;">Instagram</a> &nbsp;&middot;&nbsp; ' +
+    '<a href="https://pinterest.com/getpristinewell" style="color:#8F9574;text-decoration:none;">Pinterest</a> &nbsp;&middot;&nbsp; ' +
+    '<a href="https://x.com/getpristinewell" style="color:#8F9574;text-decoration:none;">X</a></p>' +
+    '<p style="margin:0 0 6px;font-size:12px;color:#999999;font-weight:300;' + SANS + '">Pristine Wellness &middot; Wholefood wisdom for real families &middot; Australia</p>' +
+    '<p style="margin:0;font-size:12px;color:#999999;font-weight:300;' + SANS + '">You are receiving this because you joined us at pristinewellness.com.au. <a href="UNSUB_URL" style="color:#999999;">Unsubscribe</a></p>' +
+    '</td></tr></table></td></tr>';
 
-  var baseOpen = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escHtml(subject) + '</title></head><body style="margin:0;padding:0;background:#F5F0E8;">' +
-    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#F5F0E8;"><tr><td align="center" style="padding:30px 20px;">' +
-    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;background:#ffffff;border-radius:4px;overflow:hidden;">';
+  var baseOpen = '<!DOCTYPE html><html xmlns:v="urn:schemas-microsoft-com:vml"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">' +
+    '<title>' + escHtml(subject) + '</title></head><body style="margin:0;padding:0;background:#F5F0E8;">' +
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#F5F0E8;"><tr><td align="center" style="padding:0 0 20px;">' +
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:100%;max-width:600px;background:#F5F0E8;">';
   var baseClose = '</table></td></tr></table></body></html>';
 
   // ── TEMPLATE 1: Hero + Body (default) ──
   if (tpl === 1) {
-    var heroRow = imgUrl ? '<tr><td style="padding:0;line-height:0;"><img src="' + imgUrl + '" alt="' + escHtml(heading) + '" width="600" style="width:100%;max-width:600px;height:auto;display:block;"></td></tr>' : '';
-    return baseOpen + heroWithLogo +
-      '<tr><td style="padding:36px 40px 10px;"><h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:30px;font-weight:400;font-style:italic;color:#111111;line-height:1.25;">' + escHtml(heading) + '</h1>' + paras + '</td></tr>' +
-      (btnLink && btnText ? '<tr><td style="padding:10px 40px 36px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#8F9574" style="background:#8F9574;border-radius:4px;padding:14px 30px;"><a href="' + btnLink + '" style="color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;display:inline-block;">' + escHtml(btnText.toUpperCase()) + '</a></td></tr></table></td></tr>' : '<tr><td style="padding:0 40px 36px;"></td></tr>') +
-      socialFooter + baseClose;
+    return baseOpen + heroWithLogo + headingBlock('', 'center') +
+      '<tr><td style="padding:24px 28px 10px;">' + paras + button + '</td></tr>' +
+      signature + socialFooter + baseClose;
   }
 
   // ── TEMPLATE 2: Hero + Gallery ──
@@ -5451,31 +5461,29 @@ async function buildEmailHTML(tplNum) {
     var g1 = (document.getElementById('em-gallery-1') && document.getElementById('em-gallery-1').value.trim()) || '';
     var g2 = (document.getElementById('em-gallery-2') && document.getElementById('em-gallery-2').value.trim()) || '';
     var g3 = (document.getElementById('em-gallery-3') && document.getElementById('em-gallery-3').value.trim()) || '';
-    var toUrl = function(p){ return p ? (p.indexOf('http') === 0 ? p : 'https://pristinewellness.com.au/' + p) : ''; };
+    var toUrl = function(p){ return p ? (p.indexOf('http') === 0 ? p : SITE + p) : ''; };
     g1 = toUrl(g1); g2 = toUrl(g2); g3 = toUrl(g3);
     var galleryImgs = [g1, g2, g3].filter(Boolean);
-    var colW = galleryImgs.length === 1 ? 520 : galleryImgs.length === 2 ? 256 : 168;
-    var galleryRow = galleryImgs.length ? '<tr><td style="padding:4px 40px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>' +
-      galleryImgs.map(function(u){ return '<td width="' + colW + '" style="padding:0 4px;"><img src="' + u + '" width="' + colW + '" height="140" style="width:' + colW + 'px;height:140px;object-fit:cover;display:block;border-radius:3px;"></td>'; }).join('') +
+    var colPct = galleryImgs.length === 1 ? 100 : galleryImgs.length === 2 ? 50 : 33;
+    var galleryRow = galleryImgs.length ? '<tr><td style="padding:4px 24px 24px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>' +
+      galleryImgs.map(function(u){ return '<td width="' + colPct + '%" style="padding:0 4px;"><img src="' + u + '" alt="" width="176" height="150" style="width:100%;height:150px;object-fit:cover;display:block;border:0;border-radius:2px;"></td>'; }).join('') +
       '</tr></table></td></tr>' : '';
-    var heroRow2 = imgUrl ? '<tr><td style="padding:0;line-height:0;"><img src="' + imgUrl + '" alt="" width="600" style="width:100%;max-width:600px;height:auto;display:block;"></td></tr>' : '';
-    return baseOpen + heroWithLogo +
-      '<tr><td style="padding:36px 40px 10px;"><h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:30px;font-weight:400;font-style:italic;color:#111111;line-height:1.25;">' + escHtml(heading) + '</h1>' + paras + '</td></tr>' +
+    return baseOpen + heroWithLogo + headingBlock('', 'center') +
+      '<tr><td style="padding:24px 28px 0;">' + paras + '</td></tr>' +
       galleryRow +
-      (btnLink && btnText ? '<tr><td style="padding:0 40px 30px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#8F9574" style="background:#8F9574;border-radius:4px;padding:14px 30px;"><a href="' + btnLink + '" style="color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;display:inline-block;">' + escHtml(btnText.toUpperCase()) + '</a></td></tr></table></td></tr>' : '<tr><td style="padding:0 40px 30px;"></td></tr>') +
-      socialFooter + baseClose;
+      (button ? '<tr><td style="padding:0 28px;">' + button + '</td></tr>' : '') +
+      signature + socialFooter + baseClose;
   }
 
-  // ── TEMPLATE 3: Editorial (no hero) ──
+  // ── TEMPLATE 3: Editorial (marble top, no photo) ──
   if (tpl === 3) {
-    return baseOpen + heroWithLogo +
-      '<tr><td style="padding:36px 40px 10px;">' +
-      '<p style="margin:0 0 6px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8F9574;font-family:Arial,sans-serif;">Pristine Wellness</p>' +
-      '<h1 style="margin:0 0 24px;font-family:Georgia,serif;font-size:28px;font-weight:400;font-style:italic;color:#111111;line-height:1.3;">' + escHtml(heading) + '</h1>' +
+    return baseOpen + marbleHero + headingBlock('Pristine Wellness', 'left') +
+      '<tr><td style="padding:22px 28px 10px;">' +
       '<div style="width:40px;height:1.5px;background:#8F9574;margin-bottom:24px;"></div>' +
-      paras + '</td></tr>' +
-      (btnLink && btnText ? '<tr><td style="padding:0 40px 30px;"><a href="' + btnLink + '" style="color:#1a1a1a;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.5px;text-decoration:underline;">' + escHtml(btnText) + ' &rarr;</a></td></tr>' : '') +
-      socialFooter + baseClose;
+      paras +
+      (btnLink && btnText ? '<p style="margin:4px 0 30px;"><a href="' + btnLink + '" style="color:#111111;font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:underline;' + SANS + '">' + escHtml(btnText) + ' &rarr;</a></p>' : '') +
+      '</td></tr>' +
+      signature + socialFooter + baseClose;
   }
 
   return null;
