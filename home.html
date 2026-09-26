@@ -871,6 +871,35 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
   html body .footer .footer-socials svg{box-sizing:content-box !important;padding:12px !important;margin:0 !important;}
 }
 </style>
+<style>
+/* Sign-up boxes: the free guide box (The Source, Kitchen) and the newsletter box (Home, About, Experiment) */
+html body .pw-guide-box{display:flex;gap:3rem;align-items:center;background:#f5f1e8;border-radius:12px;padding:3rem 3.5rem;margin:0 0 3rem;text-align:left;}
+html body .pw-guide-cover{flex:0 0 210px;}
+html body .pw-guide-cover img{width:100% !important;height:auto !important;max-width:none !important;aspect-ratio:560/794;object-fit:cover;display:block;border-radius:3px;box-shadow:0 18px 40px rgba(40,35,20,0.22),0 2px 6px rgba(40,35,20,0.12);}
+html body .pw-guide-text{flex:1;min-width:0;}
+html body .pw-guide-box .pw-eyebrow{display:block;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#8F9574;font-weight:500;margin-bottom:10px;font-family:'Jost',sans-serif;}
+html body .pw-guide-box h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(28px,3.4vw,40px);line-height:1.15;color:#111;margin:0 0 12px;}
+html body .pw-guide-box p{font-size:15px;line-height:1.8;color:#555;margin:0 0 1.4rem;max-width:520px;}
+html body .pw-guide-box .pw-small{font-size:12px !important;line-height:1.6 !important;color:#999;margin:0.8rem 0 0;font-weight:300;}
+html body .pw-guide-box .pw-signup-row{display:flex;max-width:460px;border-radius:4px;overflow:hidden;border:0.5px solid #ddd8cc;margin:0;}
+html body .pw-guide-box .pw-signup-row input[type="email"]{flex:1;padding:15px 18px;border:none;background:#fff;font-size:14px;color:#333;outline:none;font-family:'Jost',sans-serif;min-width:0;}
+html body .pw-signup-row button{padding:15px 24px;background:#8F9574;border:none;color:#fff;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;font-weight:500;white-space:nowrap;}
+html body .pw-signup-row button:hover{background:#7a8163;}
+html body .pw-news-box{position:relative;border-radius:12px;overflow:hidden;margin:0 0 3rem;}
+html body .pw-news-box p,html body .pw-news-box h3,html body .pw-news-box em{color:#fff !important;text-shadow:0 1px 12px rgba(0,0,0,0.35);}
+html body .pw-news-box .pw-signup-row input[type="email"]{color:#333 !important;text-shadow:none;}
+html body .pw-news-box h3{font-size:clamp(32px,6.5vw,48px) !important;line-height:1.15 !important;}
+html body .pw-news-box .pw-news-small{font-size:12.5px !important;line-height:1.6 !important;max-width:520px;margin:0 auto !important;}
+html body .pw-news-section{max-width:1280px;margin:0 auto;padding:1.5rem 2.5rem 3rem;box-sizing:border-box;background:#fff;}
+@media(max-width:700px){
+  html body .pw-guide-box{flex-direction:column;gap:1.6rem;padding:2.2rem 1.4rem;text-align:center;}
+  html body .pw-guide-cover{flex:0 0 auto;width:150px;}
+  html body .pw-guide-box p{margin-left:auto;margin-right:auto;}
+  html body .pw-guide-box .pw-signup-row{margin:0 auto;}
+  html body .pw-news-section{padding:1rem 16px 2.5rem;}
+}
+@media(max-width:560px){html body .pw-signup-row{flex-direction:column !important;}html body .pw-signup-row input[type="email"],html body .pw-signup-row button{width:100% !important;}}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -1000,6 +1029,7 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
 
   
 </div><!-- closes explore-section so the footer spans the full width -->
+<div class="pw-news-section"><div class="pw-signup pw-news-box"><div style="position:absolute;inset:0;background-image:url('/images/newsletter-bg.jpg');background-size:cover;background-position:center;"></div><div style="position:absolute;inset:0;background:rgba(15,10,25,0.45);"></div><div style="position:relative;z-index:1;padding:4rem 2rem;text-align:center;color:#fff;"><span style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#cfdcb8;display:block;margin-bottom:14px;font-weight:500;font-family:'Jost',sans-serif;">Free newsletter</span><h3 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(30px,4vw,48px);color:#fff;margin:0 0 12px;font-weight:400;">Nourish your inbox</h3><p style="font-size:16px;margin:0 auto 2rem;line-height:1.8;max-width:480px;font-weight:400;color:#fff;">Wellness insights, wholefood recipes and ancestral wisdom, delivered free, with intention.</p><div class="pw-signup-row" style="display:flex;gap:0;max-width:440px;margin:0 auto 1rem;border-radius:4px;overflow:hidden;"><input type="email" placeholder="your@email.com" aria-label="Email address" style="flex:1;padding:15px 20px;border:none;background:rgba(255,255,255,0.95);font-size:14px;color:#333;outline:none;font-family:'Jost',sans-serif;min-width:0;"/><input type="text" name="website" style="position:absolute;left:-9999px;opacity:0;" tabindex="-1" autocomplete="off" aria-hidden="true"><button type="button" onclick="pwSubscribe(this)">Subscribe free</button></div><p class="pw-news-small" style="font-size:12px;font-weight:300;margin:0;color:#fff;">Plus our free guide, <em>The Essential Pristine Health Guide</em>, when you join. No spam, unsubscribe anytime.</p></div></div></div>
 <div class="footer"><div class="footer-inner">
     <div class="footer-left"><span class="footer-copy">© 2026 Pristine Wellness</span></div>
     <div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div>
@@ -1526,6 +1556,49 @@ function doDrawerSearch(q) {
   box.innerHTML = matches.map(function(d) {
     return '<a class="mdr-item" href="' + d.url + '"><span class="mdr-cat">' + d.cat + '</span>' + d.title + '</a>';
   }).join('');
+}
+</script>
+<script>
+async function pwSubscribe(btn) {
+  var wrap = btn.closest('.pw-signup') || btn.closest('div[style*="z-index:1"]') || document;
+  var input = wrap.querySelector('input[type="email"]');
+  var hp = wrap.querySelector('input[name="website"]');
+  var email = input ? input.value.trim() : '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { if (input) { input.focus(); input.placeholder = 'Please enter your email'; } return; }
+  btn.disabled = true;
+  var orig = btn.textContent;
+  btn.textContent = 'Joining...';
+  try {
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, source: location.pathname.replace('/','').replace('.html','') || 'home', website: hp ? hp.value : '' })
+    });
+    var data = await resp.json();
+    if (data.ok) {
+      btn.textContent = 'Welcome aboard';
+      if (input) { input.value = ''; input.placeholder = 'You are on the list'; }
+      // Every new subscriber gets the free guide straight away
+      if (!wrap.querySelector('.pw-guide-ready')) {
+        var light = !!btn.closest('.pw-guide-box');
+        var ready = document.createElement('div');
+        ready.className = 'pw-guide-ready';
+        ready.style.cssText = 'margin:1rem 0 0.4rem;';
+        ready.innerHTML = '<p style="font-size:14px;margin:0 0 12px;color:' + (light ? '#1a1a1a' : '#fff') + ';">Thank you for joining us. Your free guide is ready.</p>' +
+          '<a href="/downloads/the-essential-pristine-health-guide.pdf" target="_blank" rel="noopener" style="display:inline-block;padding:13px 26px;background:' + (light ? '#8F9574' : '#fff') + ';color:' + (light ? '#fff' : '#1a1a1a') + ';border-radius:4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:Jost,sans-serif;font-weight:500;text-decoration:none;">Download your free guide</a>';
+        var row = btn.closest('.pw-signup-row') || btn.parentNode;
+        row.parentNode.insertBefore(ready, row.nextSibling);
+      }
+    } else {
+      btn.textContent = orig;
+      btn.disabled = false;
+      alert(data.error || 'Please try again.');
+    }
+  } catch(e) {
+    btn.textContent = orig;
+    btn.disabled = false;
+    alert('Could not connect. Please try again in a moment.');
+  }
 }
 </script>
 </body>
