@@ -693,6 +693,17 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
   html body .footer .footer-socials svg{box-sizing:content-box !important;padding:12px !important;margin:0 !important;}
 }
 </style>
+<style>
+/* Social feed: three columns (X, Instagram, Pinterest), follow links instead of follower counts */
+html body .feeds-section{grid-template-columns:repeat(3,1fr) !important;gap:2rem !important;}
+@media(max-width:1000px){html body .feeds-section{grid-template-columns:1fr !important;}}
+html body a.stat-item{display:block;text-decoration:none;color:inherit;transition:background 0.2s;}
+html body a.stat-item:hover{background:#fafaf8;}
+html body .stat-count{font-size:34px !important;}
+html body .feeds-section .feed-handle{display:none !important;}
+html body .feed-empty{font-size:14px;color:#888;line-height:1.7;margin:0;padding:1.4rem 0;}
+html body .feed-empty a{color:var(--sage);}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -750,9 +761,9 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
 <div class="inner">
 
   <div class="stats-strip">
-    <div class="stat-item"><span class="stat-platform">X (Twitter)</span><span class="stat-count">,</span><span class="stat-label">Followers</span><span class="stat-handle">@getpristinewell</span></div>
-    <div class="stat-item"><span class="stat-platform">Instagram</span><span class="stat-count">,</span><span class="stat-label">Followers</span><span class="stat-handle">@getpristinewell</span></div>
-    <div class="stat-item"><span class="stat-platform">Pinterest</span><span class="stat-count">,</span><span class="stat-label">Monthly views</span><span class="stat-handle">@getpristinewell</span></div>
+    <a class="stat-item" href="https://x.com/getpristinewell" target="_blank" rel="noopener"><span class="stat-platform">X (Twitter)</span><span class="stat-count">Follow</span><span class="stat-label">Daily notes and fun facts</span><span class="stat-handle">@getpristinewell</span></a>
+    <a class="stat-item" href="https://instagram.com/getpristinewell" target="_blank" rel="noopener"><span class="stat-platform">Instagram</span><span class="stat-count">Follow</span><span class="stat-label">Our kitchen and rituals</span><span class="stat-handle">@getpristinewell</span></a>
+    <a class="stat-item" href="https://pinterest.com/getpristinewell" target="_blank" rel="noopener"><span class="stat-platform">Pinterest</span><span class="stat-count">Follow</span><span class="stat-label">Recipes to save</span><span class="stat-handle">@getpristinewell</span></a>
   </div>
 
   <div class="feeds-section">
@@ -762,21 +773,7 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
         <button class="feed-follow-btn" onclick="window.open('https://x.com/getpristinewell')">Follow</button>
       </div>
       <div class="feed-posts" id="x-feed-posts">
-        <div class="feed-post" onclick="window.open('https://x.com/getpristinewell')">
-          <div class="feed-post-img" style="background-image:url('/images/site/embedded-fa04324cdd.jpg');"><div class="feed-post-overlay"></div></div>
-          <div class="feed-post-body">
-            <p class="feed-post-text"><strong>Did you know</strong> that a 2-hour walk in the forest can boost your immune system for up to 30 days? Your body remembers what your mind has forgotten. 🌿 #ForestBathing #PristineWellness</p>
-            <div class="feed-post-meta"><span class="feed-post-date">May 20, 2026</span><span class="feed-post-stat"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>142</span></div>
-          </div>
-        </div>
-        <div class="feed-post" onclick="window.open('https://x.com/getpristinewell')">
-          <div class="feed-post-img" style="background-image:url('/images/site/embedded-fbb6bda882.jpg');"><div class="feed-post-overlay"></div></div>
-          <div class="feed-post-body">
-            <p class="feed-post-text"><strong>Morning ritual:</strong> olive oil + fresh lemon juice on an empty stomach. Simple, ancient, powerful. Your liver will thank you. 🍋 #WellnessRitual #LiverHealth</p>
-            <div class="feed-post-meta"><span class="feed-post-date">May 18, 2026</span><span class="feed-post-stat"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>287</span></div>
-          </div>
-        </div>
-        
+        <p class="feed-empty">New posts are on the way. Follow <a href="https://x.com/getpristinewell" target="_blank" rel="noopener">@getpristinewell</a> to see them first.</p>
       </div>
     </div>
     <div>
@@ -785,21 +782,16 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
         <button class="feed-follow-btn" onclick="window.open('https://instagram.com/getpristinewell')">Follow</button>
       </div>
       <div class="feed-posts" id="ig-feed-posts">
-        <div class="feed-post" onclick="window.open('https://instagram.com/getpristinewell')">
-          <div class="feed-post-img" style="background-image:url('/images/site/embedded-232249563d.jpg');"><div class="feed-post-overlay"></div></div>
-          <div class="feed-post-body">
-            <p class="feed-post-text"><strong>New recipe:</strong> Chickpea & Green Bean Curry 🍛 Loaded with turmeric, cumin and coconut milk. Recipe on the site now. Link in bio. #WholefoodCooking #PlantBased</p>
-            <div class="feed-post-meta"><span class="feed-post-date">May 12, 2026</span><span class="feed-post-stat"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>412</span></div>
-          </div>
-        </div>
-        <div class="feed-post" onclick="window.open('https://instagram.com/getpristinewell')">
-          <div class="feed-post-img" style="background-image:url('/images/site/embedded-a53c65fe87.jpg');"><div class="feed-post-overlay"></div></div>
-          <div class="feed-post-body">
-            <p class="feed-post-text"><strong>Grounding.</strong> Bare feet on the earth. Free electrons transferring into your body. Inflammation reducing. This is ancestral wellness at its simplest. 🌍 #Grounding #Earthing #PristineWellness</p>
-            <div class="feed-post-meta"><span class="feed-post-date">May 10, 2026</span><span class="feed-post-stat"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>631</span></div>
-          </div>
-        </div>
-        
+        <p class="feed-empty">New posts are on the way. Follow <a href="https://instagram.com/getpristinewell" target="_blank" rel="noopener">@getpristinewell</a> to see them first.</p>
+      </div>
+    </div>
+    <div>
+      <div class="feed-header">
+        <div class="feed-title-row"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pinterest</span><span class="feed-handle">@getpristinewell</span></div>
+        <button class="feed-follow-btn" onclick="window.open('https://pinterest.com/getpristinewell')">Follow</button>
+      </div>
+      <div class="feed-posts" id="pin-feed-posts">
+        <p class="feed-empty">New posts are on the way. Follow <a href="https://pinterest.com/getpristinewell" target="_blank" rel="noopener">@getpristinewell</a> to see them first.</p>
       </div>
     </div>
   </div>
@@ -899,15 +891,7 @@ function handleModalClick(e) {
 }
 
 // SEARCH
-var searchDocs = [
-  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
-  {title:'Longevity and Healthspan',cat:'Wellness',excerpt:'Making the science of living longer work in everyday life.',url:'article-longevity-and-healthspan-making-it-work-.html'},
-  {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-and-green-bean-curry.html'},
-  {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
-  {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. A new photo each time we check.',url:'experiment.html'},
-  {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
-  {title:'The Source',cat:'Wellness',excerpt:'Articles on ancestral wisdom, pure water, nutrition and modern science.',url:'the-source.html'},
-];
+var searchDocs = [];
 
 function openSearch() {
   var so=document.getElementById('search-overlay');if(so)so.classList.add('open');
@@ -1000,16 +984,7 @@ window.addEventListener('scroll', function() {
 
 
 // SEARCH
-var searchDocs = [
-
-  {title:'The Ancient Power of Forest Bathing',cat:'Mental Wellness',excerpt:'Discover how Shinrin-yoku can lower cortisol, strengthen immunity and restore a calm, clear mind.',url:'article-forest-bathing.html'},
-  {title:'Chickpea and Green Bean Curry',cat:'Ancestral Kitchen',excerpt:'A warming plant-based curry loaded with anti-inflammatory spices the whole family loves.',url:'recipe-chickpea-and-green-bean-curry.html'},
-  {title:'About Pristine Wellness',cat:'About',excerpt:'A family on a mission to share what we know, rooted in ancestral wisdom.',url:'about.html'},
-  {title:'The Experiment',cat:'Pure Water',excerpt:'Two jars. Two waters. One camera. A new photo each time we check.',url:'experiment.html'},
-  {title:'Robert Gourlay and MEA Structured Water',cat:'Pure Water',excerpt:'Water quality scientist, founder of Phion, inventor of the MEA device.',url:'about.html'},
-  {title:'Grounding and Inflammation',cat:'Wellness',excerpt:'Direct skin contact with the earth reduces inflammation and regulates cortisol.',url:'the-source.html'},
-  {title:'Ancestral Kitchen',cat:'Recipes',excerpt:'Nutrient dense, sugar free, prepared with living water. Not for pleasure. For longevity.',url:'ancestral-kitchen.html'},
-];
+var searchDocs = [];
 
 
 
@@ -1087,7 +1062,8 @@ buildSearchIndex();
     var imgUrl = post.image ? (post.image.indexOf('http') === 0 ? post.image : 'https://pristinewellness.com.au/' + post.image) : '';
     var caption = escapeHtml(post.caption || '');
     var date = post.date ? new Date(post.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-    return '<div class="feed-post" onclick="window.open(\'' + link + '\')">' +
+    if (!/^https?:\/\//.test(link)) link = platformUrl(post.platform);
+    return '<div class="feed-post" onclick="window.open(\'' + link.replace(/'/g, '%27') + '\')">' +
       (imgUrl ? '<div class="feed-post-img" style="background-image:url(\'' + imgUrl + '\')"></div>' : '') +
       '<div class="feed-post-body">' +
         '<p class="feed-post-text">' + caption + '</p>' +
@@ -1095,10 +1071,27 @@ buildSearchIndex();
       '</div>' +
     '</div>';
   }
-  fetch('data/social-feed.json?cb=' + Date.now())
-    .then(function(r) { return r.ok ? r.json() : []; })
+  var titles = {};
+  var SITE_LINK = /^https?:\/\/(?:www\.)?pristinewellness\.com\.au\/(\S+?)(?:\.html)?\/?$/;
+  function tidy(post) {
+    // A caption that is only a link to one of our stories: show its title and open the story
+    var m = String(post.caption || '').trim().match(SITE_LINK);
+    if (!m) return post;
+    var page = m[1] + '.html';
+    return { platform: post.platform, image: post.image, date: post.date,
+      link: post.link || ('https://pristinewellness.com.au/' + page),
+      caption: titles[page] || '' };
+  }
+  Promise.all([
+    fetch('data/social-feed.json?cb=' + Date.now()).then(function(r) { return r.ok ? r.json() : []; }),
+    fetch('data/search-index.json').then(function(r) { return r.ok ? r.json() : []; }).catch(function() { return []; })
+  ])
+    .then(function(res) {
+      (Array.isArray(res[1]) ? res[1] : []).forEach(function(e) { if (e && e.url) titles[e.url.replace(/^\//, '')] = e.title; });
+      return (Array.isArray(res[0]) ? res[0] : []).map(tidy);
+    })
     .then(function(posts) {
-      if (!Array.isArray(posts) || !posts.length) return; // keep placeholder content if no curated posts
+      if (!Array.isArray(posts) || !posts.length) return; // keep the "posts on the way" note
       var byPlatform = { x: [], instagram: [], pinterest: [] };
       posts.forEach(function(p) {
         var plat = (p.platform || 'instagram').toLowerCase();

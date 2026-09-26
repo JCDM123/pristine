@@ -7336,13 +7336,11 @@ async function loadSocialFeed() {
   sfSetStatus('Loading...', null);
   var listEl = document.getElementById('sf-list');
   try {
-    var resp = await fetch('https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/data/social-feed.json?cb=' + Date.now());
-    if (resp.ok) {
-      sfPosts = await resp.json();
-      if (!Array.isArray(sfPosts)) sfPosts = [];
-    } else {
-      sfPosts = [];
-    }
+    // Read the real file, not the few-minutes-old public copy, so saving never drops a post you just added
+    var cur = null;
+    try { cur = await githubRequest('data/social-feed.json', 'GET'); } catch (notFound) { cur = null; }
+    sfPosts = cur ? JSON.parse(decodeURIComponent(escape(atob((cur.content || '').replace(/\s/g, ''))))) : [];
+    if (!Array.isArray(sfPosts)) sfPosts = [];
     renderSocialFeedList();
     sfSetStatus('Loaded ' + sfPosts.length + ' posts.', true);
   } catch(e) {
