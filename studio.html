@@ -5186,12 +5186,38 @@ function copyImagePath(btn) {
   });
 }
 
+/* Pages and data files that mention an image. null means the check itself failed. */
+async function pwPagesUsingImage(path) {
+  try {
+    var name = path.replace(/^\//, '');
+    var root = await githubRequest('', 'GET');
+    var data = [];
+    try { data = await githubRequest('data', 'GET'); } catch (e) { data = []; }
+    var files = (root || []).concat(data || []).filter(function(f) {
+      return f.type === 'file' && /\.(html|json|xml)$/.test(f.path) && !/template\.html$|^studio\.html$|^data\/subscribers/.test(f.path);
+    }).map(function(f) { return f.path; });
+    var hits = [];
+    await Promise.all(files.map(async function(p) {
+      var f = await githubRequest(p, 'GET');
+      var text = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+      if (text.indexOf(name) !== -1) hits.push(p);
+    }));
+    return hits.sort();
+  } catch (e) { return null; }
+}
+
 async function deleteImage(btn) {
   var path = btn.getAttribute('data-path');
   var sha = btn.getAttribute('data-sha');
-  if (!confirm('Delete ' + path + '? This cannot be undone.')) return;
   var token = getToken();
   if (!token) { alert('No GitHub token.'); return; }
+  setImgLibStatus('Checking where this photo is used...', null);
+  var usedOn = await pwPagesUsingImage(path);
+  if (usedOn === null) { setImgLibStatus('Could not check where this photo is used, so it was not deleted. Try again.', false); return; }
+  if (usedOn.length) {
+    var names = usedOn.slice(0, 8).join('\n') + (usedOn.length > 8 ? '\n...and ' + (usedOn.length - 8) + ' more' : '');
+    if (!confirm(path + ' is still used on ' + usedOn.length + ' page(s):\n\n' + names + '\n\nDeleting it will leave a blank space there. Delete anyway?')) { setImgLibStatus('Not deleted. The photo is still in use.', true); return; }
+  } else if (!confirm('Delete ' + path + '? It is not used on any page. This cannot be undone.')) { setImgLibStatus('Ready', true); return; }
   setImgLibStatus('Deleting...', null);
   try {
     var resp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + path, {
@@ -7569,7 +7595,13 @@ function fixShareBar(html) {
     else if (html.slice(i,i+6) === '</div>') { depth--; i += 6; if (depth === 0) break; }
     else i++;
   }
-  var nb = '<div class="share-bar">'
+  var oldBar = html.slice(start, i);
+  // Already has all four share buttons: leave the page alone
+  if (['Share on X', 'Pin this', 'Facebook', 'Copy link'].every(function(label) { return new RegExp(label + '\\s*</button>').test(oldBar); })) return html;
+  // Keep the recipe buttons (Jump to recipe, Print recipe) that sit in the same bar
+  var keep = (oldBar.match(/<button class="share-btn pw-recipe-action"[\s\S]*?<\/button>/g) || []).join('');
+  if (keep) keep += '<span class="pw-share-gap"></span>';
+  var nb = '<div class="share-bar">' + keep
     + '<span class="share-label">Share</span>'
     + '<button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);var t=encodeURIComponent(document.title);window.open(\'https://twitter.com/intent/tweet?url=\'+u+\'&text=\'+t,\'_blank\',\'width=600,height=400\');})()">'
     + '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M4 4l16 16M4 20L20 4"/></svg> Share on X</button>'
@@ -7598,16 +7630,18 @@ async function updateAllRecipes() {
   }
   if (!confirm('Update share buttons on all ' + urls.length + ' file(s) (recipes + articles)? This pushes to GitHub.')) return;
   if (btn) { btn.disabled = true; btn.textContent = 'Updating...'; }
-  var ok = 0; var fail = 0;
+  var ok = 0; var fail = 0; var same = 0;
   for (var i = 0; i < urls.length; i++) {
     var url = urls[i];
-    if (status) status.textContent = 'Updating ' + (i+1) + '/' + urls.length + ': ' + url + '...';
+    if (status) status.textContent = 'Checking ' + (i+1) + '/' + urls.length + ': ' + url + '...';
     try {
-      var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/' + url + '?cb=' + Date.now());
-      var html = await r.text();
-      if (!html || html.length < 500) { fail++; continue; }
-      html = fixShareBar(html);
-      var sha = await getFileSHA(url);
+      // Read the real file (not the few-minutes-old public copy) so recent edits are never undone
+      var cur = await githubRequest(url, 'GET');
+      var original = decodeURIComponent(escape(atob((cur.content || '').replace(/\s/g, ''))));
+      if (!original || original.length < 500) { fail++; continue; }
+      var html = fixShareBar(original);
+      if (html === original) { same++; continue; }
+      var sha = cur.sha;
       await githubRequest(url, 'PUT', {
         message: 'Studio: update share buttons: ' + url,
         content: btoa(unescape(encodeURIComponent(html))),
@@ -7617,7 +7651,7 @@ async function updateAllRecipes() {
     } catch(e) { console.error(url, e); fail++; }
     await new Promise(function(res) { setTimeout(res, 500); });
   }
-  if (status) status.textContent = 'Done. ' + ok + ' updated' + (fail ? ', ' + fail + ' failed , check console.' : '. All good!');
+  if (status) status.textContent = 'Done. ' + ok + ' updated, ' + same + ' already up to date' + (fail ? ', ' + fail + ' could not be checked.' : '.');
   if (btn) { btn.disabled = false; btn.textContent = 'Update All Recipes'; }
 }
 
