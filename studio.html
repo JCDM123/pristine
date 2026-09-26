@@ -2306,7 +2306,7 @@ async function handleRecipeImage(event) {
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token first.'); return; }
   if (label) label.textContent = 'Compressing...';
-  compressImage(file, 1200, 630, 0.82, false).then(async function(compressed) {
+  compressImage(file, 1920, 1200, 0.82, false).then(async function(compressed) {
     var base64 = compressed.base64;
     var name = document.getElementById('r-name').value.trim();
     var slug = name ? name.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,30) + '-hero' : 'recipe-hero-' + Date.now();
@@ -4068,9 +4068,9 @@ async function handleArticleImage(event) {
   var slug = topic ? topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,30) + '-hero' : 'article-hero-' + Date.now();
   var ext = file.name.split('.').pop().toLowerCase() || 'jpg';
   var imgPath = 'images/' + slug + '.' + ext;
-  // Compress before uploading (1200x630 for article heroes)
+  // Compress before uploading (up to 1920 wide so the full-width header stays sharp)
   if (label) label.textContent = 'Compressing...';
-  compressImage(file, 1200, 630, 0.82, false).then(async function(compressed) {
+  compressImage(file, 1920, 1200, 0.82, false).then(async function(compressed) {
     var base64 = compressed.base64;
     try {
       // Check if file exists (need SHA to overwrite)
