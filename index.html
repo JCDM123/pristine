@@ -836,10 +836,11 @@ html body #main-nav .nav-links a:not(.active){border-bottom-color:transparent !i
 .mobile-drawer-results .mdr-item{display:block;padding:10px 4px;border-bottom:0.5px solid rgba(0,0,0,0.06);font-size:14px !important;color:#333;text-decoration:none;letter-spacing:0 !important;text-transform:none !important;font-weight:400 !important;}
 .mobile-drawer-results .mdr-none{padding:10px 4px;font-size:13px;color:#aaa;font-weight:300;}
 .mobile-drawer-results{margin:-0.5rem 0 0.8rem;max-height:40vh;overflow-y:auto;flex-shrink:0;}
-.mobile-drawer-search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;}
-.mobile-drawer-search-input:focus{border-color:var(--sage);}
-.mobile-drawer-search-input{width:100%;padding:10px 36px 10px 12px;border:0.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Jost',sans-serif;color:var(--text);background:#fafaf8;outline:none;}
-.mobile-drawer-search{position:relative;margin-bottom:1.5rem;}
+.mobile-drawer-search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);pointer-events:none;stroke:var(--sage);}
+.mobile-drawer-search-input:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(143,149,116,0.15);}
+.mobile-drawer-search-input{width:100%;padding:14px 18px 14px 46px;border:0.5px solid var(--sage);border-radius:30px;font-size:13px;letter-spacing:2px;font-weight:500;font-family:'Jost',sans-serif;color:#111;background:#fff;outline:none;}
+.mobile-drawer-search-input::placeholder{color:#111;opacity:1;text-transform:uppercase;letter-spacing:2px;font-weight:500;}
+.mobile-drawer-search{position:relative;margin-bottom:0.6rem;}
 </style>
 <style>
 /* Bigger tap areas on phones. The invisible ::after area grows the touch target without moving anything on screen. */
