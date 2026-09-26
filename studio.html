@@ -1121,31 +1121,23 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">Explore Panels</h2>
-          <p class="manage-section-sub">The two panels below the hero , The Source and Ancestral Kitchen. Each fades between 2 images. Upload images then paste their paths below.</p>
+          <p class="manage-section-sub">The two panels below the hero: The Source and Ancestral Kitchen. Each shows one photo. Pick or upload a new one, then publish.</p>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem;">
         <div>
           <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);font-weight:600;margin-bottom:1rem;">The Source</div>
-          <div class="field"><label>Image 1 path</label><input type="text" id="exp-source-img1" placeholder="images/source-panel-1.jpg" oninput="updateExpPreview('source',1,this.value)"></div>
+          <div class="field"><label>Photo</label><input type="text" id="exp-source-img1" placeholder="images/source-panel-1.jpg" oninput="updateExpPreview('source',1,this.value)"></div>
           <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-source-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
           <input type="file" accept="image/*" id="exp-source-file1" style="display:none" onchange="uploadExpImage('source',1,this)">
           <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img1').value=p;updateExpPreview('source',1,p);})">Pick from Library</button></div>
-          <div class="field" style="margin-top:1rem;"><label>Image 2 path</label><input type="text" id="exp-source-img2" placeholder="images/source-panel-2.jpg" oninput="updateExpPreview('source',2,this.value)"></div>
-          <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-source-prev2"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
-          <input type="file" accept="image/*" id="exp-source-file2" style="display:none" onchange="uploadExpImage('source',2,this)">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file2').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img2').value=p;updateExpPreview('source',2,p);})">Pick from Library</button></div>
         </div>
         <div>
           <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);font-weight:600;margin-bottom:1rem;">Ancestral Kitchen</div>
-          <div class="field"><label>Image 1 path</label><input type="text" id="exp-kitchen-img1" placeholder="images/kitchen-panel-1.jpg" oninput="updateExpPreview('kitchen',1,this.value)"></div>
+          <div class="field"><label>Photo</label><input type="text" id="exp-kitchen-img1" placeholder="images/kitchen-panel-1.jpg" oninput="updateExpPreview('kitchen',1,this.value)"></div>
           <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-kitchen-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
           <input type="file" accept="image/*" id="exp-kitchen-file1" style="display:none" onchange="uploadExpImage('kitchen',1,this)">
           <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img1').value=p;updateExpPreview('kitchen',1,p);})">Pick from Library</button></div>
-          <div class="field" style="margin-top:1rem;"><label>Image 2 path</label><input type="text" id="exp-kitchen-img2" placeholder="images/kitchen-panel-2.jpg" oninput="updateExpPreview('kitchen',2,this.value)"></div>
-          <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-kitchen-prev2"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
-          <input type="file" accept="image/*" id="exp-kitchen-file2" style="display:none" onchange="uploadExpImage('kitchen',2,this)">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file2').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img2').value=p;updateExpPreview('kitchen',2,p);})">Pick from Library</button></div>
         </div>
       </div>
       <div style="margin-top:1.5rem;">
@@ -1160,6 +1152,21 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
 <!-- ===== MANAGE CONTENT TAB ===== -->
 <div id="tab-manage" class="tab-panel">
   <div class="manage-wrap">
+
+    <!-- MAINTENANCE MODE -->
+    <div class="manage-section">
+      <div class="manage-section-head">
+        <div>
+          <h2 class="manage-section-title">Maintenance mode</h2>
+          <p class="manage-section-sub">When on, visitors see a "Back very soon" page instead of the site. You still see the full site on any device where you have opened the studio. Changes take up to 10 minutes to reach everyone.</p>
+        </div>
+        <div class="manage-status-bar"><div class="status-dot" id="maint-dot"></div><span id="maint-status">Checking...</span></div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:1rem;">
+        <button class="gen-btn" id="maint-btn" onclick="toggleMaintenance()" disabled style="background:var(--forest);">Loading...</button>
+        <a href="/maintenance.html" target="_blank" rel="noopener" style="font-size:12px;color:var(--sage);letter-spacing:1px;text-transform:uppercase;">See the maintenance page</a>
+      </div>
+    </div>
 
     <!-- PRIVATE PREVIEWS -->
     <div class="manage-section">
@@ -1180,7 +1187,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">The Source</h2>
-          <p class="manage-section-sub">Articles on the live site. Toggle Essential Reading to pin stories; delete to remove from the grid.</p>
+          <p class="manage-section-sub">Articles on the live site. Pin up to three stories for Essential Reading. They show in the order you pin them. Delete removes a story from the grid.</p>
         </div>
         <div class="manage-status-bar"><div class="status-dot" id="src-dot"></div><span id="src-status">Ready</span></div>
       </div>
@@ -1194,7 +1201,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">Ancestral Kitchen</h2>
-          <p class="manage-section-sub">Recipes on the live site. Toggle pinned to feature in the pinned section; delete to remove from the grid.</p>
+          <p class="manage-section-sub">Recipes on the live site. Pin up to three recipes for Essential Recipes. They show in the order you pin them. Delete removes a recipe from the grid.</p>
         </div>
         <div class="manage-status-bar"><div class="status-dot" id="kit-dot"></div><span id="kit-status">Ready</span></div>
       </div>
@@ -1379,12 +1386,21 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
             <p style="font-size:11px;color:var(--muted);margin-top:4px;">Paste a pristinewellness.com.au link and we will auto-fetch the image and caption.</p>
           </div>
           <div class="field">
+            <label>Or pick one of our stories</label>
+            <select id="sf-story" onchange="sfPickStory(this.value)" style="padding:8px 12px;border:0.5px solid var(--border);border-radius:4px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">
+              <option value="">Choose a story or recipe...</option>
+            </select>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px;">Then press Make branded image: the story's photo with its title and our logo, sized for X (1200 x 675). No design work needed.</p>
+          </div>
+          <div class="field">
             <label>Image</label>
             <div style="display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:start;">
               <div>
                 <div class="img-upload-zone" id="sf-img-zone" onclick="document.getElementById('sf-img-input').click()" style="height:120px;"><span class="slot-label">Upload image</span></div>
                 <input type="file" id="sf-img-input" accept="image/*" style="display:none" onchange="handleSocialFeedImage(this)">
                 <button class="gen-btn" style="background:var(--forest);margin-top:6px;font-size:10px;padding:5px 10px;" onclick="openImgPicker(function(p){setSocialFeedImageFromPath(p)})">Pick from Library</button>
+                <button class="gen-btn" id="sf-brand-btn" style="background:var(--sage);margin-top:6px;font-size:10px;padding:5px 10px;" onclick="sfMakeBrandedImage()">Make branded image</button>
+                <a id="sf-brand-dl" download="pristine-wellness-x.jpg" style="display:none;margin-top:8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--sage);">Download for posting on X</a>
               </div>
               <div>
                 <label style="font-size:11px;display:block;margin-bottom:4px;">Caption</label>
@@ -1415,6 +1431,7 @@ function checkPassword() {
     document.getElementById('lock-screen').style.display = 'none';
     document.getElementById('studio').style.display = 'block';
     sessionStorage.setItem('studio_auth', '1');
+    try { localStorage.setItem('pw_owner', '1'); } catch (e) {}
   } else {
     document.getElementById('pw-error').textContent = 'Incorrect password.';
     document.getElementById('pw-input').value = '';
@@ -2999,6 +3016,7 @@ async function publishArticle() {
     await pwSitemapAdd(filename);
     if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('a');
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
+    pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
     btn.style.background = '#8F9574';
     for (var bi = 0; bi < articleBodyImages.length; bi++) { if (articleBodyImages[bi]) clearBodyImg(bi, 'article'); }
@@ -3570,6 +3588,7 @@ async function publishRecipe() {
     await pwSitemapAdd(filename);
     if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('r');
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
+    pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
     btn.style.background = '#8F9574';
 
@@ -4128,7 +4147,59 @@ async function refreshManageData() {
 
 async function loadManageTab() {
   // Always load fresh so the list reflects the current GitHub state
-  await Promise.all([loadSourceForManage(), loadKitchenForManage(), loadPreviewsForManage()]);
+  await Promise.all([loadMaintenanceState(), loadSourceForManage(), loadKitchenForManage(), loadPreviewsForManage()]);
+}
+
+/* ===== MAINTENANCE MODE: one line in site-status.js turns it on or off ===== */
+var pwMaintOn = null;
+function setMaintStatus(msg, ok) {
+  var dot = document.getElementById('maint-dot'), st = document.getElementById('maint-status');
+  if (dot) dot.style.background = ok === true ? '#27ae60' : ok === false ? '#e74c3c' : '#f39c12';
+  if (st) st.textContent = msg;
+}
+function renderMaintButton() {
+  var btn = document.getElementById('maint-btn');
+  if (!btn) return;
+  btn.disabled = pwMaintOn === null;
+  btn.textContent = pwMaintOn === null ? 'Unavailable' : pwMaintOn ? 'Turn maintenance off (show the site)' : 'Turn maintenance on';
+  btn.style.background = pwMaintOn ? '#c0392b' : 'var(--forest)';
+}
+async function loadMaintenanceState() {
+  try {
+    var f = await githubRequest('site-status.js', 'GET');
+    var js = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+    var m = js.match(/var MAINTENANCE = (true|false);/);
+    if (!m) throw new Error('The switch file is not in the expected format.');
+    pwMaintOn = m[1] === 'true';
+    setMaintStatus(pwMaintOn ? 'ON: visitors see the maintenance page' : 'Off: the site is live', !pwMaintOn);
+  } catch (e) {
+    pwMaintOn = null;
+    setMaintStatus('Could not read the switch: ' + e.message, false);
+  }
+  renderMaintButton();
+}
+async function toggleMaintenance() {
+  if (pwMaintOn === null) return;
+  var turnOn = !pwMaintOn;
+  if (!confirm(turnOn ? 'Turn maintenance mode ON? Visitors will see the "Back very soon" page until you turn it off.' : 'Turn maintenance mode OFF and show the site to everyone?')) return;
+  var btn = document.getElementById('maint-btn');
+  if (btn) btn.disabled = true;
+  setMaintStatus('Saving...', null);
+  try {
+    var f = await githubRequest('site-status.js', 'GET');
+    var js = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+    var updated = js.replace(/var MAINTENANCE = (true|false);/, 'var MAINTENANCE = ' + turnOn + ';');
+    if (updated === js && js.indexOf('var MAINTENANCE = ' + turnOn + ';') === -1) throw new Error('The switch file is not in the expected format.');
+    if (updated !== js) {
+      await githubRequest('site-status.js', 'PUT', { message: turnOn ? 'Maintenance mode on' : 'Maintenance mode off', content: btoa(unescape(encodeURIComponent(updated))), sha: f.sha, branch: GITHUB_BRANCH });
+    }
+    pwMaintOn = turnOn;
+    try { localStorage.setItem('pw_owner', '1'); } catch (e) {}
+    setMaintStatus(turnOn ? 'ON. Visitors see the maintenance page within 10 minutes.' : 'Off. The site is back for everyone within 10 minutes.', !turnOn);
+  } catch (e) {
+    setMaintStatus('Not changed: ' + e.message, false);
+  }
+  renderMaintButton();
 }
 
 async function loadSourceForManage() {
@@ -4212,7 +4283,8 @@ function parseSourceArticles(html) {
       var fCat = (featHtml.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
       var fHref = (featHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
       var fMeta = (featHtml.match(/feat-meta[^>]*>([^&<]+)/) || ['',''])[1];
-      if (fTitle) articles.push({ title: fTitle, cat: fCat, date: (fMeta||'').trim(), url: fHref, rawCard: '', pinned: false, featured: true });
+      var fImg = (featHtml.match(/background-image:url\('([^']+)'\)/) || ['',''])[1];
+      if (fTitle) articles.push({ title: fTitle, cat: fCat, date: (fMeta||'').trim(), url: fHref, img: fImg, rawCard: '', pinned: false, featured: true });
     }
   }
 
@@ -4248,7 +4320,8 @@ function parseSourceArticles(html) {
     if (erEnd !== -1) {
       var erHtml = html.slice(erDivStart, erEnd);
       articles.forEach(function(a) {
-        if (a.url && erHtml.indexOf("window.location='" + a.url + "'") !== -1) a.pinned = true;
+        var at = a.url ? erHtml.indexOf("window.location='" + a.url + "'") : -1;
+        if (at !== -1) { a.pinned = true; a.pinOrder = at; }
       });
     }
   }
@@ -4267,7 +4340,7 @@ function parseKitchenRecipes(html) {
       var kfTitle = (kfHtml.match(/feat-title[^>]*>([^<]+)</) || ['',''])[1];
       var kfCat = (kfHtml.match(/<span class="feat-cat">([^<]+)<\/span>/) || ['',''])[1];
       var kfHref = (kfHtml.match(/href="([^"]+\.html)"/) || ['',''])[1];
-      var kfMeta = (kfHtml.match(/feat-meta[^>]*>([^&<]+)/) || ['',''])[1];
+      var kfMeta = (kfHtml.match(/feat-meta[^>]*>([^<]+)/) || ['',''])[1];
       var kfImg = (kfHtml.match(/background-image:url\('([^']+)'\)/) || ['',''])[1];
       if (kfTitle) recipes.push({ title: kfTitle, cat: kfCat, date: (kfMeta||'').trim(), url: kfHref, img: kfImg, rawCard: '', pinned: false, featured: true });
     }
@@ -4306,7 +4379,8 @@ function parseKitchenRecipes(html) {
     if (prEnd !== -1) {
       var prHtml = html.slice(prDivStart, prEnd);
       recipes.forEach(function(r) {
-        if (r.url && prHtml.indexOf("window.location='" + r.url + "'") !== -1) r.pinned = true;
+        var at = r.url ? prHtml.indexOf("window.location='" + r.url + "'") : -1;
+        if (at !== -1) { r.pinned = true; r.pinOrder = at; }
       });
     }
   }
@@ -4347,20 +4421,32 @@ function renderKitchenList() {
       '<div class="manage-row-title">' + (r.featured ? '<span style="background:#C9A96E;color:#fff;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:3px;margin-right:8px;vertical-align:middle;">FEATURED</span>' : '') + escHtml(r.title) + '</div>' +
       '<span class="manage-row-cat">' + escHtml(r.cat || 'Uncategorised') + '</span>' +
       '<span class="manage-row-meta">' + escHtml(r.date) + '</span>' +
-      '<button class="manage-pin-btn' + (r.pinned ? ' pinned' : '') + '" onclick="toggleKitchenPin(' + i + ')" title="Toggle pinned recipe">' +
-        (r.pinned ? '&#128204; Pinned' : '&#128204; Pin') +
+      '<button class="manage-pin-btn' + (r.pinned ? ' pinned' : '') + '" onclick="toggleKitchenPin(' + i + ')" title="Toggle Essential Recipes">' +
+        (r.pinned ? '&#128204; Essential' : '&#128204; Pin') +
       '</button>' +
       '<button class="manage-del-btn" onclick="deleteKitchenRecipe(' + i + ')" title="Delete recipe">&#215;</button>' + '<button onclick="openStoryPhotos(\'recipe\', manageKitchenData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openStoryText(\'recipe\', manageKitchenData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'recipe\', manageKitchenData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
     '</div>';
   });
   html += '<button class="manage-save-btn" id="kit-save-btn" onclick="saveKitchenChanges()">Save Changes to Ancestral Kitchen</button>';
   html += '<button class="manage-save-btn" id="update-all-recipes-btn" onclick="updateAllRecipes()" style="background:var(--forest);margin-left:0.5rem;">Update All Recipes</button>';
+  html += '<button class="manage-save-btn" id="share-all-btn" onclick="pwRefreshAllShareImages()" style="background:var(--sage);margin-left:0.5rem;">Make X preview pictures</button>';
   html += '<div id="update-all-status" style="font-size:12px;color:var(--muted);margin-top:0.5rem;"></div>';
+  html += '<div id="share-all-status" style="font-size:12px;color:var(--muted);margin-top:0.3rem;"></div>';
   el.innerHTML = html;
 }
 
+/* Essential sections hold three. New picks go to the end, in the order you pin them. */
+var PW_ESSENTIAL_MAX = 3;
+function pwCanPin(list, i, label) {
+  if (list[i].pinned) return true;
+  if (list.filter(function(x) { return x.pinned; }).length < PW_ESSENTIAL_MAX) return true;
+  alert(label + ' shows ' + PW_ESSENTIAL_MAX + ' at a time. Unpin one first, then pin this one.');
+  return false;
+}
 function toggleSourcePin(i) {
+  if (!pwCanPin(manageSourceData, i, 'Essential Reading')) return;
   manageSourceData[i].pinned = !manageSourceData[i].pinned;
+  if (manageSourceData[i].pinned) manageSourceData[i].pinOrder = 1e12 + Date.now();
   var btn = document.querySelector('#src-row-' + i + ' .manage-pin-btn');
   if (btn) {
     btn.classList.toggle('pinned', manageSourceData[i].pinned);
@@ -4369,11 +4455,13 @@ function toggleSourcePin(i) {
 }
 
 function toggleKitchenPin(i) {
+  if (!pwCanPin(manageKitchenData, i, 'Essential Recipes')) return;
   manageKitchenData[i].pinned = !manageKitchenData[i].pinned;
+  if (manageKitchenData[i].pinned) manageKitchenData[i].pinOrder = 1e12 + Date.now();
   var btn = document.querySelector('#kit-row-' + i + ' .manage-pin-btn');
   if (btn) {
     btn.classList.toggle('pinned', manageKitchenData[i].pinned);
-    btn.innerHTML = manageKitchenData[i].pinned ? '&#128204; Pinned' : '&#128204; Pin';
+    btn.innerHTML = manageKitchenData[i].pinned ? '&#128204; Essential' : '&#128204; Pin';
   }
 }
 
@@ -4539,6 +4627,24 @@ function rebuildFilterPills(sourceHTML) {
   return sourceHTML.slice(0, pillsStart + 26) + '\n' + pillsHTML + sourceHTML.slice(pillsEnd);
 }
 
+function pwPlain(s) { var t = document.createElement('textarea'); t.innerHTML = s || ''; return t.value.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim(); }
+function pwPinnedPicks(list) {
+  return list.filter(function(x) { return x.pinned && x.url; })
+    .sort(function(a, b) { return (a.pinOrder || 0) - (b.pinOrder || 0); })
+    .slice(0, PW_ESSENTIAL_MAX);
+}
+function pwPinnedCard(p) {
+  var bg = p.img ? "background-image:url('" + p.img + "')" : 'background:var(--forest)';
+  return '<div class="pinned-small" onclick="window.location=\'' + p.url + '\'">' +
+    '<div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span>' +
+    '<div class="pinned-small-img-inner" style="' + bg + '"></div></div>' +
+    '<div class="pinned-small-body">' +
+    '<span class="pinned-small-cat">' + escHtml(pwPlain(p.cat)) + '</span>' +
+    '<div class="pinned-small-title">' + escHtml(pwPlain(p.title)) + '</div>' +
+    '<div class="pinned-small-meta">' + escHtml(pwPlain(p.date)) + '</div>' +
+    '</div></div>\n';
+}
+
 function rebuildSourceGrid(html) {
   // 1. Handle featured: if the featured article was deleted from the list, restore the placeholder
   var featStart = html.indexOf('<div class="featured"');
@@ -4573,25 +4679,16 @@ function rebuildSourceGrid(html) {
   if (erIdx !== -1) {
     var erStart = html.lastIndexOf('<div', erIdx);
     var erEnd = findDivEndJS(html, erStart);
-    var pinnedArr = manageSourceData.filter(function(a) { return a.pinned && a.url; });
+    var pinnedArr = pwPinnedPicks(manageSourceData);
     var erHtml;
     if (pinnedArr.length === 0) {
       erHtml = '<div id="essential-reading" style="display:none"></div>';
     } else {
-      var smalls = pinnedArr.slice(0, 3);
+      var smalls = pinnedArr;
       erHtml = '<div id="essential-reading">\n';
       erHtml += '<div class="pinned-intro"><span class="pinned-intro-eyebrow">Curated by us</span><div class="pinned-intro-title">Essential Reading</div></div>\n';
       erHtml += '<div class="pinned-section"><div class="pinned-grid">\n';
-      smalls.forEach(function(p) {
-        erHtml += '<div class="pinned-small" onclick="window.location=\'' + p.url + '\'">' +
-          '<div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span>' +
-          '<div class="pinned-small-img-inner" style="background-image:url(\'' + (p.img||'') + '\')"></div></div>' +
-          '<div class="pinned-small-body">' +
-          '<span class="pinned-small-cat">' + escHtml(p.cat||'') + '</span>' +
-          '<div class="pinned-small-title">' + escHtml(p.title) + '</div>' +
-          '<div class="pinned-small-meta">' + escHtml(p.date||'') + '</div>' +
-          '</div></div>\n';
-      });
+      smalls.forEach(function(p) { erHtml += pwPinnedCard(p); });
       erHtml += '</div></div>\n</div>';
     }
     html = html.slice(0, erStart) + erHtml + html.slice(erEnd);
@@ -4634,25 +4731,16 @@ function rebuildKitchenGrid(html) {
   if (prIdx !== -1) {
     var prStart = html.lastIndexOf('<div', prIdx);
     var prEnd = findDivEndJS(html, prStart);
-    var pinnedArr = manageKitchenData.filter(function(r) { return r.pinned && r.url; });
+    var pinnedArr = pwPinnedPicks(manageKitchenData);
     var prHtml;
     if (pinnedArr.length === 0) {
       prHtml = '<div id="pinned-recipes" style="display:none"></div>';
     } else {
-      var picks = pinnedArr.slice(0, 3);
+      var picks = pinnedArr;
       prHtml = '<div id="pinned-recipes">\n';
       prHtml += '<div class="pinned-intro"><span class="pinned-intro-eyebrow">Curated by us</span><div class="pinned-intro-title">Essential Recipes</div></div>\n';
       prHtml += '<div class="pinned-section"><div class="pinned-grid">\n';
-      picks.forEach(function(p) {
-        prHtml += '<div class="pinned-small" onclick="window.location=\'' + p.url + '\'">' +
-          '<div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span>' +
-          '<div class="pinned-small-img-inner" style="background-image:url(\'' + (p.img||'') + '\')"></div></div>' +
-          '<div class="pinned-small-body">' +
-          '<span class="pinned-small-cat">' + escHtml(p.cat||'') + '</span>' +
-          '<div class="pinned-small-title">' + escHtml(p.title) + '</div>' +
-          '<div class="pinned-small-meta">' + escHtml(p.date||'') + '</div>' +
-          '</div></div>\n';
-      });
+      picks.forEach(function(p) { prHtml += pwPinnedCard(p); });
       prHtml += '</div></div>\n</div>';
     }
     html = html.slice(0, prStart) + prHtml + html.slice(prEnd);
@@ -4670,11 +4758,12 @@ async function loadSlidesTab() {
   if (!token) { setSlideStatus('No GitHub token set.', false); return; }
   setSlideStatus('Loading...', null);
   try {
-    var data = await githubRequest('home.html', 'GET');
+    var data = await githubRequest('index.html', 'GET');
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     slidesData = parseSlidesFromHTML(html);
     renderSlidesEditor();
-    setSlideStatus('Loaded ' + slidesData.length + ' slide(s) from home.html.', true);
+    loadExplorePanelValues(html);
+    setSlideStatus('Loaded ' + slidesData.length + ' slide(s) from the homepage.', true);
   } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
   }
@@ -4701,7 +4790,8 @@ function parseSlidesFromHTML(html) {
     // Extract the background-image URL
     var urlMatch = tagContent.match(/background-image:url\(\\'([^\\']+)\\'/) || tagContent.match(/background-image:url\('([^']+)'/);
     if (urlMatch) {
-      slides.push({ image: urlMatch[1], bgpos: '' });
+      var posMatch = tagContent.match(/background-position:([^;"]+)/);
+      slides.push({ image: urlMatch[1], bgpos: posMatch ? posMatch[1].trim() : '' });
     }
     pos = tagEnd + 7;
   }
@@ -4711,13 +4801,14 @@ function parseSlidesFromHTML(html) {
   var subM = html.match(/<p class="hero-sub">([^<]*)<\/p>/);
   var cta1M = html.match(/<a class="hero-cta-primary"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/);
   var cta2M = html.match(/<a class="hero-cta-secondary"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/);
+  var plainText = function(x) { var t = document.createElement('textarea'); t.innerHTML = x; return t.value; };
   var sharedText = {
-    eyebrow: eyebrowM ? eyebrowM[1] : 'Pristine Wellness',
-    headline: headlineM ? headlineM[1].replace(/<br>/g,'\n').replace(/<[^>]+>/g,'') : 'Live the way\nyou were\ndesigned to.',
-    sub: subM ? subM[1] : '',
-    cta1text: cta1M ? cta1M[2].trim() : 'Read The Source',
+    eyebrow: eyebrowM ? plainText(eyebrowM[1]) : 'Pristine Wellness',
+    headline: headlineM ? plainText(headlineM[1].replace(/<br\s*\/?>/g,'\n').replace(/<[^>]+>/g,'')) : 'Live the way\nyou were\ndesigned to.',
+    sub: subM ? plainText(subM[1]) : '',
+    cta1text: cta1M ? plainText(cta1M[2].trim()) : 'Read The Source',
     cta1href: cta1M ? cta1M[1] : 'the-source.html',
-    cta2text: cta2M ? cta2M[2].trim() : 'Our story',
+    cta2text: cta2M ? plainText(cta2M[2].trim()) : 'Our story',
     cta2href: cta2M ? cta2M[1] : 'about.html'
   };
   // Apply shared text to each slide
@@ -4824,12 +4915,14 @@ async function onSlideImageChange(idx, input) {
 }
 
 function deleteSlide(idx) {
+  collectSlideTextFields();
   if (!confirm('Remove slide ' + (idx+1) + '? This cannot be undone until you publish.')) return;
   slidesData.splice(idx, 1);
   renderSlidesEditor();
 }
 
 function addSlide() {
+  collectSlideTextFields();
   var base = slidesData.length ? Object.assign({}, slidesData[0]) : {
     eyebrow: 'Pristine Wellness',
     headline: 'Live the way\nyou were\ndesigned to.',
@@ -4838,6 +4931,7 @@ function addSlide() {
     cta2text: 'Our story', cta2href: 'about.html'
   };
   base.image = '';
+  base.bgpos = '';
   slidesData.push(base);
   renderSlidesEditor();
   setSlideStatus('New slide added. Upload an image then publish.', true);
@@ -4863,16 +4957,16 @@ async function publishSlides() {
   if (!token) { setSlideStatus('No GitHub token.', false); return; }
   if (!slidesData.length) { setSlideStatus('No slides to publish.', false); return; }
   collectSlideTextFields();
-  setSlideStatus('Fetching home.html...', null);
+  setSlideStatus('Fetching the homepage...', null);
   try {
-    var data = await githubRequest('home.html', 'GET');
+    var data = await githubRequest('index.html', 'GET');
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     var sha = data.sha;
     html = rebuildSlidesInHTML(html);
     if (html.length < 10000) { throw new Error('Safety check failed: rebuilt HTML is too short (' + html.length + ' chars). Aborting to prevent data loss.'); }
     var encoded = btoa(unescape(encodeURIComponent(html)));
     if (!encoded || encoded.length < 1000) { throw new Error('Safety check failed: encoded content is empty. Aborting.'); }
-    await githubRequest('home.html', 'PUT', { message: 'Update homepage slides via Studio', content: encoded, sha: sha });
+    await githubRequest('index.html', 'PUT', { message: 'Update homepage slides via Studio', content: encoded, sha: sha });
     setSlideStatus('Published! Changes live within 60 seconds.', true);
   } catch(e) {
     setSlideStatus('Error: ' + e.message, false);
@@ -4883,13 +4977,13 @@ function rebuildSlidesInHTML(html) {
   // 1. Replace slide divs
   var newSlideDivs = slidesData.map(function(s, i) {
     var cls = i === 0 ? 'slide active' : 'slide';
-    return '  <div class="' + cls + '" style="background-image:url(\'' + s.image + '\');"></div>';
+    return '  <div class="' + cls + '" style="background-image:url(\'' + s.image + '\');' + (s.bgpos ? 'background-position:' + s.bgpos + ';' : '') + '"></div>';
   }).join('\n');
 
   // Replace all existing slide divs block
-  html = html.replace(/<div class="slide(?:\s+active)?"\s+style="background-image:url[\s\S]*?><\/div>/g, '');
+  html = html.replace(/[ \t]*<div class="slide(?:\s+active)?"\s+style="background-image:url[\s\S]*?><\/div>\n?/g, '');
   // Insert new slides before slide-overlay
-  html = html.replace('<div class="slide-overlay">', newSlideDivs + '\n  <div class="slide-overlay">');
+  html = html.replace(/[ \t]*<div class="slide-overlay">/, newSlideDivs + '\n  <div class="slide-overlay">');
 
   // 2. Update dot nav count
   var dots = slidesData.map(function(s, i) {
@@ -4904,7 +4998,7 @@ function rebuildSlidesInHTML(html) {
   // eyebrow
   html = html.replace(/<span class="hero-eyebrow">[^<]*<\/span>/, '<span class="hero-eyebrow">' + escHtml(sd.eyebrow) + '</span>');
   // headline - convert \n to <br>
-  var headlineHtml = sd.headline.replace(/\n/g,'<br>');
+  var headlineHtml = escHtml(sd.headline).replace(/\n/g,'<br>');
   html = html.replace(/<h1 class="hero-headline">[\s\S]*?<\/h1>/, '<h1 class="hero-headline">' + headlineHtml + '</h1>');
   // sub
   html = html.replace(/<p class="hero-sub">[^<]*<\/p>/, '<p class="hero-sub">' + escHtml(sd.sub) + '</p>');
@@ -5173,12 +5267,38 @@ function copyImagePath(btn) {
   });
 }
 
+/* Pages and data files that mention an image. null means the check itself failed. */
+async function pwPagesUsingImage(path) {
+  try {
+    var name = path.replace(/^\//, '');
+    var root = await githubRequest('', 'GET');
+    var data = [];
+    try { data = await githubRequest('data', 'GET'); } catch (e) { data = []; }
+    var files = (root || []).concat(data || []).filter(function(f) {
+      return f.type === 'file' && /\.(html|json|xml)$/.test(f.path) && !/template\.html$|^studio\.html$|^data\/subscribers/.test(f.path);
+    }).map(function(f) { return f.path; });
+    var hits = [];
+    await Promise.all(files.map(async function(p) {
+      var f = await githubRequest(p, 'GET');
+      var text = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+      if (text.indexOf(name) !== -1) hits.push(p);
+    }));
+    return hits.sort();
+  } catch (e) { return null; }
+}
+
 async function deleteImage(btn) {
   var path = btn.getAttribute('data-path');
   var sha = btn.getAttribute('data-sha');
-  if (!confirm('Delete ' + path + '? This cannot be undone.')) return;
   var token = getToken();
   if (!token) { alert('No GitHub token.'); return; }
+  setImgLibStatus('Checking where this photo is used...', null);
+  var usedOn = await pwPagesUsingImage(path);
+  if (usedOn === null) { setImgLibStatus('Could not check where this photo is used, so it was not deleted. Try again.', false); return; }
+  if (usedOn.length) {
+    var names = usedOn.slice(0, 8).join('\n') + (usedOn.length > 8 ? '\n...and ' + (usedOn.length - 8) + ' more' : '');
+    if (!confirm(path + ' is still used on ' + usedOn.length + ' page(s):\n\n' + names + '\n\nDeleting it will leave a blank space there. Delete anyway?')) { setImgLibStatus('Not deleted. The photo is still in use.', true); return; }
+  } else if (!confirm('Delete ' + path + '? It is not used on any page. This cannot be undone.')) { setImgLibStatus('Ready', true); return; }
   setImgLibStatus('Deleting...', null);
   try {
     var resp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + path, {
@@ -6414,7 +6534,7 @@ function updateExpPreview(panel, num, url) {
   var prev = document.getElementById('exp-' + panel + '-prev' + num);
   if (!prev) return;
   if (!url) { prev.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div>'; return; }
-  var fullUrl = url.indexOf('http') === 0 ? url : 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + url + '?cb=' + Date.now();
+  var fullUrl = url.indexOf('http') === 0 ? url : 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + url.replace(/^\//, '') + '?cb=' + Date.now();
   prev.innerHTML = '<img src="' + fullUrl + '" style="width:100%;height:100%;object-fit:cover;">';
 }
 
@@ -6423,7 +6543,7 @@ async function uploadExpImage(panel, num, input) {
   var file = input.files[0];
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token first.'); return; }
-  var statusEl = document.getElementById('exp-status');
+  var statusEl = document.getElementById('explore-status');
   if (statusEl) statusEl.textContent = 'Uploading...';
   try {
     var compressed = await compressImage(file, 1200, 900, 0.85, false);
@@ -6463,76 +6583,63 @@ async function publishExplorePanels() {
   if (!token) { alert('Please enter your GitHub token first.'); return; }
   var statusEl = document.getElementById('explore-status');
   var imgs = {
-    source1: (document.getElementById('exp-source-img1') || {}).value || '',
-    source2: (document.getElementById('exp-source-img2') || {}).value || '',
-    kitchen1: (document.getElementById('exp-kitchen-img1') || {}).value || '',
-    kitchen2: (document.getElementById('exp-kitchen-img2') || {}).value || ''
+    source1: ((document.getElementById('exp-source-img1') || {}).value || '').trim(),
+    kitchen1: ((document.getElementById('exp-kitchen-img1') || {}).value || '').trim()
   };
   if (!imgs.source1 && !imgs.kitchen1) {
     if (statusEl) statusEl.textContent = 'Please enter at least one image path.';
     return;
   }
-  if (statusEl) statusEl.textContent = 'Fetching home.html...';
+  if (statusEl) statusEl.textContent = 'Fetching the homepage...';
   try {
-    var data = await githubRequest('home.html', 'GET');
+    var data = await githubRequest('index.html', 'GET');
     var html = decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, ''))));
     var sha = data.sha;
     // Update explore panel images
     var before = html;
     html = rebuildExplorePanelsInHTML(html, imgs);
-    if (html === before) throw new Error('The explore panels on home.html are not set up for studio editing, so nothing was published.');
+    if (html === before) { if (statusEl) statusEl.textContent = 'No change: those are already the photos on the homepage.'; return; }
     var encoded = btoa(unescape(encodeURIComponent(html)));
-    await githubRequest('home.html', 'PUT', { message: 'Update explore panel images via studio', content: encoded, sha: sha });
+    await githubRequest('index.html', 'PUT', { message: 'Update explore panel images via studio', content: encoded, sha: sha });
     if (statusEl) statusEl.textContent = 'Published! Explore panel images updated.';
   } catch(e) {
     if (statusEl) statusEl.textContent = 'Error: ' + e.message;
   }
 }
 
-function rebuildExplorePanelsInHTML(html, imgs) {
-  // Each panel: <div class="explore-panel-img" id="exp-source-panel" data-img1="X" data-img2="Y">
-  //   <img class="exp-img exp-img-1" src="X" ...><img class="exp-img exp-img-2" src="Y" ...>
-  // We update the panel's data-img1/data-img2 AND the child img src values.
-
-  function updatePanel(html, panelId, img1, img2) {
-    // Find the panel div opening tag
-    var panelRe = new RegExp('(<div class="explore-panel-img" id="' + panelId + '"[^>]*>)([\\s\\S]*?)(</div>)');
-    var m = html.match(panelRe);
-    if (!m) return html;
-    var openTag = m[1];
-    var inner = m[2];
-
-    // Update data-img1 / data-img2 on the opening tag
-    if (img1) {
-      if (/data-img1="[^"]*"/.test(openTag)) openTag = openTag.replace(/data-img1="[^"]*"/, 'data-img1="' + img1 + '"');
-      else openTag = openTag.replace('>', ' data-img1="' + img1 + '">');
-    }
-    if (img2) {
-      if (/data-img2="[^"]*"/.test(openTag)) openTag = openTag.replace(/data-img2="[^"]*"/, 'data-img2="' + img2 + '"');
-      else openTag = openTag.replace('>', ' data-img2="' + img2 + '">');
-    }
-
-    // Update child img src + show them
-    if (img1) {
-      inner = inner.replace(/(<img class="exp-img exp-img-1"[^>]*?)src="[^"]*"/, '$1src="' + img1 + '"');
-      inner = inner.replace(/(<img class="exp-img exp-img-1"[^>]*?)style="display:none[^"]*"/, '$1style=""');
-    }
-    if (img2) {
-      inner = inner.replace(/(<img class="exp-img exp-img-2"[^>]*?)src="[^"]*"/, '$1src="' + img2 + '"');
-      inner = inner.replace(/(<img class="exp-img exp-img-2"[^>]*?)style="display:none;opacity:0[^"]*"/, '$1style="opacity:0;"');
-    }
-
-    return html.replace(panelRe, openTag + inner + '</div>');
+/* The homepage has two panels, each with one photo. Find a panel by the title that follows its photo. */
+function pwExplorePanelAt(html, title) {
+  var at = html.indexOf('<div class="explore-panel-img"');
+  while (at !== -1) {
+    var end = findDivEndJS(html, at);
+    if (end === -1) return null;
+    var next = html.indexOf('<div class="explore-panel-img"', end);
+    var titleAt = html.indexOf('class="explore-panel-title">' + title + '<', end);
+    if (titleAt !== -1 && (next === -1 || titleAt < next)) return { start: at, end: end };
+    at = next;
   }
-
-  html = updatePanel(html, 'exp-source-panel', imgs.source1, imgs.source2);
-  html = updatePanel(html, 'exp-kitchen-panel', imgs.kitchen1, imgs.kitchen2);
+  return null;
+}
+function rebuildExplorePanelsInHTML(html, imgs) {
+  [['The Source', imgs.source1], ['Ancestral Kitchen', imgs.kitchen1]].forEach(function(pair) {
+    if (!pair[1]) return;
+    var box = pwExplorePanelAt(html, pair[0]);
+    if (!box) return;
+    var block = html.slice(box.start, box.end).replace(/(<img\b[^>]*?\bsrc=")[^"]*"/, function(m, pre) { return pre + pair[1].replace(/"/g, '') + '"'; });
+    html = html.slice(0, box.start) + block + html.slice(box.end);
+  });
   return html;
 }
 
-function loadExplorePanelValues() {
-  // When slides tab loads, also pre-fill explore panel inputs from home.html content
-  // This is called after loadSlidesTab completes
+function loadExplorePanelValues(html) {
+  // Show the photos the homepage uses now
+  if (!html) return;
+  [['source', 'The Source'], ['kitchen', 'Ancestral Kitchen']].forEach(function(pair) {
+    var box = pwExplorePanelAt(html, pair[1]);
+    var src = box ? (html.slice(box.start, box.end).match(/<img\b[^>]*?\bsrc="([^"]*)"/) || ['', ''])[1] : '';
+    var inp = document.getElementById('exp-' + pair[0] + '-img1');
+    if (inp && src) { inp.value = src; updateExpPreview(pair[0], 1, src); }
+  });
 }
 
 /* ===== IMAGE PICKER MODAL ===== */
@@ -7311,15 +7418,14 @@ async function loadSocialFeed() {
   sfSetStatus('Loading...', null);
   var listEl = document.getElementById('sf-list');
   try {
-    var resp = await fetch('https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/data/social-feed.json?cb=' + Date.now());
-    if (resp.ok) {
-      sfPosts = await resp.json();
-      if (!Array.isArray(sfPosts)) sfPosts = [];
-    } else {
-      sfPosts = [];
-    }
+    // Read the real file, not the few-minutes-old public copy, so saving never drops a post you just added
+    var cur = null;
+    try { cur = await githubRequest('data/social-feed.json', 'GET'); } catch (notFound) { cur = null; }
+    sfPosts = cur ? JSON.parse(decodeURIComponent(escape(atob((cur.content || '').replace(/\s/g, ''))))) : [];
+    if (!Array.isArray(sfPosts)) sfPosts = [];
     renderSocialFeedList();
     sfSetStatus('Loaded ' + sfPosts.length + ' posts.', true);
+    sfLoadStoryList();
   } catch(e) {
     sfPosts = [];
     renderSocialFeedList();
@@ -7387,6 +7493,209 @@ async function sfMaybeAutoFetch(url) {
     sfSetStatus('Could not auto-fetch. Add details manually.', false);
   }
 }
+
+/* ===== BRANDED SHARE PICTURE: photo, title and logo, 1200 x 675 (the size X shows) ===== */
+async function pwLoadPhoto(path) {
+  path = String(path || '').replace(/^https?:\/\/(?:www\.)?pristinewellness\.com\.au\//, '').replace(/^\//, '');
+  try { return await sfLoadImage('/' + path); }
+  catch (e) {
+    // A photo uploaded moments ago may not be on the site yet; GitHub has it straight away
+    return await new Promise(function(resolve, reject) {
+      var img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = function() { resolve(img); }; img.onerror = function() { reject(new Error('photo not found')); };
+      img.src = 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + path;
+    });
+  }
+}
+async function pwDrawShareCard(o) {
+  var title = o.title || '', eyebrow = o.eyebrow || '', photo = o.photo || '';
+    try { await Promise.all([document.fonts.load('italic 64px "Cormorant Garamond"'), document.fonts.load('500 20px "Jost"')]); } catch (e) {}
+
+    var W = 1200, H = 675;
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var x = c.getContext('2d');
+    x.fillStyle = '#8F9574'; x.fillRect(0, 0, W, H);
+    if (photo) {
+      try {
+        var img = await pwLoadPhoto(photo);
+        var sc = Math.max(W / img.width, H / img.height);
+        var dw = img.width * sc, dh = img.height * sc;
+        x.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      } catch (e) { /* no photo: the sage background stays */ }
+    }
+    // Soft shade from the left so the words read over any photo
+    var g = x.createLinearGradient(0, 0, W * 0.75, 0);
+    g.addColorStop(0, 'rgba(20,16,10,0.78)'); g.addColorStop(0.55, 'rgba(20,16,10,0.45)'); g.addColorStop(1, 'rgba(20,16,10,0.05)');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+
+    try { var logo = await sfLoadImage('/images/site/logo.svg'); x.drawImage(logo, 64, 52, 118, 118); } catch (e) {}
+
+    var left = 72, maxW = 640;
+    x.fillStyle = 'rgba(241,234,223,0.92)';
+    x.font = '500 19px "Jost", Helvetica, Arial, sans-serif';
+    if ('letterSpacing' in x) x.letterSpacing = '4px';
+    x.fillText(eyebrow.toUpperCase(), left, 262);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+
+    // Title: largest size that fits in four lines
+    var size = 66, lines = [];
+    for (; size >= 40; size -= 2) {
+      x.font = 'italic 400 ' + size + 'px "Cormorant Garamond", Georgia, serif';
+      lines = []; var line = '';
+      title.split(/\s+/).forEach(function(w) {
+        var t = line ? line + ' ' + w : w;
+        if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
+      });
+      if (line) lines.push(line);
+      if (lines.length <= 4) break;
+    }
+    x.fillStyle = '#ffffff';
+    x.shadowColor = 'rgba(0,0,0,0.35)'; x.shadowBlur = 12;
+    lines.slice(0, 4).forEach(function(l, i) { x.fillText(l, left, 330 + i * size * 1.12); });
+    x.shadowBlur = 0;
+
+    x.fillStyle = 'rgba(241,234,223,0.85)';
+    x.font = '400 18px "Jost", Helvetica, Arial, sans-serif';
+    if ('letterSpacing' in x) x.letterSpacing = '3px';
+    x.fillText('PRISTINEWELLNESS.COM.AU', left, H - 56);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+
+    return c.toDataURL('image/jpeg', 0.88);
+}
+
+/* After a story is published or edited: make its branded picture and point X's link preview at it.
+   The page only changes once the picture is saved, so a failure leaves the normal photo in place. */
+var pwShareIndex = null;
+async function pwRefreshShareImage(file) {
+  if (!/^(article|recipe)-[a-z0-9-]+\.html$/.test(file || '') || /-template\.html$/.test(file)) return 'skipped';
+  var readPage = async function() { var f = await githubRequest(file, 'GET'); return { sha: f.sha, html: decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, '')))) }; };
+  var pg = await readPage();
+  if (/<!-- PW_PREVIEW_START -->/.test(pg.html)) return 'skipped';
+  var plain = function(x) { var t = document.createElement('textarea'); t.innerHTML = x || ''; return t.value; };
+  var title = plain((pg.html.match(/<meta property="og:title" content="([^"]*)"/) || pg.html.match(/<h1[^>]*>([^<]*)</) || ['', ''])[1]).trim();
+  var photo = (pg.html.match(/<meta property="og:image" content="([^"]*)"/) || ['', ''])[1];
+  if (/newsletter-bg\.jpg$/.test(photo)) photo = '';
+  if (!pwShareIndex) {
+    try { var si = await githubRequest('data/search-index.json', 'GET'); pwShareIndex = JSON.parse(decodeURIComponent(escape(atob((si.content || '').replace(/\s/g, ''))))); } catch (e) { pwShareIndex = []; }
+  }
+  var entry = (pwShareIndex || []).filter(function(e) { return e.url === file; })[0];
+  var eyebrow = (/^recipe-/.test(file) ? 'Ancestral Kitchen' : 'The Source') + (entry && entry.cat ? ' \u00b7 ' + entry.cat.replace(/^Recipes\s*\u00b7\s*/, '') : '');
+  var dataUrl = await pwDrawShareCard({ title: title, eyebrow: eyebrow, photo: photo });
+  var imgPath = 'images/share/' + file.replace(/\.html$/, '') + '.jpg';
+  var imgSha = await getFileSHA(imgPath);
+  var body = { message: 'Share picture: ' + imgPath, content: dataUrl.split(',')[1], branch: GITHUB_BRANCH };
+  if (imgSha) body.sha = imgSha;
+  await githubRequest(imgPath, 'PUT', body);
+  // Point X at it (the page may have changed meanwhile, so read it again)
+  var url = PW_SITE + imgPath + '?v=' + Date.now().toString(36);
+  pg = await readPage();
+  var html = pg.html;
+  if (/<meta name="twitter:image" content="[^"]*"/.test(html)) html = html.replace(/<meta name="twitter:image" content="[^"]*"/, '<meta name="twitter:image" content="' + url + '"');
+  else if (/<meta name="twitter:card"[^>]*>/.test(html)) html = html.replace(/(<meta name="twitter:card"[^>]*>)/, '$1\n<meta name="twitter:image" content="' + url + '">');
+  else return 'no-tag';
+  if (html === pg.html) return 'same';
+  await githubRequest(file, 'PUT', { message: 'Share picture for X: ' + file, content: btoa(unescape(encodeURIComponent(html))), sha: pg.sha, branch: GITHUB_BRANCH });
+  return 'done';
+}
+function pwRefreshShareQuietly(file, statusFn) {
+  pwRefreshShareImage(file).then(function(r) { if (r === 'done' && statusFn) statusFn('X link preview picture made.'); })
+    .catch(function(e) { console.warn('Share picture not made for ' + file + ': ' + e.message); });
+}
+
+/* Manage: make pictures for every story at once */
+async function pwRefreshAllShareImages() {
+  var btn = document.getElementById('share-all-btn'), st = document.getElementById('share-all-status');
+  var files = (manageSourceData || []).concat(manageKitchenData || []).map(function(x) { return x.url; }).filter(function(u) { return /^(article|recipe)-/.test(u || ''); });
+  if (!files.length) { if (st) st.textContent = 'Open Manage Content first so the stories are loaded.'; return; }
+  if (!confirm('Make the X link preview picture for all ' + files.length + ' stories and recipes?')) return;
+  if (btn) btn.disabled = true;
+  pwShareIndex = null;
+  var ok = 0, fail = [];
+  for (var i = 0; i < files.length; i++) {
+    if (st) st.textContent = 'Making ' + (i + 1) + ' of ' + files.length + '...';
+    try { await pwRefreshShareImage(files[i]); ok++; } catch (e) { fail.push(files[i]); }
+  }
+  if (st) st.textContent = 'Done. ' + ok + ' made' + (fail.length ? ', ' + fail.length + ' failed: ' + fail.join(', ') : '.') ;
+  if (btn) btn.disabled = false;
+}
+
+/* ===== BRANDED IMAGE FOR A STORY (for X posts and anything without its own photo) ===== */
+var sfStories = [];
+async function sfLoadStoryList() {
+  var sel = document.getElementById('sf-story');
+  if (!sel) return;
+  try {
+    var f = await githubRequest('data/search-index.json', 'GET');
+    var list = JSON.parse(decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, '')))));
+    sfStories = (Array.isArray(list) ? list : []).filter(function(e) { return e && /^(article|recipe)-.+\.html$/.test(e.url || ''); });
+    sel.innerHTML = '<option value="">Choose a story or recipe...</option>' + sfStories.map(function(e, i) {
+      return '<option value="' + i + '">' + escHtml(e.title) + '</option>';
+    }).join('');
+  } catch (e) { /* the list is a convenience; pasting a link still works */ }
+}
+
+function sfPickStory(i) {
+  var e = sfStories[i];
+  if (!e) return;
+  document.getElementById('sf-link').value = 'https://pristinewellness.com.au/' + e.url;
+  var cap = document.getElementById('sf-caption');
+  if (cap && !cap.value.trim()) cap.value = e.title + (e.excerpt ? '\n\n' + e.excerpt : '');
+  sfSetStatus('Story chosen. Press Make branded image.', true);
+}
+
+/* Which story is this post about? From the link box, or the caption if the link is empty */
+function sfStoryFileFromForm() {
+  var text = (document.getElementById('sf-link').value || '') + ' ' + (document.getElementById('sf-caption').value || '');
+  var m = text.match(/pristinewellness\.com\.au\/((?:article|recipe)-[a-z0-9-]+?)(?:\.html)?(?=[\s?#"'\/]|$)/i);
+  return m ? m[1].toLowerCase() + '.html' : '';
+}
+
+function sfLoadImage(src) {
+  return new Promise(function(resolve, reject) {
+    var img = new Image();
+    img.onload = function() { resolve(img); };
+    img.onerror = function() { reject(new Error('Could not load ' + src)); };
+    img.src = src;
+  });
+}
+
+async function sfMakeBrandedImage() {
+  var file = sfStoryFileFromForm();
+  if (!file) { sfSetStatus('Pick a story, or paste one of our story links first.', false); return; }
+  var btn = document.getElementById('sf-brand-btn');
+  if (btn) btn.disabled = true;
+  sfSetStatus('Making the image...', null);
+  try {
+    var f = await githubRequest(file, 'GET');
+    var html = decodeURIComponent(escape(atob((f.content || '').replace(/\s/g, ''))));
+    var plain = function(x) { var t = document.createElement('textarea'); t.innerHTML = x || ''; return t.value; };
+    var title = plain((html.match(/<meta property="og:title" content="([^"]*)"/) || html.match(/<h1[^>]*>([^<]*)</) || ['', ''])[1]).trim();
+    var ogImg = (html.match(/<meta property="og:image" content="([^"]*)"/) || ['', ''])[1];
+    var photo = ogImg.replace(/^https?:\/\/(?:www\.)?pristinewellness\.com\.au\//, '').replace(/^\//, '');
+    var entry = sfStories.filter(function(e) { return e.url === file; })[0];
+    var eyebrow = (/^recipe-/.test(file) ? 'Ancestral Kitchen' : 'The Source') +
+      (entry && entry.cat ? ' · ' + entry.cat.replace(/^Recipes\s*·\s*/, '') : '');
+
+    var dataUrl = await pwDrawShareCard({ title: title, eyebrow: eyebrow, photo: photo });
+    var path = 'images/social-x-' + Date.now() + '-' + file.replace(/^(article|recipe)-/, '').replace(/\.html$/, '').slice(0, 30) + '.jpg';
+    await githubRequest(path, 'PUT', { message: 'Branded social image: ' + path, content: dataUrl.split(',')[1], branch: GITHUB_BRANCH });
+    sfImagePath = path;
+    var zone = document.getElementById('sf-img-zone');
+    if (zone) { zone.style.backgroundImage = 'url(' + dataUrl + ')'; zone.style.backgroundSize = 'cover'; zone.style.backgroundPosition = 'center'; }
+    var link = document.getElementById('sf-link');
+    if (link && !link.value.trim()) link.value = 'https://pristinewellness.com.au/' + file;
+    var cap = document.getElementById('sf-caption');
+    if (cap && !cap.value.trim()) cap.value = title;
+    sfLastBrandedDataUrl = dataUrl;
+    var dl = document.getElementById('sf-brand-dl');
+    if (dl) { dl.href = dataUrl; dl.download = path.split('/').pop(); dl.style.display = 'block'; }
+    sfSetStatus('Branded image ready and saved. Download it to post on X, then press Add to Feed.', true);
+  } catch (e) {
+    sfSetStatus('Could not make the image: ' + e.message, false);
+  }
+  if (btn) btn.disabled = false;
+}
+var sfLastBrandedDataUrl = '';
 
 async function handleSocialFeedImage(input) {
   if (!input.files || !input.files[0]) return;
@@ -7570,7 +7879,13 @@ function fixShareBar(html) {
     else if (html.slice(i,i+6) === '</div>') { depth--; i += 6; if (depth === 0) break; }
     else i++;
   }
-  var nb = '<div class="share-bar">'
+  var oldBar = html.slice(start, i);
+  // Already has all four share buttons: leave the page alone
+  if (['Share on X', 'Pin this', 'Facebook', 'Copy link'].every(function(label) { return new RegExp(label + '\\s*</button>').test(oldBar); })) return html;
+  // Keep the recipe buttons (Jump to recipe, Print recipe) that sit in the same bar
+  var keep = (oldBar.match(/<button class="share-btn pw-recipe-action"[\s\S]*?<\/button>/g) || []).join('');
+  if (keep) keep += '<span class="pw-share-gap"></span>';
+  var nb = '<div class="share-bar">' + keep
     + '<span class="share-label">Share</span>'
     + '<button class="share-btn" onclick="(function(){var u=encodeURIComponent(window.location.href);var t=encodeURIComponent(document.title);window.open(\'https://twitter.com/intent/tweet?url=\'+u+\'&text=\'+t,\'_blank\',\'width=600,height=400\');})()">'
     + '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;"><path d="M4 4l16 16M4 20L20 4"/></svg> Share on X</button>'
@@ -7599,16 +7914,18 @@ async function updateAllRecipes() {
   }
   if (!confirm('Update share buttons on all ' + urls.length + ' file(s) (recipes + articles)? This pushes to GitHub.')) return;
   if (btn) { btn.disabled = true; btn.textContent = 'Updating...'; }
-  var ok = 0; var fail = 0;
+  var ok = 0; var fail = 0; var same = 0;
   for (var i = 0; i < urls.length; i++) {
     var url = urls[i];
-    if (status) status.textContent = 'Updating ' + (i+1) + '/' + urls.length + ': ' + url + '...';
+    if (status) status.textContent = 'Checking ' + (i+1) + '/' + urls.length + ': ' + url + '...';
     try {
-      var r = await fetch('https://raw.githubusercontent.com/JCDM123/pristine/main/' + url + '?cb=' + Date.now());
-      var html = await r.text();
-      if (!html || html.length < 500) { fail++; continue; }
-      html = fixShareBar(html);
-      var sha = await getFileSHA(url);
+      // Read the real file (not the few-minutes-old public copy) so recent edits are never undone
+      var cur = await githubRequest(url, 'GET');
+      var original = decodeURIComponent(escape(atob((cur.content || '').replace(/\s/g, ''))));
+      if (!original || original.length < 500) { fail++; continue; }
+      var html = fixShareBar(original);
+      if (html === original) { same++; continue; }
+      var sha = cur.sha;
       await githubRequest(url, 'PUT', {
         message: 'Studio: update share buttons: ' + url,
         content: btoa(unescape(encodeURIComponent(html))),
@@ -7618,7 +7935,7 @@ async function updateAllRecipes() {
     } catch(e) { console.error(url, e); fail++; }
     await new Promise(function(res) { setTimeout(res, 500); });
   }
-  if (status) status.textContent = 'Done. ' + ok + ' updated' + (fail ? ', ' + fail + ' failed , check console.' : '. All good!');
+  if (status) status.textContent = 'Done. ' + ok + ' updated, ' + same + ' already up to date' + (fail ? ', ' + fail + ' could not be checked.' : '.');
   if (btn) { btn.disabled = false; btn.textContent = 'Update All Recipes'; }
 }
 
@@ -8250,6 +8567,7 @@ async function seSavePhotos() {
     var extra = 0;
     if (P.heroNew) extra = await seUpdateEverywhere(file, function(block) { return seSetBlockImage(block, P.heroNew); }, 'main photo');
     seSetStatus('Saved! Live in 1-2 minutes' + (extra ? ' (story and ' + extra + ' other page' + (extra === 1 ? '' : 's') + ' updated).' : '.'));
+    if (P.heroNew) await pwRefreshShareImage(file).catch(function() {});
     SE.photo.hero = P.heroNew || P.hero; SE.photo.heroNew = '';
     setTimeout(function() { if (document.getElementById('se-modal') && SE.url === file && SE.photo) openStoryPhotos(kind, file); }, 1200);
   } catch (e) {
@@ -8423,6 +8741,7 @@ async function seSaveText() {
       } catch (e) {}
     }
     seSetStatus('Saved ' + changes + ' change' + (changes === 1 ? '' : 's') + '! Live in 1-2 minutes' + (extra ? ' (title also updated on ' + extra + ' other page' + (extra === 1 ? '' : 's') + ').' : '.'));
+    if (extra) await pwRefreshShareImage(SE.url).catch(function() {});
     setTimeout(function() { if (document.getElementById('se-modal') && SE.url === file && SE.text && SE.sha === null) openStoryText(kind, file); }, 1500);
   } catch (e) {
     seSetStatus('Not saved: ' + e.message, true);
