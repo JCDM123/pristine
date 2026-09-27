@@ -1730,6 +1730,8 @@ window.addEventListener('afterprint', pwClearPrintCard);
 /* Cooking timers: any step that mentions a time gets a timer button */
 (function() {
   var RX = /(\d+(?:\.\d+)?)(?:\s*(?:to|or|-|,)\s*(\d+(?:\.\d+)?))?\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?)\b/gi;
+  /* Timers are for cooking, not for soaking, fermenting, chilling or setting */
+  var NOT_COOKING = /ferment|soak|sprout|cultur|refrigerat|fridge|chill|overnight|marinat|freez|brine|steep|set in the/i;
   var W = {one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
   function digits(s) {
     s = s.replace(/\bhalf an hour\b/gi, '30 minutes').replace(/\ban hour\b/gi, '1 hour');
@@ -1806,13 +1808,17 @@ window.addEventListener('afterprint', pwClearPrintCard);
     window.pwTimerTitle = document.title;
     document.querySelectorAll('.method-step').forEach(function(step, i) {
       var p = step.querySelector('.step-text'); if (!p || step.querySelector('.pw-step-timers')) return;
-      var seen = {}, found = [], m, text = digits(p.textContent); RX.lastIndex = 0;
-      while ((m = RX.exec(text))) {
-        if (/every\s*$/i.test(text.slice(Math.max(0, m.index - 8), m.index)) || /^\s*mark/i.test(text.slice(RX.lastIndex, RX.lastIndex + 6))) continue;
-        var secs = Math.round(parseFloat(m[1]) * unitSecs(m[3]));
-        if (secs < 30 || secs > 86400 || seen[secs]) continue;
-        seen[secs] = 1; found.push(secs);
-      }
+      var seen = {}, found = [];
+      digits(p.textContent).split(/(?<=[.!?])\s+/).forEach(function(sentence) {
+        if (NOT_COOKING.test(sentence)) return;
+        var m; RX.lastIndex = 0;
+        while ((m = RX.exec(sentence))) {
+          if (/every\s*$/i.test(sentence.slice(Math.max(0, m.index - 8), m.index)) || /^\s*mark/i.test(sentence.slice(RX.lastIndex, RX.lastIndex + 6))) continue;
+          var secs = Math.round(parseFloat(m[1]) * unitSecs(m[3]));
+          if (secs < 30 || secs > 3 * 3600 || seen[secs]) continue;
+          seen[secs] = 1; found.push(secs);
+        }
+      });
       if (!found.length) return;
       var row = document.createElement('div'); row.className = 'pw-step-timers';
       found.slice(0, 3).forEach(function(secs) {
