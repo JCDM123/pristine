@@ -890,31 +890,68 @@ html body .share-bar .pw-share-gap{flex:0 0 100% !important;height:0 !important;
 @media(max-width:700px){html body .share-bar .pw-recipe-action{padding:9px 13px !important;font-size:11px !important;letter-spacing:1px !important;}}
 #pw-print-card{display:none;}
 @media print{
-  @page{margin:14mm;}
+  @page{size:A4;margin:12mm 13mm;}
   html body{background:#fff !important;}
   html body.pw-printing > *:not(#pw-print-card){display:none !important;}
   html body.pw-printing #pw-print-card{display:block !important;}
-  #pw-print-card{font-family:'Jost',Arial,sans-serif;color:#1a1a1a;font-size:11pt;line-height:1.5;}
-  #pw-print-card .pc-brand{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15pt;color:#8F9574;border-bottom:1px solid #8F9574;padding-bottom:6px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline;}
-  #pw-print-card .pc-brand small{font-family:'Jost',Arial,sans-serif;font-style:normal;font-size:8pt;letter-spacing:1.5px;text-transform:uppercase;color:#888;}
-  #pw-print-card h1{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:400;font-size:24pt;line-height:1.15;margin:0 0 6px;}
-  #pw-print-card .pc-about{color:#555;margin:0 0 10px;}
-  #pw-print-card .pc-stats{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:9pt;letter-spacing:0.5px;margin:0 0 16px;padding:8px 0;border-top:0.5px solid #ddd;border-bottom:0.5px solid #ddd;}
-  #pw-print-card .pc-stats b{color:#8F9574;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;font-size:7.5pt;margin-right:4px;}
-  #pw-print-card .pc-cols{display:flex;gap:22px;align-items:flex-start;}
-  #pw-print-card .pc-ing{flex:0 0 34%;}
+  #pw-print-card{font-family:'Jost',Arial,sans-serif;color:#1a1a1a;font-size:10pt;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #pw-print-card .pc-top{display:flex;align-items:center;justify-content:space-between;border-bottom:0.6pt solid #8F9574;padding-bottom:8px;margin-bottom:14px;}
+  #pw-print-card .pc-logo{display:flex;align-items:center;gap:9px;}
+  #pw-print-card .pc-logo img{width:32px;height:32px;border-radius:50%;object-fit:cover;display:block;}
+  #pw-print-card .pc-logo span{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15pt;color:#6f7558;}
+  #pw-print-card .pc-kicker{font-size:7pt;letter-spacing:2.2px;text-transform:uppercase;color:#8F9574;font-weight:500;}
+  #pw-print-card .pc-hero{display:flex;gap:18px;align-items:center;margin-bottom:14px;}
+  #pw-print-card .pc-photo{flex:0 0 43%;height:56mm;border-radius:8px;background-size:cover;background-position:center;}
+  #pw-print-card .pc-intro{flex:1;}
+  #pw-print-card h1{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:400;font-size:25pt;line-height:1.1;margin:5px 0 8px;color:#111;}
+  #pw-print-card .pc-about{color:#555;font-size:9.3pt;line-height:1.6;margin:0;}
+  #pw-print-card .pc-stats{display:flex;gap:7px;margin:0 0 16px;}
+  #pw-print-card .pc-stat{flex:1;background:#f5f1e8;border-radius:6px;padding:6px 8px;text-align:center;}
+  #pw-print-card .pc-stat b{display:block;font-size:6.5pt;letter-spacing:1.8px;text-transform:uppercase;color:#8F9574;font-weight:500;}
+  #pw-print-card .pc-stat span{font-family:'Cormorant Garamond',Georgia,serif;font-size:13pt;color:#111;}
+  #pw-print-card .pc-cols{display:flex;gap:18px;align-items:flex-start;}
+  #pw-print-card .pc-ing{flex:0 0 35%;background:#f8f6f0;border-radius:8px;padding:12px 14px 8px;}
   #pw-print-card .pc-method{flex:1;}
-  #pw-print-card h2{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:400;font-size:15pt;margin:0 0 8px;color:#1a1a1a;}
+  #pw-print-card h2{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:400;font-size:16pt;margin:0 0 8px;color:#111;}
   #pw-print-card ul{list-style:none;padding:0;margin:0;}
-  #pw-print-card li{padding:4px 0;border-bottom:0.5px solid #eee;break-inside:avoid;}
-  #pw-print-card li .pc-amt{font-weight:500;margin-right:6px;}
-  #pw-print-card ol{padding-left:18px;margin:0;}
-  #pw-print-card ol li{border:none;padding:0 0 8px;}
+  #pw-print-card ul li{display:flex;gap:8px;padding:4px 0;border-bottom:0.5pt solid #e6e1d4;font-size:9.2pt;line-height:1.45;break-inside:avoid;}
+  #pw-print-card ul li:last-child{border-bottom:none;}
+  #pw-print-card ul li::before{content:'';flex:0 0 8px;height:8px;border:0.8pt solid #8F9574;border-radius:50%;margin-top:3.5px;}
+  #pw-print-card .pc-amt{font-weight:500;margin-right:4px;}
+  #pw-print-card ol{list-style:none;padding:0;margin:0;counter-reset:pcs;}
+  #pw-print-card ol li{position:relative;padding:0 0 9px 30px;font-size:9.6pt;break-inside:avoid;counter-increment:pcs;}
+  #pw-print-card ol li::before{content:counter(pcs);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:#8F9574;color:#fff;font-size:8pt;font-weight:500;text-align:center;line-height:19px;}
   #pw-print-card ol li b{display:block;font-weight:500;}
-  #pw-print-card .pc-note{margin-top:12px;padding:8px 10px;background:#f6f5f0;border-left:2px solid #8F9574;font-size:10pt;break-inside:avoid;}
-  #pw-print-card .pc-note b{display:block;font-size:7.5pt;letter-spacing:1.5px;text-transform:uppercase;color:#8F9574;font-weight:500;margin-bottom:2px;}
-  #pw-print-card .pc-foot{margin-top:18px;padding-top:6px;border-top:0.5px solid #ddd;font-size:8pt;color:#888;display:flex;justify-content:space-between;}
+  #pw-print-card .pc-notes{display:flex;gap:10px;margin-top:12px;break-inside:avoid;}
+  #pw-print-card .pc-note{flex:1;padding:9px 12px;background:#f5f1e8;border-radius:6px;font-size:8.8pt;line-height:1.5;}
+  #pw-print-card .pc-note b{display:block;font-size:6.8pt;letter-spacing:1.8px;text-transform:uppercase;color:#8F9574;font-weight:500;margin-bottom:3px;}
+  #pw-print-card .pc-foot{margin-top:16px;padding-top:7px;border-top:0.5pt solid #ddd;font-size:7.5pt;color:#888;display:flex;justify-content:space-between;align-items:center;}
+  #pw-print-card .pc-foot em{font-family:'Cormorant Garamond',Georgia,serif;font-size:11pt;color:#6f7558;}
+  #pw-timers,.pw-step-timer{display:none !important;}
 }
+</style>
+<style id="pw-timer-css">
+.pw-step-timers{display:flex;flex-wrap:wrap;gap:8px;margin:0.7rem 0 0;}
+.pw-step-timer{display:inline-flex;align-items:center;gap:7px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;padding:8px 15px;border-radius:30px;border:0.5px solid #8F9574;background:#fff;color:#6f7558;cursor:pointer;transition:background 0.2s,color 0.2s;}
+.pw-step-timer:hover,.pw-step-timer.running{background:#8F9574;color:#fff;}
+.pw-step-timer svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6;}
+#pw-timers{position:fixed;right:20px;bottom:20px;z-index:900;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+.pw-timer-card{position:relative;min-width:230px;background:#fff;border:0.5px solid #e2ddd0;border-radius:14px;padding:14px 18px 14px 18px;box-shadow:0 14px 40px rgba(40,35,20,0.18);font-family:'Jost',sans-serif;animation:pwTimerIn 0.25s ease;}
+@keyframes pwTimerIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.pw-timer-card .pwt-label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8F9574;font-weight:500;margin-bottom:2px;padding-right:22px;}
+.pw-timer-card .pwt-time{font-family:'Cormorant Garamond',serif;font-size:44px;line-height:1.05;color:#111;font-variant-numeric:tabular-nums;}
+.pw-timer-card .pwt-bar{height:3px;background:#efeae0;border-radius:3px;margin:8px 0 10px;overflow:hidden;}
+.pw-timer-card .pwt-bar i{display:block;height:100%;width:100%;background:#8F9574;transition:width 0.5s linear;}
+.pw-timer-card .pwt-row{display:flex;gap:8px;}
+.pw-timer-card .pwt-row button{flex:1;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;padding:8px 10px;border-radius:30px;border:0.5px solid #8F9574;background:#fff;color:#6f7558;cursor:pointer;}
+.pw-timer-card .pwt-row button.pwt-main{background:#8F9574;color:#fff;}
+.pw-timer-card .pwt-close{position:absolute;top:10px;right:12px;width:24px;height:24px;border:none;background:none;color:#aaa;font-size:15px;cursor:pointer;line-height:24px;}
+.pw-timer-card.done{background:#8F9574;border-color:#8F9574;animation:pwTimerPulse 1.2s ease-in-out infinite;}
+.pw-timer-card.done .pwt-label,.pw-timer-card.done .pwt-time,.pw-timer-card.done .pwt-close{color:#fff;}
+.pw-timer-card.done .pwt-bar{background:rgba(255,255,255,0.3);}
+.pw-timer-card.done .pwt-row button{background:#fff;color:#6f7558;border-color:#fff;}
+@keyframes pwTimerPulse{0%,100%{box-shadow:0 14px 40px rgba(40,35,20,0.18);}50%{box-shadow:0 0 0 8px rgba(143,149,116,0.25);}}
+@media(max-width:700px){#pw-timers{left:12px;right:12px;bottom:12px;align-items:stretch;}.pw-timer-card{min-width:0;}.pw-timer-card .pwt-time{font-size:38px;}}
 </style>
 </head>
 <body>
@@ -1623,28 +1660,42 @@ function pwBuildPrintCard() {
   var txt = function(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; };
   var mk = function(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
   var card = mk('div'); card.id = 'pw-print-card';
-  var brand = mk('div', 'pc-brand', 'Pristine Wellness');
-  brand.appendChild(mk('small', '', 'Ancestral Kitchen'));
-  card.appendChild(brand);
-  card.appendChild(mk('h1', '', txt(document.querySelector('h1'))));
+  var top = mk('div', 'pc-top');
+  var logo = mk('div', 'pc-logo');
+  var li = document.createElement('img'); li.src = '/images/site/logo.jpg'; li.alt = '';
+  logo.appendChild(li); logo.appendChild(mk('span', '', 'Pristine Wellness'));
+  top.appendChild(logo); top.appendChild(mk('span', 'pc-kicker', 'Ancestral Kitchen'));
+  card.appendChild(top);
+  var hero = mk('div', 'pc-hero');
+  var heroEl = document.querySelector('.recipe-hero');
+  var bg = heroEl ? (heroEl.style.backgroundImage || getComputedStyle(heroEl).backgroundImage) : '';
+  if (!bg || bg === 'none') { var og = document.querySelector('meta[property="og:image"]'); if (og) bg = 'url("' + og.content + '")'; }
+  if (bg && bg !== 'none') { var ph = mk('div', 'pc-photo'); ph.style.backgroundImage = bg; hero.appendChild(ph); }
+  var intro = mk('div', 'pc-intro');
+  var cat = txt(document.querySelector('.recipe-cat-badge'));
+  intro.appendChild(mk('span', 'pc-kicker', cat ? cat + ' recipe' : 'Recipe'));
+  intro.appendChild(mk('h1', '', txt(document.querySelector('h1'))));
   var about = txt(document.querySelector('.recipe-about p'));
-  if (about) card.appendChild(mk('p', 'pc-about', about));
+  if (about.length > 320) { var cut = about.slice(0, 320); var end = cut.lastIndexOf('. '); about = end > 120 ? cut.slice(0, end + 1) : cut.replace(/\s+\S*$/, '') + '...'; }
+  if (about) intro.appendChild(mk('p', 'pc-about', about));
+  hero.appendChild(intro);
+  card.appendChild(hero);
   var stats = mk('div', 'pc-stats');
   document.querySelectorAll('.quick-stat').forEach(function(q) {
     var label = txt(q.querySelector('.qs-label')), value = txt(q.querySelector('.qs-value'));
     if (!label || !value) return;
     if (/serves/i.test(label) && document.getElementById('serving-count')) value = txt(document.getElementById('serving-count'));
-    var s = mk('span'); s.appendChild(mk('b', '', label)); s.appendChild(document.createTextNode(value)); stats.appendChild(s);
+    var s = mk('div', 'pc-stat'); s.appendChild(mk('b', '', label)); s.appendChild(mk('span', '', value)); stats.appendChild(s);
   });
   if (stats.children.length) card.appendChild(stats);
   var cols = mk('div', 'pc-cols');
   var ing = mk('div', 'pc-ing'); ing.appendChild(mk('h2', '', 'Ingredients'));
   var ul = mk('ul');
   document.querySelectorAll('.ingredient-item').forEach(function(i) {
-    var li = mk('li'); var a = txt(i.querySelector('.ing-amount'));
-    if (a) li.appendChild(mk('span', 'pc-amt', a));
-    li.appendChild(document.createTextNode(txt(i.querySelector('.ing-name'))));
-    ul.appendChild(li);
+    var li = mk('li'); var wrap = mk('span'); var a = txt(i.querySelector('.ing-amount'));
+    if (a) wrap.appendChild(mk('span', 'pc-amt', a));
+    wrap.appendChild(document.createTextNode(txt(i.querySelector('.ing-name'))));
+    li.appendChild(wrap); ul.appendChild(li);
   });
   ing.appendChild(ul);
   var meth = mk('div', 'pc-method'); meth.appendChild(mk('h2', '', 'Method'));
@@ -1656,14 +1707,19 @@ function pwBuildPrintCard() {
     ol.appendChild(li);
   });
   meth.appendChild(ol);
-  document.querySelectorAll('.chef-tip').forEach(function(c) {
-    var n = mk('div', 'pc-note'); n.appendChild(mk('b', '', txt(c.querySelector('.chef-tip-label')) || 'Note'));
-    n.appendChild(document.createTextNode(txt(c.querySelector('p')))); meth.appendChild(n);
-  });
   cols.appendChild(ing); cols.appendChild(meth); card.appendChild(cols);
+  var tips = document.querySelectorAll('.chef-tip');
+  if (tips.length) {
+    var notes = mk('div', 'pc-notes');
+    tips.forEach(function(c) {
+      var n = mk('div', 'pc-note'); n.appendChild(mk('b', '', txt(c.querySelector('.chef-tip-label')) || 'Note'));
+      n.appendChild(document.createTextNode(txt(c.querySelector('p')))); notes.appendChild(n);
+    });
+    card.appendChild(notes);
+  }
   var foot = mk('div', 'pc-foot');
-  foot.appendChild(mk('span', '', window.location.hostname + window.location.pathname));
-  foot.appendChild(mk('span', '', '© Pristine Wellness'));
+  foot.appendChild(mk('em', '', 'Live the way you were designed to.'));
+  foot.appendChild(mk('span', '', 'More recipes at pristinewellness.com.au'));
   card.appendChild(foot);
   document.body.appendChild(card);
   document.body.classList.add('pw-printing');
@@ -1679,6 +1735,108 @@ function pwPrintRecipe() {
 }
 window.addEventListener('beforeprint', function() { if (!document.getElementById('pw-print-card')) pwBuildPrintCard(); });
 window.addEventListener('afterprint', pwClearPrintCard);
+</script>
+<script id="pw-timer-js">
+/* Cooking timers: any step that mentions a time gets a timer button */
+(function() {
+  var RX = /(\d+(?:\.\d+)?)(?:\s*(?:to|or|-|,)\s*(\d+(?:\.\d+)?))?\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?)\b/gi;
+  var W = {one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
+  function digits(s) {
+    s = s.replace(/\bhalf an hour\b/gi, '30 minutes').replace(/\ban hour\b/gi, '1 hour');
+    s = s.replace(/\b(twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)[\s-](one|two|three|four|five|six|seven|eight|nine)\b/gi, function(m, a, b) { return W[a.toLowerCase()] + W[b.toLowerCase()]; });
+    return s.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)\b/gi, function(m) { return W[m.toLowerCase()]; });
+  }
+  var ICON = '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>';
+  var timers = {}, seq = 0, wake = null, audio = null;
+  function unitSecs(u) { u = u.toLowerCase(); return /^h/.test(u) ? 3600 : /^m/.test(u) ? 60 : 1; }
+  function nice(sec) {
+    if (sec >= 3600) { var h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60); return h + ' hr' + (m ? ' ' + m + ' min' : ''); }
+    if (sec >= 60) return Math.round(sec / 60) + ' min';
+    return sec + ' sec';
+  }
+  function fmt(sec) {
+    sec = Math.max(0, Math.ceil(sec)); var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function box() {
+    var b = document.getElementById('pw-timers');
+    if (!b) { b = document.createElement('div'); b.id = 'pw-timers'; b.setAttribute('aria-live', 'polite'); document.body.appendChild(b); }
+    return b;
+  }
+  function chime() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.45, 0.9].forEach(function(t) {
+        var o = audio.createOscillator(), g = audio.createGain();
+        o.type = 'sine'; o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
+        var s = audio.currentTime + t; g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.35, s + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.4);
+        o.start(s); o.stop(s + 0.42);
+      });
+    } catch (e) {}
+    if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
+  }
+  function keepAwake() {
+    try { if (!wake && navigator.wakeLock) navigator.wakeLock.request('screen').then(function(w) { wake = w; }).catch(function() {}); } catch (e) {}
+  }
+  function releaseAwake() {
+    var any = Object.keys(timers).some(function(k) { return timers[k].running; });
+    if (!any && wake) { try { wake.release(); } catch (e) {} wake = null; }
+  }
+  function render(t) {
+    var left = t.running ? (t.end - Date.now()) / 1000 : t.left;
+    if (t.running && left <= 0) { t.running = false; t.left = 0; t.card.classList.add('done'); t.main.textContent = 'Restart'; if (t.btn) t.btn.classList.remove('running'); chime(); releaseAwake(); }
+    t.time.textContent = t.left === 0 && !t.running ? 'Done' : fmt(left);
+    t.bar.style.width = Math.max(0, Math.min(100, (left / t.total) * 100)) + '%';
+  }
+  function tick() {
+    Object.keys(timers).forEach(function(k) { render(timers[k]); });
+    var run = Object.keys(timers).filter(function(k) { return timers[k].running; });
+    if (run.length) { var t = timers[run[0]]; document.title = fmt((t.end - Date.now()) / 1000) + ' ' + t.baseTitle; }
+    else if (window.pwTimerTitle) document.title = window.pwTimerTitle;
+  }
+  function start(t) { t.end = Date.now() + t.left * 1000; t.running = true; t.main.textContent = 'Pause'; t.card.classList.remove('done'); if (t.btn) t.btn.classList.add('running'); keepAwake(); }
+  function pause(t) { t.left = Math.max(0, (t.end - Date.now()) / 1000); t.running = false; t.main.textContent = 'Resume'; if (t.btn) t.btn.classList.remove('running'); releaseAwake(); }
+  function remove(id) { var t = timers[id]; if (!t) return; if (t.btn) t.btn.classList.remove('running'); t.card.remove(); delete timers[id]; releaseAwake(); tick(); }
+  window.pwStartTimer = function(btn, secs, label) {
+    try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === 'suspended') audio.resume(); } catch (e) {}
+    for (var k in timers) if (timers[k].btn === btn) { var ex = timers[k]; if (ex.running) pause(ex); else { if (ex.left === 0) ex.left = ex.total; start(ex); } render(ex); return; }
+    var id = 't' + (++seq);
+    var card = document.createElement('div'); card.className = 'pw-timer-card';
+    card.innerHTML = '<button class="pwt-close" aria-label="Close timer">&#x2715;</button><span class="pwt-label"></span><div class="pwt-time"></div><div class="pwt-bar"><i></i></div><div class="pwt-row"><button class="pwt-main">Pause</button><button class="pwt-add">+1 min</button></div>';
+    card.querySelector('.pwt-label').textContent = label;
+    var t = { card: card, btn: btn, total: secs, left: secs, running: false, time: card.querySelector('.pwt-time'), bar: card.querySelector('.pwt-bar i'), main: card.querySelector('.pwt-main'), baseTitle: window.pwTimerTitle || document.title };
+    timers[id] = t;
+    t.main.onclick = function() { if (t.running) pause(t); else { if (t.left === 0) t.left = t.total; start(t); } render(t); };
+    card.querySelector('.pwt-add').onclick = function() { if (t.running) t.end += 60000; else { t.left += 60; } t.total += 60; t.card.classList.remove('done'); if (!t.running && t.main.textContent === 'Restart') t.main.textContent = 'Resume'; render(t); };
+    card.querySelector('.pwt-close').onclick = function() { remove(id); };
+    box().appendChild(card);
+    start(t); render(t);
+  };
+  function setup() {
+    window.pwTimerTitle = document.title;
+    document.querySelectorAll('.method-step').forEach(function(step, i) {
+      var p = step.querySelector('.step-text'); if (!p || step.querySelector('.pw-step-timers')) return;
+      var seen = {}, found = [], m, text = digits(p.textContent); RX.lastIndex = 0;
+      while ((m = RX.exec(text))) {
+        if (/every\s*$/i.test(text.slice(Math.max(0, m.index - 8), m.index)) || /^\s*mark/i.test(text.slice(RX.lastIndex, RX.lastIndex + 6))) continue;
+        var secs = Math.round(parseFloat(m[1]) * unitSecs(m[3]));
+        if (secs < 30 || secs > 86400 || seen[secs]) continue;
+        seen[secs] = 1; found.push(secs);
+      }
+      if (!found.length) return;
+      var row = document.createElement('div'); row.className = 'pw-step-timers';
+      found.slice(0, 3).forEach(function(secs) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'pw-step-timer';
+        b.innerHTML = ICON + '<span></span>'; b.querySelector('span').textContent = nice(secs) + ' timer';
+        b.onclick = function() { window.pwStartTimer(b, secs, 'Step ' + (i + 1) + ' · ' + nice(secs)); };
+        row.appendChild(b);
+      });
+      p.parentNode.appendChild(row);
+    });
+    setInterval(tick, 500);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
+})();
 </script>
 </body>
 </html>
