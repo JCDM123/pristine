@@ -891,11 +891,11 @@ html body .share-bar .pw-share-gap{flex:0 0 100% !important;height:0 !important;
 @media(max-width:700px){html body .share-bar .pw-recipe-action{padding:9px 13px !important;font-size:11px !important;letter-spacing:1px !important;}}
 #pw-print-card{display:none;}
 @media print{
-  @page{size:A4;margin:12mm 13mm;}
+  @page{size:A4;margin:0;}
   html body{background:#fff !important;}
   html body.pw-printing > *:not(#pw-print-card){display:none !important;}
   html body.pw-printing #pw-print-card{display:block !important;}
-  #pw-print-card{font-family:'Jost',Arial,sans-serif;color:#1a1a1a;font-size:10pt;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #pw-print-card{font-family:'Jost',Arial,sans-serif;color:#1a1a1a;font-size:10pt;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:12mm 13mm;-webkit-box-decoration-break:clone;box-decoration-break:clone;}
   #pw-print-card .pc-top{display:flex;align-items:center;justify-content:space-between;border-bottom:0.6pt solid #8F9574;padding-bottom:8px;margin-bottom:14px;}
   #pw-print-card .pc-logo{display:flex;align-items:center;gap:9px;}
   #pw-print-card .pc-logo img{width:32px;height:32px;border-radius:50%;object-fit:cover;display:block;}
