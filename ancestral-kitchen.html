@@ -1229,15 +1229,18 @@ html body .footer .footer-socials svg{width:18px !important;height:18px !importa
 </style>
 <style>
 /* Sign-up boxes: the free guide box (The Source, Kitchen) and the newsletter box (Home, About, Experiment) */
-html body .pw-guide-box{display:flex;gap:3rem;align-items:center;background:#f5f1e8;border-radius:12px;padding:3rem 3.5rem;margin:0 0 3rem;text-align:left;}
-html body .pw-guide-cover{flex:0 0 210px;}
-html body .pw-guide-cover img{width:100% !important;height:auto !important;max-width:none !important;aspect-ratio:560/794;object-fit:cover;display:block;border-radius:3px;box-shadow:0 18px 40px rgba(40,35,20,0.22),0 2px 6px rgba(40,35,20,0.12);}
+html body .pw-guide-box{display:flex;gap:4.5rem;align-items:center;background:#f5f1e8;border-radius:12px;padding:3.5rem 4rem 3.5rem 4.5rem;margin:0 0 3rem;text-align:left;}
+html body .pw-guide-cover{flex:0 0 240px;position:relative;}
+html body .pw-guide-cover::before,html body .pw-guide-cover::after{content:'';position:absolute;inset:0;background:#fcfaf5;border-radius:3px;box-shadow:0 10px 24px rgba(40,35,20,0.14),0 1px 3px rgba(40,35,20,0.10);transform-origin:50% 100%;z-index:0;}
+html body .pw-guide-cover::before{transform:rotate(-8deg) translateX(-6px);background:#f3efe4;}
+html body .pw-guide-cover::after{transform:rotate(-4deg) translateX(-2px);}
+html body .pw-guide-cover img{width:100% !important;height:auto !important;max-width:none !important;aspect-ratio:560/794;object-fit:cover;display:block;position:relative;z-index:1;border-radius:3px;box-shadow:0 18px 40px rgba(40,35,20,0.22),0 2px 6px rgba(40,35,20,0.12);}
 html body .pw-guide-text{flex:1;min-width:0;}
 html body .pw-guide-box .pw-eyebrow{display:block;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#8F9574;font-weight:500;margin-bottom:10px;font-family:'Jost',sans-serif;}
-html body .pw-guide-box h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(28px,3.4vw,40px);line-height:1.15;color:#111;margin:0 0 12px;}
-html body .pw-guide-box p{font-size:15px;line-height:1.8;color:#555;margin:0 0 1.4rem;max-width:520px;}
+html body .pw-guide-box h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(28px,3vw,38px);line-height:1.15;color:#111;margin:0 0 12px;}
+html body .pw-guide-box p{font-size:15px;line-height:1.8;color:#555;margin:0 0 1.4rem;max-width:620px;}
 html body .pw-guide-box .pw-small{font-size:12px !important;line-height:1.6 !important;color:#999;margin:0.8rem 0 0;font-weight:300;}
-html body .pw-guide-box .pw-signup-row{display:flex;max-width:460px;border-radius:4px;overflow:hidden;border:0.5px solid #ddd8cc;margin:0;}
+html body .pw-guide-box .pw-signup-row{display:flex;max-width:560px;border-radius:4px;overflow:hidden;border:0.5px solid #ddd8cc;margin:0;}
 html body .pw-guide-box .pw-signup-row input[type="email"]{flex:1;padding:15px 18px;border:none;background:#fff;font-size:14px;color:#333;outline:none;font-family:'Jost',sans-serif;min-width:0;}
 html body .pw-signup-row button{padding:15px 24px;background:#8F9574;border:none;color:#fff;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;font-weight:500;white-space:nowrap;}
 html body .pw-signup-row button:hover{background:#7a8163;}
@@ -1247,6 +1250,10 @@ html body .pw-news-box .pw-signup-row input[type="email"]{color:#333 !important;
 html body .pw-news-box h3{font-size:clamp(32px,6.5vw,48px) !important;line-height:1.15 !important;}
 html body .pw-news-box .pw-news-small{font-size:12.5px !important;line-height:1.6 !important;max-width:520px;margin:0 auto !important;}
 html body .pw-news-section{max-width:1280px;margin:0 auto;padding:1.5rem 2.5rem 3rem;box-sizing:border-box;background:#fff;}
+@media(min-width:701px) and (max-width:1100px){
+  html body .pw-guide-box{gap:2.5rem;padding:3rem;}
+  html body .pw-guide-cover{flex:0 0 190px;}
+}
 @media(max-width:700px){
   html body .pw-guide-box{flex-direction:column;gap:1.6rem;padding:2.2rem 1.4rem;text-align:center;}
   html body .pw-guide-cover{flex:0 0 auto;width:150px;}
