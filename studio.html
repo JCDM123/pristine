@@ -1908,7 +1908,7 @@ async function generateArticle() {
         tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 2 }]
       };
       var rResp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(researchBody)
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() }, body: JSON.stringify(researchBody)
       });
       var rRaw = await rResp.text();
       var rData;
@@ -1951,7 +1951,7 @@ async function generateArticle() {
     if (useCitations && !researchedSources) apiBody.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }];
     var response = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify(apiBody)
     });
     var rawText = await response.text();
@@ -2436,7 +2436,7 @@ async function generateRecipe() {
   try {
     var response = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 3000,
@@ -3376,7 +3376,7 @@ async function publishRecipe() {
         setStatus('r', 'active', 'Tidying captions and tags...');
         var fixResp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
           body: JSON.stringify({
             model: 'claude-sonnet-4-6',
             max_tokens: 500,
@@ -3704,7 +3704,7 @@ async function fetchTrendingRecipes(btn) {
     if (useSearch) body.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 1 }];
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify(body)
     });
     var data = await resp.json();
@@ -3780,7 +3780,7 @@ async function refreshTrends(btn) {
   async function doTrendQuery(query) {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1200,
@@ -5366,28 +5366,26 @@ async function loadSubscribers() {
   if (!listEl) return;
   listEl.innerHTML = '<div style="padding:1.2rem;color:var(--muted);font-size:13px;">Loading...</div>';
   try {
-    var data = await githubRequest('data/subscribers.json', 'GET');
-    subscribersData = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, '')))));
-    window._subSHA = data.sha;
+    if (!getToken()) throw new Error('401');
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/subscribers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: '{}'
+    });
+    if (resp.status === 401) throw new Error('401');
+    var data = await resp.json();
+    if (!data.ok) throw new Error(data.error || 'Worker error');
+    subscribersData = data.subscribers || [];
     renderSubscribers();
   } catch(e) {
     subscribersData = [];
     var m = String(e && e.message || e);
-    var notFound = /not found/i.test(m);
-    var auth = /bad credentials|401|requires authentication/i.test(m);
-    var rate = /rate limit|403/i.test(m);
-    if (notFound) {
-      countEl.textContent = 'No subscriber file yet. Upload data/subscribers.json to the repo to start collecting.';
-      listEl.innerHTML = '<div style="padding:1.2rem;color:var(--muted);font-size:13px;">Nothing to show. Once data/subscribers.json exists in the repo, signups will appear here.</div>';
-    } else if (auth) {
-      countEl.textContent = 'GitHub token rejected. Check the token is valid and has repo access.';
-      listEl.innerHTML = '<div style="padding:1.2rem;color:#e74c3c;font-size:13px;">Could not read data/subscribers.json. Your subscribers are safe, the studio just cannot authenticate.</div>';
-    } else if (rate) {
-      countEl.textContent = 'GitHub rate limit or permission denied. Wait a minute, then retry.';
-      listEl.innerHTML = '<div style="padding:1.2rem;color:#e74c3c;font-size:13px;">Could not read data/subscribers.json right now.</div>';
+    if (m === '401') {
+      countEl.textContent = 'GitHub token missing or not accepted. Paste your token at the top of the studio.';
+      listEl.innerHTML = '<div style="padding:1.2rem;color:#e74c3c;font-size:13px;">Could not open the subscriber list. Your subscribers are safe, the studio just cannot sign in.</div>';
     } else {
       countEl.textContent = 'Could not load subscribers: ' + m;
-      listEl.innerHTML = '<div style="padding:1.2rem;color:#e74c3c;font-size:13px;">Could not read data/subscribers.json.</div>';
+      listEl.innerHTML = '<div style="padding:1.2rem;color:#e74c3c;font-size:13px;">Could not reach the subscriber list right now. Try again in a minute.</div>';
     }
   }
 }
@@ -5445,18 +5443,18 @@ function renderSubscribers() {
 }
 
 async function deleteSubscriber(i) {
-  if (!confirm('Remove ' + subscribersData[i].email + ' from the list?')) return;
+  var email = subscribersData[i].email;
+  if (!confirm('Remove ' + email + ' from the list?')) return;
   subscribersData.splice(i, 1);
   renderSubscribers();
   try {
-    await githubRequest('data/subscribers.json', 'PUT', {
-      message: 'Remove subscriber',
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(subscribersData, null, 2)))),
-      sha: window._subSHA,
-      branch: GITHUB_BRANCH
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/subscribers/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ email: email })
     });
-    var fresh = await githubRequest('data/subscribers.json', 'GET');
-    window._subSHA = fresh.sha;
+    var data = await resp.json();
+    if (!data.ok) throw new Error(data.error || 'Worker error');
   } catch(e) {
     alert('Could not save the removal: ' + e.message);
     loadSubscribers();
@@ -6226,7 +6224,7 @@ async function applyCorrections(kind) {
   try {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
@@ -6400,7 +6398,7 @@ async function refreshRising(btn) {
   async function doRisingQuery(q) {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
@@ -6938,7 +6936,7 @@ async function generateSocialContent(type, data) {
   try {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
@@ -7067,6 +7065,9 @@ async function saveWelcomeSequence() {
       delay_days: n === 1 ? 0 : n === 2 ? 3 : 7
     };
   });
+  for (var wn = 1; wn <= 3; wn++) {
+    if (seq['email' + wn].subject) seq['email' + wn].html = await buildWelcomeHTML(wn) || '';
+  }
   try {
     var existing = null;
     try {
@@ -7089,26 +7090,29 @@ async function saveWelcomeSequence() {
   }
 }
 
+// Build a welcome email with the same design as the studio preview
+async function buildWelcomeHTML(n) {
+  var ids = ['em-subject','em-heading','em-blurb','em-image','em-btn-text','em-btn-link'];
+  var saved = {};
+  ids.forEach(function(id) { var el = document.getElementById(id); saved[id] = el ? el.value : ''; });
+  function set(id, v) { var el = document.getElementById(id); if (el) el.value = v; }
+  set('em-subject', (document.getElementById('wseq-' + n + '-subject') || {}).value || '');
+  set('em-heading', (document.getElementById('wseq-' + n + '-heading') || {}).value || '');
+  set('em-blurb', (document.getElementById('wseq-' + n + '-body') || {}).value || '');
+  set('em-image', '');
+  set('em-btn-text', (document.getElementById('wseq-' + n + '-btn-text') || {}).value || '');
+  set('em-btn-link', (document.getElementById('wseq-' + n + '-btn-link') || {}).value || '');
+  var html = null;
+  try { html = await buildEmailHTML(1); }
+  finally { ids.forEach(function(id) { set(id, saved[id]); }); }
+  return html;
+}
+
 async function previewWelcomeEmail(n) {
-  var subject = (document.getElementById('wseq-' + n + '-subject') || {}).value || '';
-  var heading = (document.getElementById('wseq-' + n + '-heading') || {}).value || '';
-  var body = (document.getElementById('wseq-' + n + '-body') || {}).value || '';
-  var btnText = (document.getElementById('wseq-' + n + '-btn-text') || {}).value || '';
-  var btnLink = (document.getElementById('wseq-' + n + '-btn-link') || {}).value || '';
-  // Temporarily set email fields and trigger preview
-  var savedSubj = document.getElementById('em-subject').value;
-  var savedHead = document.getElementById('em-heading').value;
-  var savedBlurb = document.getElementById('em-blurb').value;
-  document.getElementById('em-subject').value = subject;
-  document.getElementById('em-heading').value = heading;
-  document.getElementById('em-blurb').value = body;
-  var html = await buildEmailHTML(1);
-  document.getElementById('em-subject').value = savedSubj;
-  document.getElementById('em-heading').value = savedHead;
-  document.getElementById('em-blurb').value = savedBlurb;
+  var html = await buildWelcomeHTML(n);
   if (!html) { alert('Fill in the fields first.'); return; }
   var w = window.open('', '_blank');
-  w.document.write(html);
+  w.document.write(html.replace(/UNSUB_URL/g, '#'));
   w.document.close();
 }
 
@@ -7835,7 +7839,7 @@ async function aiFixAllRecipe() {
   try {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
