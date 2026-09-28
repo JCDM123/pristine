@@ -1650,19 +1650,24 @@ async function pwSubscribe(btn) {
     });
     var data = await resp.json();
     if (data.ok) {
-      btn.textContent = 'Welcome aboard';
-      if (input) { input.value = ''; input.placeholder = 'You are on the list'; }
-      // Every new subscriber gets the free guide straight away
+      // Swap the form for one clear confirmation
+      var light = !!btn.closest('.pw-guide-box');
+      var already = /on the list/i.test(data.message || '');
+      var row = btn.closest('.pw-signup-row') || btn.parentNode;
+      var small = wrap.querySelector('.pw-news-small, .pw-small');
       if (!wrap.querySelector('.pw-guide-ready')) {
-        var light = !!btn.closest('.pw-guide-box');
+        var ink = light ? '#1a1a1a' : '#fff';
         var ready = document.createElement('div');
         ready.className = 'pw-guide-ready';
-        ready.style.cssText = 'margin:1rem 0 0.4rem;';
-        ready.innerHTML = '<p style="font-size:14px;margin:0 0 12px;color:' + (light ? '#1a1a1a' : '#fff') + ';">Thank you for joining us. Your free guide is ready.</p>' +
+        ready.setAttribute('role', 'status');
+        ready.style.cssText = 'margin:0.4rem 0 0.4rem;';
+        ready.innerHTML = '<div class="pw-ready-title" style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-weight:400;font-size:clamp(24px,2.6vw,30px);line-height:1.2;margin:0 0 8px;color:' + ink + ';' + (light ? '' : 'text-shadow:0 1px 12px rgba(0,0,0,0.35);') + '">' + (already ? 'You\'re already one of us.' : 'You\'re in. Welcome to the family.') + '</div>' +
+          '<p style="font-family:Jost,sans-serif;font-size:14px;line-height:1.7;margin:0 0 16px;color:' + ink + ';">' + (already ? 'Your free guide is ready below.' : 'We\'ve sent a welcome email to your inbox. Your free guide is ready below.') + '</p>' +
           '<a href="/downloads/the-essential-pristine-health-guide.pdf" target="_blank" rel="noopener" style="display:inline-block;padding:13px 26px;background:' + (light ? '#8F9574' : '#fff') + ';color:' + (light ? '#fff' : '#1a1a1a') + ';border-radius:4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:Jost,sans-serif;font-weight:500;text-decoration:none;">Download your free guide</a>';
-        var row = btn.closest('.pw-signup-row') || btn.parentNode;
         row.parentNode.insertBefore(ready, row.nextSibling);
       }
+      row.style.display = 'none';
+      if (small) small.style.display = 'none';
     } else {
       btn.textContent = orig;
       btn.disabled = false;
