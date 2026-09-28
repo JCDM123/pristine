@@ -7029,6 +7029,7 @@ async function loadWelcomeSequence() {
     if (!resp.ok) { setWelcomeStatus('No sequence saved yet. Fill in the fields and save.', true); return; }
     var data = await resp.json();
     var seq = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, '')))));
+    window._welcomeSeq = seq; // keeps each email's photo and cards, which have no form fields
     [1,2,3].forEach(function(n) {
       var e = seq['email' + n];
       if (!e) return;
@@ -7066,6 +7067,9 @@ async function saveWelcomeSequence() {
     };
   });
   for (var wn = 1; wn <= 3; wn++) {
+    var extra = welcomeExtra(wn);
+    if (extra.image) seq['email' + wn].image = extra.image;
+    if (extra.cards) seq['email' + wn].cards = extra.cards;
     if (seq['email' + wn].subject) seq['email' + wn].html = await buildWelcomeHTML(wn) || '';
   }
   try {
@@ -7090,6 +7094,23 @@ async function saveWelcomeSequence() {
   }
 }
 
+function welcomeExtra(n) {
+  return ((window._welcomeSeq || {})['email' + n]) || {};
+}
+
+// Photo cards for a welcome email, placed where the body says [[CARDS]]
+function welcomeCardsHTML(cards) {
+  var S = "font-family:'Jost',Helvetica,Arial,sans-serif;", SE = "font-family:'Cormorant Garamond',Georgia,serif;";
+  var rows = cards.map(function(c) {
+    var img = /^https?:/.test(c.img || '') ? c.img : 'https://pristinewellness.com.au/' + (c.img || '');
+    return '<tr><td style="padding:0 0 18px;"><a href="' + escHtml(c.url) + '" style="text-decoration:none;color:inherit;display:block;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;border:1px solid #e8e2d6;border-radius:8px;"><tr>'
+      + '<td class="pwc-img" width="170" valign="top" style="width:170px;padding:0;"><img class="pwc-pic" src="' + escHtml(img) + '" width="170" height="140" alt="" style="display:block;width:170px;height:140px;object-fit:cover;border-radius:8px 0 0 8px;border:0;"></td>'
+      + '<td class="pwc-txt" valign="middle" style="padding:14px 18px;"><p style="margin:0 0 5px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#8F9574;font-weight:500;' + S + '">' + escHtml(c.tag) + '</p><p style="margin:0 0 6px;font-size:20px;line-height:1.2;font-style:italic;color:#111;' + SE + '">' + escHtml(c.title) + '</p><p style="margin:0;font-size:13.5px;line-height:1.6;color:#555;font-weight:300;' + S + '">' + escHtml(c.text) + '</p><p style="margin:8px 0 0;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#6f7558;font-weight:500;' + S + '">Read more &rarr;</p></td>'
+      + '</tr></table></a></td></tr>';
+  }).join('');
+  return '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:4px 0 8px;">' + rows + '</table>';
+}
+
 // Build a welcome email with the same design as the studio preview
 async function buildWelcomeHTML(n) {
   var ids = ['em-subject','em-heading','em-blurb','em-image','em-btn-text','em-btn-link'];
@@ -7099,12 +7120,17 @@ async function buildWelcomeHTML(n) {
   set('em-subject', (document.getElementById('wseq-' + n + '-subject') || {}).value || '');
   set('em-heading', (document.getElementById('wseq-' + n + '-heading') || {}).value || '');
   set('em-blurb', (document.getElementById('wseq-' + n + '-body') || {}).value || '');
-  set('em-image', '');
+  var extra = welcomeExtra(n);
+  set('em-image', extra.image || '');
   set('em-btn-text', (document.getElementById('wseq-' + n + '-btn-text') || {}).value || '');
   set('em-btn-link', (document.getElementById('wseq-' + n + '-btn-link') || {}).value || '');
   var html = null;
   try { html = await buildEmailHTML(1); }
   finally { ids.forEach(function(id) { set(id, saved[id]); }); }
+  if (html && Array.isArray(extra.cards) && extra.cards.length) {
+    html = html.replace(/<p[^>]*>\[\[CARDS\]\]<\/p>/, welcomeCardsHTML(extra.cards))
+      .replace('</head>', '<style>@media only screen and (max-width:480px){.pwc-img{display:block!important;width:100%!important;}.pwc-txt{display:block!important;width:auto!important;}.pwc-pic{width:100%!important;height:170px!important;border-radius:8px 8px 0 0!important;}}</style></head>');
+  }
   return html;
 }
 
