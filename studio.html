@@ -1283,7 +1283,21 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
           <button class="gen-btn" onclick="saveWelcomeSequence()" style="background:var(--forest);">Save Welcome Sequence</button>
           <button class="gen-btn" onclick="previewWelcomeEmail(1)" style="background:var(--sage);">Preview Email 1</button>
         </div>
-        <p style="margin-top:1rem;font-size:12px;color:var(--muted);line-height:1.7;">These emails are saved to your GitHub repo and triggered automatically by the Cloudflare Worker when someone subscribes. Make sure your worker has the welcome sequence endpoint enabled.</p>
+        <p style="margin-top:1rem;font-size:12px;color:var(--muted);line-height:1.7;">Email 1 goes out the moment someone joins. Emails 2 and 3 go out on day 3 and day 7 at about 8am Sydney time. People already on your list are never sent them again unless you press Restart on the Subscribers tab.</p>
+
+        <!-- Send a test -->
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:1.5rem;margin-top:1.5rem;">
+          <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:4px;">Send a test</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Sends the last saved version to any inbox, marked [TEST]. Nobody is added to your list. Save first if you have made changes.</div>
+          <div class="field"><label>Send to</label><input type="email" id="wseq-test-email" placeholder="you@example.com"></div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+            <button class="gen-btn" onclick="sendWelcomeTest('all')" style="background:var(--forest);">Send all 3</button>
+            <button class="gen-btn" onclick="sendWelcomeTest(1)" style="background:var(--sage);">Email 1</button>
+            <button class="gen-btn" onclick="sendWelcomeTest(2)" style="background:var(--sage);">Email 2</button>
+            <button class="gen-btn" onclick="sendWelcomeTest(3)" style="background:var(--sage);">Email 3</button>
+          </div>
+          <div id="wseq-test-status" style="margin-top:0.8rem;font-size:12px;color:var(--muted);"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -5428,6 +5442,7 @@ function renderSubscribers() {
       '<span style="flex:1;color:var(--text);">' + escHtml(sub.email) + '</span>' + statusBadge +
       '<span style="color:var(--muted);font-size:11px;">' + escHtml(sub.source || '') + '</span>' +
       '<span style="color:var(--muted);font-size:11px;">' + escHtml(sub.date || '') + '</span>' +
+      (sub.status === 'unsubscribed' ? '' : '<button onclick="restartWelcome(' + sub._idx + ')" style="background:none;border:none;color:#8F9574;cursor:pointer;font-size:15px;padding:0 4px;" title="Restart welcome emails">&#8635;</button>') +
       '<button onclick="deleteSubscriber(' + sub._idx + ')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:15px;padding:0 4px;" title="Remove">&times;</button>' +
     '</div>';
   }).join('');
@@ -7140,6 +7155,45 @@ async function previewWelcomeEmail(n) {
   var w = window.open('', '_blank');
   w.document.write(html.replace(/UNSUB_URL/g, '#'));
   w.document.close();
+}
+
+async function sendWelcomeTest(n) {
+  var st = document.getElementById('wseq-test-status');
+  var email = ((document.getElementById('wseq-test-email') || {}).value || '').trim();
+  if (!email) { st.style.color = '#c0392b'; st.textContent = 'Type the email address to send the test to.'; return; }
+  if (!getToken()) { st.style.color = '#c0392b'; st.textContent = 'Paste your GitHub token at the top of the studio first.'; return; }
+  st.style.color = 'var(--muted)'; st.textContent = 'Sending...';
+  try {
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/welcome/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ email: email, n: n })
+    });
+    var data = await resp.json();
+    if (resp.status === 401) throw new Error('Your GitHub token was not accepted.');
+    if (data.ok) { st.style.color = '#5a7344'; st.textContent = (n === 'all' ? 'All 3 test emails sent' : 'Test of email ' + n + ' sent') + ' to ' + email + '. Check the inbox and spam folder.'; return; }
+    var why = (data.results || []).filter(function(r) { return !r.ok; }).map(function(r) { return 'Email ' + r.n + ': ' + r.error; }).join(' \u00b7 ');
+    throw new Error(why || data.error || 'Not sent');
+  } catch (e) {
+    st.style.color = '#c0392b'; st.textContent = 'Could not send: ' + e.message;
+  }
+}
+
+async function restartWelcome(i) {
+  var email = subscribersData[i].email;
+  if (!confirm('Send the welcome emails to ' + email + ' again?\n\nEmail 1 goes now, email 2 on day 3 and email 3 on day 7.')) return;
+  try {
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/welcome/restart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ email: email })
+    });
+    var data = await resp.json();
+    if (!data.ok) throw new Error(data.error || 'Not sent');
+    alert('Done. Email 1 is on its way to ' + email + '.');
+  } catch (e) {
+    alert('Could not restart the welcome emails: ' + e.message);
+  }
 }
 
 /* ===== EMAIL REMINDER ===== */
