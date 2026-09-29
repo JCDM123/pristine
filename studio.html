@@ -1858,10 +1858,12 @@ async function generateArticle() {
     'AUDIENCE: health-conscious parents who want to trust you. You are not writing to mates. The register is warm and grounded but composed, like a well-read parent explaining something they have genuinely researched and put into practice. Credible, never blokey, never pub-talk. ' +
     'VOICE: First person plural (we/our/us). Calm, direct, quietly confident. You have done the reading and you are walking the reader through it simply. ' +
     'SENTENCES: Write in full, flowing sentences that connect to each other. Vary the length naturally. NEVER use clipped one-line fragments for effect (avoid things like "That was enough." "The research is there." "We have been there."). If a thought is short, fold it into the sentence around it so the writing breathes rather than stutters. ' +
-    'PLAIN LANGUAGE: Always plain and accessible. When a technical term is genuinely useful, give it one plain handle and then a simple analogy that makes it click, then move on. Do not stack technical clauses back to back. Cut jargon the analogy already explains. ' +
+    'PLAIN LANGUAGE (most important rule): Write at a Year 8 to 9 reading level, even for deep scientific topics. Keep sentences short: aim for an average under 18 words and never more than 28 words in one sentence. Keep the real scientific names (IgA, lactoferrin, cortisol, the microbiome and so on) because they make the writing credible, but every time one appears, explain it straight away in the same or the next sentence the way a parent would explain it to a friend at the kitchen bench, usually with an everyday comparison. Examples: "The main antibody, IgA, works like a coat of paint on the inside of the gut, catching germs before they can get through." "When stress hormones stay high, the body is like an engine revving too high for too long." "A newborn\'s gut is like a new fence with the palings not quite nailed in yet." Use 3 to 5 comparisons like these in a full article, drawn from home, garden, cars, cooking and family life. Never list several technical names in one sentence; if the reader does not need a name, leave it out and describe what it does. Swap jargon for everyday words (newborn deaths not neonatal mortality, strong gut lining not mucosal integrity, calm not modulate). ' +
     'Example of the right level: "When you reach the deepest stage of sleep, your brain runs its own cleaning cycle. Scientists call it the glymphatic system, but you can think of it as a dishwasher for your head: it clears out the waste that builds up through the day." ' +
     'NO CASUAL SLANG: avoid wrecked, out cold, bugs, reckon, mop up, good reason, stuff, gonna, mate. Use composed everyday words instead (exhausted, sound asleep, bacteria, and so on). ' +
     'RESEARCH: This brand proves its claims. Reference the data and studies naturally, but always lead with the plain meaning or a human moment first, then bring the study in as backup (here is what they found, here is what it means for you). Keep numbers only where they genuinely land with impact; otherwise express the finding in plain words (e.g. "nearly doubled their melatonin" rather than exact figures). Every claim that needs evidence keeps its citation. ' +
+    'FAMILY FACTS: Only use family details given in the brief. Never invent what the family did, bought, tried, or which doctors were involved, and never add details such as birth order that were not given. If the brief has little family detail, write as a family who has done the reading ("we found", "what struck us") rather than making up events. ' +
+    'HEALTH CLAIMS: Say plainly what the research and the family\'s experience show, with a citation. Do not promise that anything cures or treats a named disease, and do not tell readers to stop medical care. ' +
     'FAMILY MOMENTS: Weave in real, specific family detail naturally and sparingly: "In our house...", "my wife noticed...", "the kids reckon it looks like...", "we started this when...". Keep these genuine and understated, not performative. ' +
     'PARAGRAPHS: Short, max 3 to 4 sentences, but each a complete connected thought. ' +
     'CALIBRATION: A scientist should nod, a busy parent should understand it immediately. Never preachy, never salesy. ' +
@@ -2014,7 +2016,7 @@ async function generateArticle() {
     article = JSON.parse(JSON.stringify(article).replace(/\u2014/g, ', ').replace(/\u2013/g, '-').replace(/ ,/g, ',').replace(/,  +/g, ', '));
     generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: selectedTags.join(', '), format: format, useCitations: useCitations };
     renderArticlePreview(article, category, readtime, author, dateVal, selectedTags.join(', '));
-    setStatus('a', 'done', 'Article ready');
+    setStatus('a', 'done', 'Article ready' + pwReadingLevelNote(article));
     // Word count from article content
     var wcText = [article.intro || '', article.closing || ''];
     (article.sections || []).forEach(function(s) { wcText.push(s.heading || '', s.content || ''); });
@@ -2031,6 +2033,26 @@ async function generateArticle() {
   }
   btn.disabled = false;
   btn.innerHTML = 'Generate Article';
+}
+
+// Rough reading level of a generated article (Flesch-Kincaid grade), shown when it is ready
+function pwReadingLevel(article) {
+  var parts = [article.intro || ''].concat((article.sections || []).map(function(x) { return x.content || ''; })).concat([article.closing || '']);
+  var text = parts.join(' ').replace(/\[\d+\]/g, '').replace(/<[^>]+>/g, ' ');
+  var sentences = text.split(/[.!?]+\s/).filter(function(x) { return x.trim().split(/\s+/).length > 2; });
+  var words = text.match(/[A-Za-z']+/g) || [];
+  if (!sentences.length || words.length < 50) return null;
+  var syl = 0;
+  words.forEach(function(w) { var v = (w.toLowerCase().match(/[aeiouy]+/g) || []).length; if (/e$/i.test(w) && v > 1) v--; syl += Math.max(1, v); });
+  var grade = 0.39 * words.length / sentences.length + 11.8 * syl / words.length - 15.59;
+  return { grade: Math.round(grade), avg: Math.round(words.length / sentences.length) };
+}
+function pwReadingLevelNote(article) {
+  try {
+    var r = pwReadingLevel(article); if (!r) return '';
+    var ok = r.grade <= 10;
+    return '. Reading level: Year ' + Math.max(1, r.grade) + (ok ? ' (on target)' : ' (above the Year 8 to 9 target, ask Corrections to "simplify to Year 8")') + ', average sentence ' + r.avg + ' words.';
+  } catch (e) { return ''; }
 }
 
 function renderArticlePreview(article, category, readtime, author, dateVal, tagsRaw) {
