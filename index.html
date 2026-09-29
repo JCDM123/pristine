@@ -1576,7 +1576,7 @@ async function pwSubscribe(btn) {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, source: location.pathname.replace('/','').replace('.html','') || 'home', pw_hp: hp ? hp.value : '' })
+      body: JSON.stringify({ email: email, source: location.pathname.replace('/','').replace('.html','') || 'home', pw_hp: hp ? hp.value : '', ref: (window.pwGetRef ? window.pwGetRef() : '') })
     });
     var data = await resp.json();
     if (data.ok) {
