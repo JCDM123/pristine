@@ -1432,7 +1432,7 @@ html body .pw-news-section{max-width:1280px;margin:0 auto;padding:1.5rem 2.5rem 
 
 
 
-<div class="pw-signup pw-guide-box"><div class="pw-guide-cover"><img class="pw-guide-page pw-guide-page-back" src="/images/site/guide-page-light.jpg" alt="" aria-hidden="true" loading="lazy" width="560" height="794"><img class="pw-guide-page pw-guide-page-mid" src="/images/site/guide-page-water.jpg" alt="" aria-hidden="true" loading="lazy" width="560" height="794"><img class="pw-guide-front" src="/images/site/guide-cover.jpg" alt="Cover of The Essential Pristine Health Guide" loading="lazy" width="560" height="794"></div><div class="pw-guide-text"><span class="pw-eyebrow">Free guide</span><h3>The Essential Pristine Health Guide</h3><p>Six changes we believe make the biggest difference to how you feel, with one small thing to try today for each. Free when you join our newsletter.</p><div class="pw-signup-row"><input type="email" placeholder="your@email.com" aria-label="Email address"/><input type="text" name="website" style="position:absolute;left:-9999px;opacity:0;" tabindex="-1" autocomplete="off" aria-hidden="true"><button type="button" onclick="pwSubscribe(this)">Get the free guide</button></div><p class="pw-small">No spam. Unsubscribe anytime. Your details are never shared.</p></div></div>
+<div class="pw-signup pw-guide-box"><div class="pw-guide-cover"><img class="pw-guide-page pw-guide-page-back" src="/images/site/guide-page-light.jpg" alt="" aria-hidden="true" loading="lazy" width="560" height="794"><img class="pw-guide-page pw-guide-page-mid" src="/images/site/guide-page-water.jpg" alt="" aria-hidden="true" loading="lazy" width="560" height="794"><img class="pw-guide-front" src="/images/site/guide-cover.jpg" alt="Cover of The Essential Pristine Health Guide" loading="lazy" width="560" height="794"></div><div class="pw-guide-text"><span class="pw-eyebrow">Free guide</span><h3>The Essential Pristine Health Guide</h3><p>Six changes we believe make the biggest difference to how you feel, with one small thing to try today for each. Free when you join our newsletter.</p><div class="pw-signup-row"><input type="email" placeholder="your@email.com" aria-label="Email address"/><input type="text" name="pw_hp" style="position:absolute;left:-9999px;opacity:0;" tabindex="-1" autocomplete="off" aria-hidden="true" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other"><button type="button" onclick="pwSubscribe(this)">Get the free guide</button></div><p class="pw-small">No spam. Unsubscribe anytime. Your details are never shared.</p></div></div>
 </div>
 
 
@@ -1912,7 +1912,7 @@ function filterCards(btn, cat) {
 async function pwSubscribe(btn) {
   var wrap = btn.closest('.pw-signup') || btn.closest('div[style*="z-index:1"]') || document;
   var input = wrap.querySelector('input[type="email"]');
-  var hp = wrap.querySelector('input[name="website"]');
+  var hp = wrap.querySelector('input[name="pw_hp"]');
   var email = input ? input.value.trim() : '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { if (input) { input.focus(); input.placeholder = 'Please enter your email'; } return; }
   btn.disabled = true;
@@ -1922,7 +1922,7 @@ async function pwSubscribe(btn) {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, source: location.pathname.replace('/','').replace('.html','') || 'home', website: hp ? hp.value : '' })
+      body: JSON.stringify({ email: email, source: location.pathname.replace('/','').replace('.html','') || 'home', pw_hp: hp ? hp.value : '' })
     });
     var data = await resp.json();
     if (data.ok) {
