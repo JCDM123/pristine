@@ -5555,7 +5555,7 @@ async function buildEmailHTML(tplNum) {
       + '<h1 style="margin:0;font-size:38px;line-height:1.15;font-weight:400;font-style:italic;color:#111111;' + SERIF + '">' + escHtml(heading) + '</h1></td></tr>';
   };
   var button = (btnLink && btnText)
-    ? '<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:8px auto 30px;"><tr><td bgcolor="#8F9574" style="background:#8F9574;border-radius:3px;padding:15px 34px;text-align:center;"><a href="' + btnLink + '" style="color:#ffffff;text-decoration:none;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;' + SANS + '">' + escHtml(btnText) + '</a></td></tr></table>'
+    ? '<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="left" style="margin:10px 0 34px;"><tr><td bgcolor="#6F7558" style="background:#6F7558;border-radius:3px;padding:18px 30px;text-align:center;"><a href="' + btnLink + '" style="color:#ffffff;text-decoration:none;font-size:13px;letter-spacing:2px;white-space:nowrap;text-transform:uppercase;font-weight:500;display:inline-block;' + SANS + '">' + escHtml(btnText) + '</a></td></tr></table>'
     : '';
 
   // Handwritten signatures (PNG so Gmail and Outlook show them)
