@@ -5535,12 +5535,14 @@ async function buildEmailHTML(tplNum) {
     return '<p style="margin:0 0 20px;font-size:16px;line-height:1.85;color:#444444;font-weight:300;' + SANS + '">' + escHtml(p.trim()).replace(/\n/g,'<br>') + '</p>';
   }).join('');
 
-  // Logo floats straight on the hero (photo or marble), no white box
+  // Logo floats straight on the hero (photo or marble), no white box.
+  // Centred unless an email asks for it on the left (to keep it off someone's head).
+  var logoAlign = window._emailLogoAlign === 'left' ? 'left' : 'center';
   var logoImg = '<a href="' + SITE + '"><img src="' + SITE + 'images/pw-logo-email.png" alt="Pristine Wellness" width="116" height="116" style="display:block;border:0;width:116px;height:116px;"></a>';
   function bgHero(img, h, inner) {
     return '<tr><td background="' + img + '" bgcolor="#F5F0E8" valign="top" align="center" height="' + h + '" style="background-image:url(\'' + img + '\');background-size:cover;background-position:center;background-color:#F5F0E8;height:' + h + 'px;">'
       + '<!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' + h + 'px;"><v:fill type="frame" src="' + img + '" color="#F5F0E8" /><v:textbox inset="0,0,0,0"><![endif]-->'
-      + '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td align="center" style="padding:36px 20px 0;">' + logoImg + '</td></tr>' + (inner || '') + '</table>'
+      + '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td align="' + logoAlign + '" style="padding:' + (logoAlign === 'left' ? '28px 28px 0' : '36px 20px 0') + ';">' + logoImg + '</td></tr>' + (inner || '') + '</table>'
       + '<!--[if gte mso 9]></v:textbox></v:rect><![endif]-->'
       + '</td></tr>';
   }
@@ -7043,7 +7045,8 @@ async function loadWelcomeSequence() {
     var resp = await fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/data/welcome-sequence.json', {
       headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
     });
-    if (!resp.ok) { setWelcomeStatus('No sequence saved yet. Fill in the fields and save.', true); return; }
+    if (resp.status === 404) { setWelcomeStatus('No sequence saved yet. Fill in the fields and save.', true); return; }
+    if (!resp.ok) { setWelcomeStatus('Could not load your saved emails (' + (resp.status === 401 ? 'GitHub token not accepted' : 'error ' + resp.status) + '). They are still sending. Do not save until they load.', false); return; }
     var data = await resp.json();
     var seq = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/[\r\n]/g, '')))));
     window._welcomeSeq = seq; // keeps each email's photo and cards, which have no form fields
@@ -7071,6 +7074,14 @@ function setWelcomeStatus(msg, ok) {
 async function saveWelcomeSequence() {
   var token = getToken();
   if (!token) { setWelcomeStatus('No GitHub token set.', false); return; }
+  // Never overwrite the live emails with blank ones (for example if they failed to load)
+  var missing = [];
+  [1,2,3].forEach(function(n) {
+    ['subject','heading','body'].forEach(function(f) {
+      if (!((document.getElementById('wseq-' + n + '-' + f) || {}).value || '').trim()) missing.push('Email ' + n + ' ' + f);
+    });
+  });
+  if (missing.length) { setWelcomeStatus('Not saved: ' + missing.join(', ') + ' is empty. Your live emails are unchanged.', false); return; }
   setWelcomeStatus('Saving...', null);
   var seq = {};
   [1,2,3].forEach(function(n) {
@@ -7087,6 +7098,7 @@ async function saveWelcomeSequence() {
     var extra = welcomeExtra(wn);
     if (extra.image) seq['email' + wn].image = extra.image;
     if (extra.cards) seq['email' + wn].cards = extra.cards;
+    if (extra.logo_align) seq['email' + wn].logo_align = extra.logo_align;
     if (seq['email' + wn].subject) seq['email' + wn].html = await buildWelcomeHTML(wn) || '';
   }
   try {
@@ -7142,8 +7154,9 @@ async function buildWelcomeHTML(n) {
   set('em-btn-text', (document.getElementById('wseq-' + n + '-btn-text') || {}).value || '');
   set('em-btn-link', (document.getElementById('wseq-' + n + '-btn-link') || {}).value || '');
   var html = null;
+  window._emailLogoAlign = extra.logo_align || '';
   try { html = await buildEmailHTML(1); }
-  finally { ids.forEach(function(id) { set(id, saved[id]); }); }
+  finally { ids.forEach(function(id) { set(id, saved[id]); }); window._emailLogoAlign = ''; }
   if (html && Array.isArray(extra.cards) && extra.cards.length) {
     html = html.replace(/<p[^>]*>\[\[CARDS\]\]<\/p>/, welcomeCardsHTML(extra.cards))
       .replace('</head>', '<style>@media only screen and (max-width:480px){.pwc-img{display:block!important;width:100%!important;}.pwc-txt{display:block!important;width:auto!important;}.pwc-pic{width:100%!important;height:170px!important;border-radius:8px 8px 0 0!important;}}</style></head>');
