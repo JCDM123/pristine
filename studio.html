@@ -348,6 +348,7 @@ sup.cite:hover { text-decoration:underline; }
 <option value="reminder" data-onclick="switchTab(&#39;reminder&#39;,null);loadReminderSettings()">Email Reminder</option>
 <option value="socialfeed" data-onclick="switchTab(&#39;socialfeed&#39;,null);loadSocialFeed()">Social Feed</option>
 <option value="experiment" data-onclick="switchTab(&#39;experiment&#39;,null);loadExperimentEntries()">Experiment</option>
+<option value="qr" data-onclick="switchTab(&#39;qr&#39;,null);loadQrCodes()">QR Codes</option>
           <option value="analytics">Analytics</option>
 </select>
 <div class="studio-tabs">
@@ -363,6 +364,7 @@ sup.cite:hover { text-decoration:underline; }
     <button class="tab-btn" onclick="switchTab('reminder',this);loadReminderSettings()">Email Reminder</button>
     <button class="tab-btn" onclick="switchTab('socialfeed',this);loadSocialFeed()">Social Feed</button>
     <button class="tab-btn" onclick="switchTab('experiment',this);loadExperimentEntries()">Experiment</button>
+    <button class="tab-btn" onclick="switchTab('qr',this);loadQrCodes()">QR Codes</button>
         <button class="tab-btn" onclick="switchTab('analytics',this)">Analytics</button>
   </div>
 
@@ -422,6 +424,41 @@ sup.cite:hover { text-decoration:underline; }
     </div>
 
   
+  <div id="tab-qr" class="tab-panel">
+    <div class="form-card">
+      <h2 style="margin-bottom:2px;">QR codes and tracked links</h2>
+      <p class="subtitle" style="margin:0 0 1.4rem;">Make a code, print it, and see what is biting: scans and newsletter signups for every code and every place you leave it.</p>
+      <div id="qr-form">
+        <input type="hidden" id="qr-id">
+        <div class="field"><label>Label *</label><input type="text" id="qr-label" maxlength="80" placeholder="Berry jar card, Harris Farm noticeboard..."></div>
+        <div class="field"><label>Where should it go?</label><input type="text" id="qr-dest" list="qr-pages" placeholder="Pick a page, or paste a full https:// address" value="index.html"><datalist id="qr-pages"></datalist></div>
+        <div class="field"><label>Text on the printed card</label><input type="text" id="qr-card" maxlength="60" placeholder="Scan to follow along"></div>
+        <div class="field"><label>Welcome message (optional)</label><input type="text" id="qr-welcome" maxlength="120" placeholder="Welcome! You found us through the berry jar experiment."><div style="font-size:11px;color:var(--muted);margin-top:4px;">Shown in a small banner when someone arrives from this code.</div></div>
+        <div class="field"><label>Notes (where it is, when printed)</label><input type="text" id="qr-notes" maxlength="300" placeholder="Harris Farm noticeboard, printed 12 Oct"></div>
+        <details id="qr-more" style="margin-bottom:1.2rem;"><summary style="cursor:pointer;font-size:12px;color:var(--muted);letter-spacing:1px;">MORE OPTIONS</summary>
+          <div style="padding-top:1rem;">
+            <div class="field" id="qr-count-field"><label>How many? (a numbered set, one per place you leave them)</label><input type="number" id="qr-count" min="1" max="50" value="1" style="max-width:120px;"></div>
+            <div class="field"><label>Test group (optional)</label><input type="text" id="qr-group" maxlength="40" placeholder="Card designs, October"><div style="font-size:11px;color:var(--muted);margin-top:4px;">Codes with the same group name are compared side by side.</div></div>
+            <div class="field"><label>Switch on this date (optional)</label><input type="date" id="qr-switch-date" style="max-width:200px;"></div>
+            <div class="field"><label>From that date, go to</label><input type="text" id="qr-switch-dest" list="qr-pages" placeholder="index.html"></div>
+          </div>
+        </details>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
+          <button class="gen-btn" id="qr-save-btn" onclick="saveQrCode()" style="background:var(--forest);">Create QR code</button>
+          <button class="trend-refresh-btn" id="qr-cancel-btn" onclick="resetQrForm()" style="display:none;">Cancel</button>
+          <span id="qr-status" style="font-size:12px;color:var(--muted);"></span>
+        </div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <h2 style="margin:0;">Your codes</h2>
+        <button class="trend-refresh-btn" onclick="loadQrCodes()">Refresh</button>
+      </div>
+      <div id="qr-list"><div style="color:var(--muted);font-size:13px;">Open this tab to load your codes.</div></div>
+    </div>
+  </div>
+
   <div id="tab-subscribers" class="tab-panel">
     <div class="form-card">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
@@ -5465,7 +5502,7 @@ function renderSubscribers() {
     return '<div style="display:flex;align-items:center;gap:1rem;padding:10px 14px;border-bottom:0.5px solid var(--border);font-size:13px;' + rowOpacity + '">' +
       cb +
       '<span style="flex:1;color:var(--text);">' + escHtml(sub.email) + '</span>' + statusBadge +
-      '<span style="color:var(--muted);font-size:11px;">' + escHtml(sub.source || '') + '</span>' +
+      '<span style="color:var(--muted);font-size:11px;">' + escHtml(sub.source || '') + (sub.ref ? ' &middot; <span style="color:#5a7344;">' + escHtml(sub.ref.replace(/^qr:/, 'QR: ')) + '</span>' : '') + '</span>' +
       '<span style="color:var(--muted);font-size:11px;">' + escHtml(sub.date || '') + '</span>' +
       (sub.status === 'unsubscribed' ? '' : '<button onclick="restartWelcome(' + sub._idx + ')" style="background:none;border:none;color:#8F9574;cursor:pointer;font-size:15px;padding:0 4px;" title="Restart welcome emails">&#8635;</button>') +
       '<button onclick="deleteSubscriber(' + sub._idx + ')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:15px;padding:0 4px;" title="Remove">&times;</button>' +
@@ -8805,6 +8842,220 @@ async function seSaveText() {
     seSetStatus('Not saved: ' + e.message, true);
   }
   if (btn) btn.disabled = false;
+}
+</script>
+<script src="pw-qrcode-lib.js"></script>
+<script src="pw-qr.js"></script>
+<script>
+/* ===== QR CODES AND TRACKED LINKS ===== */
+var PW_API = 'https://pristine-api.jc-a7f.workers.dev';
+var PW_GO = 'https://pristinewellness.com.au/go/';
+var qrData = [];
+var qrLogoInner = null;
+
+async function qrApi(path, body) {
+  if (!getToken()) throw new Error('Paste your GitHub token at the top of the studio first.');
+  var resp = await fetch(PW_API + path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() }, body: JSON.stringify(body || {}) });
+  if (resp.status === 401) throw new Error('Your GitHub token was not accepted.');
+  var data = await resp.json();
+  if (!data.ok) throw new Error(data.error || 'Something went wrong');
+  return data;
+}
+
+async function qrLogo() {
+  if (qrLogoInner !== null) return qrLogoInner;
+  try {
+    var t = await (await fetch('images/site/logo.svg')).text();
+    qrLogoInner = t.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+  } catch (e) { qrLogoInner = ''; }
+  return qrLogoInner;
+}
+
+function qrStatus(msg, bad) { var el = document.getElementById('qr-status'); el.style.color = bad ? '#c0392b' : 'var(--muted)'; el.textContent = msg; }
+
+async function qrFillPages() {
+  var dl = document.getElementById('qr-pages');
+  if (!dl || dl.children.length) return;
+  var pages = [['index.html', 'Homepage'], ['experiment.html', 'The Experiment'], ['the-source.html', 'The Source'], ['ancestral-kitchen.html', 'Ancestral Kitchen'], ['about.html', 'About']];
+  try { (await (await fetch('data/search-index.json?cb=' + Date.now())).json()).forEach(function (d) { pages.push([d.url, d.title]); }); } catch (e) {}
+  dl.innerHTML = pages.map(function (p) { return '<option value="' + escHtml(p[0]) + '">' + escHtml(p[1]) + '</option>'; }).join('');
+}
+
+async function loadQrCodes() {
+  qrFillPages();
+  var el = document.getElementById('qr-list');
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;">Loading...</div>';
+  try {
+    qrData = (await qrApi('/qr/list')).codes || [];
+    await qrLogo();
+    renderQrCodes();
+  } catch (e) {
+    el.innerHTML = '<div style="color:#c0392b;font-size:13px;">Could not load your codes: ' + escHtml(e.message) + '</div>';
+  }
+}
+
+function qrBtn(label, fn, bg) {
+  return '<button onclick="' + fn + '" style="background:' + (bg || '#fff') + ';color:' + (bg ? '#fff' : '#1a1a1a') + ';border:0.5px solid var(--border);cursor:pointer;font-size:9px;letter-spacing:1px;padding:5px 9px;border-radius:4px;font-family:Jost,sans-serif;">' + label + '</button>';
+}
+
+function qrDaysBars(days) {
+  var out = '', max = 1, list = [];
+  for (var i = 13; i >= 0; i--) {
+    var d = new Date(Date.now() - i * 86400000).toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+    list.push([d, (days || {})[d] || 0]);
+  }
+  list.forEach(function (x) { if (x[1] > max) max = x[1]; });
+  list.forEach(function (x) { out += '<span title="' + x[0] + ': ' + x[1] + ' scans" style="display:inline-block;width:8px;margin-right:2px;background:' + (x[1] ? '#8F9574' : '#e8e4dc') + ';height:' + Math.max(3, Math.round(x[1] / max * 28)) + 'px;vertical-align:bottom;border-radius:1px;"></span>'; });
+  return '<div style="height:30px;display:flex;align-items:flex-end;" title="Last 14 days">' + out + '</div>';
+}
+
+function qrTally(obj) {
+  var e = Object.entries(obj || {}).sort(function (a, b) { return b[1] - a[1]; });
+  return e.length ? e.map(function (x) { return escHtml(x[0]) + ' ' + x[1]; }).join(', ') : 'none yet';
+}
+
+function qrRow(c) {
+  var i = qrData.indexOf(c);
+  var svg = PWQR.svg(PW_GO + c.id, qrLogoInner, { px: 64 });
+  var last = c.last ? new Date(c.last).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }) : 'never';
+  return '<div style="border-top:0.5px solid var(--border);padding:14px 0;' + (c.retired ? 'opacity:0.5;' : '') + '">' +
+    '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">' +
+      '<div style="width:64px;height:64px;flex-shrink:0;">' + svg + '</div>' +
+      '<div style="flex:1;min-width:200px;">' +
+        '<div style="font-size:14px;font-weight:500;color:#1a1a1a;">' + escHtml(c.label) + (c.retired ? ' <span style="font-size:9px;letter-spacing:1px;background:#f3e0dd;color:#a04438;padding:2px 7px;border-radius:10px;">RETIRED</span>' : '') + '</div>' +
+        '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + escHtml(PW_GO.replace('https://', '') + c.id) + ' &rarr; ' + escHtml(String(c.now_dest).replace('https://pristinewellness.com.au/', '')) + (c.switch_date ? ' (switches ' + escHtml(c.switch_date) + ')' : '') + '</div>' +
+        (c.notes ? '<div style="font-size:11px;color:#5a7344;margin-top:2px;">' + escHtml(c.notes) + '</div>' : '') +
+      '</div>' +
+      '<div style="text-align:right;min-width:170px;">' +
+        '<div style="font-size:13px;color:#1a1a1a;"><strong>' + c.scans + '</strong> scans &middot; <strong>' + c.week + '</strong> this week &middot; <strong>' + c.signups + '</strong> signups</div>' +
+        '<div style="font-size:11px;color:var(--muted);">Last scan: ' + last + '</div>' + qrDaysBars(c.days) +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">' +
+      qrBtn('COPY LINK', 'qrCopy(' + i + ', this)') + qrBtn('SVG', 'qrDownload(' + i + ', \'svg\')') + qrBtn('PNG', 'qrDownload(' + i + ', \'png\')') +
+      qrBtn('CARD', 'qrDownload(' + i + ', \'card\')') + qrBtn('HALF CARD', 'qrDownload(' + i + ', \'half\')') +
+      qrBtn('EDIT', 'editQrCode(' + i + ')', '#1a1a1a') + qrBtn(c.retired ? 'BRING BACK' : 'RETIRE', 'retireQrCode(' + i + ')', c.retired ? '#7a8163' : '#b36b5e') +
+      '<details style="font-size:11px;color:var(--muted);"><summary style="cursor:pointer;padding:5px 0;">details</summary>Phone vs computer: ' + qrTally(c.device) + '<br>Where: ' + qrTally(c.region) + (c.welcome ? '<br>Welcome message: ' + escHtml(c.welcome) : '') + (c.card_text ? '<br>Card text: ' + escHtml(c.card_text) : '') + '<br>Created ' + escHtml(c.created || '') + '</details>' +
+    '</div></div>';
+}
+
+function renderQrCodes() {
+  var el = document.getElementById('qr-list');
+  if (!qrData.length) { el.innerHTML = '<div style="color:var(--muted);font-size:13px;">No codes yet. Make your first one above.</div>'; return; }
+  var groups = {}, html = '';
+  qrData.forEach(function (c) { if (c.group) (groups[c.group] = groups[c.group] || []).push(c); });
+  Object.keys(groups).forEach(function (g) {
+    var list = groups[g].slice().sort(function (a, b) { return b.signups - a.signups || b.scans - a.scans; });
+    if (list.length < 2) return;
+    var tot = list.reduce(function (a, c) { return a + c.scans; }, 0), sig = list.reduce(function (a, c) { return a + c.signups; }, 0);
+    html += '<div style="background:#f8f9f6;border:0.5px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:14px;">' +
+      '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;"><div style="font-size:14px;font-weight:500;">' + escHtml(g) + ' <span style="color:var(--muted);font-weight:400;font-size:12px;">' + list.length + ' codes &middot; ' + tot + ' scans &middot; ' + sig + ' signups</span></div>' +
+      qrBtn('PRINT SHEET (A4)', 'qrSheet(\'' + escHtml(g).replace(/'/g, '\\\'') + '\')', 'var(--forest)') + '</div>' +
+      '<table style="width:100%;font-size:12px;margin-top:10px;border-collapse:collapse;">' + list.map(function (c, k) {
+        return '<tr style="border-top:0.5px solid var(--border);"><td style="padding:5px 0;">' + (k === 0 && (c.signups || c.scans) ? '&#9733; ' : '') + escHtml(c.label) + (c.notes ? ' <span style="color:var(--muted);">(' + escHtml(c.notes) + ')</span>' : '') + '</td><td style="text-align:right;">' + c.scans + ' scans</td><td style="text-align:right;width:90px;">' + c.signups + ' signups</td></tr>';
+      }).join('') + '</table></div>';
+  });
+  html += qrData.slice().sort(function (a, b) { return (a.retired - b.retired) || String(b.created).localeCompare(String(a.created)); }).map(qrRow).join('');
+  el.innerHTML = html;
+}
+
+function qrFormValues() {
+  var v = function (id) { return (document.getElementById(id).value || '').trim(); };
+  return { id: v('qr-id'), label: v('qr-label'), dest: v('qr-dest') || 'index.html', card_text: v('qr-card'), welcome: v('qr-welcome'), notes: v('qr-notes'),
+    group: v('qr-group'), switch_date: v('qr-switch-date'), switch_dest: v('qr-switch-dest'), count: parseInt(v('qr-count'), 10) || 1 };
+}
+
+async function saveQrCode() {
+  var f = qrFormValues();
+  if (!f.label) { qrStatus('Give the code a label first.', true); return; }
+  var btn = document.getElementById('qr-save-btn'); btn.disabled = true;
+  qrStatus('Saving...');
+  try {
+    if (!f.id && f.count > 1) {
+      var made = await qrApi('/qr/batch', f);
+      qrStatus(made.codes.length + ' numbered codes made. Use PRINT SHEET on the group below to print them.');
+    } else {
+      if (f.id) { var cur = qrData.find(function (c) { return c.id === f.id; }); f.retired = cur ? cur.retired : false; }
+      await qrApi('/qr/save', f);
+      qrStatus(f.id ? 'Saved. Printed codes now go to the new page.' : 'Made. Download it below.');
+    }
+    resetQrForm(true);
+    await loadQrCodes();
+  } catch (e) { qrStatus('Not saved: ' + e.message, true); }
+  btn.disabled = false;
+}
+
+function resetQrForm(keepStatus) {
+  ['qr-id', 'qr-label', 'qr-card', 'qr-welcome', 'qr-notes', 'qr-group', 'qr-switch-date', 'qr-switch-dest'].forEach(function (id) { document.getElementById(id).value = ''; });
+  document.getElementById('qr-dest').value = 'index.html';
+  document.getElementById('qr-count').value = 1;
+  document.getElementById('qr-count-field').style.display = '';
+  document.getElementById('qr-save-btn').textContent = 'Create QR code';
+  document.getElementById('qr-cancel-btn').style.display = 'none';
+  if (!keepStatus) qrStatus('');
+}
+
+function editQrCode(i) {
+  var c = qrData[i];
+  document.getElementById('qr-id').value = c.id;
+  document.getElementById('qr-label').value = c.label;
+  document.getElementById('qr-dest').value = String(c.dest).replace('https://pristinewellness.com.au/', '');
+  document.getElementById('qr-card').value = c.card_text || '';
+  document.getElementById('qr-welcome').value = c.welcome || '';
+  document.getElementById('qr-notes').value = c.notes || '';
+  document.getElementById('qr-group').value = c.group || '';
+  document.getElementById('qr-switch-date').value = c.switch_date || '';
+  document.getElementById('qr-switch-dest').value = String(c.switch_dest || '').replace('https://pristinewellness.com.au/', '');
+  document.getElementById('qr-count-field').style.display = 'none';
+  if (c.group || c.switch_date) document.getElementById('qr-more').open = true;
+  document.getElementById('qr-save-btn').textContent = 'Save changes';
+  document.getElementById('qr-cancel-btn').style.display = '';
+  qrStatus('Editing "' + c.label + '". The printed code stays the same.');
+  document.getElementById('tab-qr').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function retireQrCode(i) {
+  var c = qrData[i];
+  var msg = c.retired ? 'Bring "' + c.label + '" back? Scans will count again.' : 'Retire "' + c.label + '"?\n\nAnyone who scans it later lands on your homepage. You can bring it back any time.';
+  if (!confirm(msg)) return;
+  try {
+    await qrApi('/qr/save', { id: c.id, label: c.label, dest: c.dest, card_text: c.card_text, welcome: c.welcome, notes: c.notes, group: c.group, switch_date: c.switch_date, switch_dest: c.switch_dest, retired: !c.retired });
+    await loadQrCodes();
+  } catch (e) { alert('Could not update: ' + e.message); }
+}
+
+function qrCopy(i, btn) {
+  try { navigator.clipboard.writeText(PW_GO + qrData[i].id); } catch (e) {}
+  btn.textContent = 'COPIED';
+  setTimeout(function () { btn.textContent = 'COPY LINK'; }, 1500);
+}
+
+function qrSave(name, blob) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+}
+function qrCanvasBlob(c) { return new Promise(function (res) { c.toBlob(res, 'image/png'); }); }
+
+async function qrDownload(i, kind) {
+  var c = qrData[i], url = PW_GO + c.id, logo = await qrLogo(), name = 'pristine-qr-' + c.id;
+  try {
+    if (kind === 'svg') qrSave(name + '.svg', new Blob([PWQR.svg(url, logo, { px: 1000 })], { type: 'image/svg+xml' }));
+    else if (kind === 'png') qrSave(name + '.png', await qrCanvasBlob(await PWQR.qrPngCanvas(url, logo, 2000)));
+    else qrSave(name + (kind === 'card' ? '-card' : '-half-card') + '-300dpi.png', await qrCanvasBlob(await PWQR.cardCanvas(kind, c, logo, url)));
+  } catch (e) { alert('Could not make the download: ' + e.message); }
+}
+
+// A4 sheets of half cards for every code in a group, 20 per sheet
+async function qrSheet(group) {
+  var list = qrData.filter(function (c) { return c.group === group && !c.retired; });
+  list.sort(function (a, b) { return String(a.label).localeCompare(String(b.label), undefined, { numeric: true }); });
+  var logo = await qrLogo();
+  for (var s = 0; s < list.length; s += 20) {
+    var cv = await PWQR.sheetCanvas(list.slice(s, s + 20), logo, function (c) { return PW_GO + c.id; });
+    qrSave('pristine-qr-' + group.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-sheet-' + (s / 20 + 1) + '-a4-300dpi.png', await qrCanvasBlob(cv));
+  }
 }
 </script>
 </body>
