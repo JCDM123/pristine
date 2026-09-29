@@ -2778,9 +2778,11 @@ async function publishArticle() {
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token at the top of the page.'); return; }
 
-  var btn = document.getElementById('a-pub-btn');
+  // A private preview shows its progress on its own button, so Publish to Site never looks like it fired
+  var btn = document.getElementById(PW_PUBLISH_MODE === 'preview' ? 'a-preview-btn' : 'a-pub-btn');
+  var btnLabel = btn.textContent;
   btn.disabled = true;
-  btn.textContent = 'Publishing...';
+  btn.textContent = PW_PUBLISH_MODE === 'preview' ? 'Saving preview...' : 'Publishing...';
   setStatus('a', 'active', PW_PUBLISH_MODE === 'preview' ? 'Creating private preview...' : 'Publishing to GitHub...');
 
   var articleUploaded = false;
@@ -2792,7 +2794,7 @@ async function publishArticle() {
     var filename = 'article-' + slug + '.html';
     if (!(await confirmSafeToReplace(filename, article.title))) {
       setStatus('a', 'error', 'Not published. Change the title so it does not replace the other story, then publish again.');
-      btn.disabled = false; btn.textContent = 'Publish';
+      btn.disabled = false; btn.textContent = btnLabel;
       return;
     }
 
@@ -2849,7 +2851,7 @@ async function publishArticle() {
     if (!articleImagePath && articleImageBase64) {
       setStatus('a', 'error', 'Image still uploading. Wait a moment and try again, or remove the image.');
       btn.disabled = false;
-      btn.textContent = 'Publish';
+      btn.textContent = btnLabel;
       return;
     }
     var bgStyle = articleImagePath
@@ -2888,7 +2890,7 @@ async function publishArticle() {
       await pwSavePreview('article', filename, fullHTML, { title: article.title, tags: tags, author: d.author || 'Mr Wellness', category: d.category });
       pwResetSponsor('a');
       setStatus('a', 'done', 'Private preview ready: ' + PW_SITE + filename + ' (not listed anywhere). Find it under Manage, Private previews.');
-      btn.disabled = false; btn.textContent = 'Publish to Site';
+      btn.disabled = false; btn.textContent = btnLabel;
       return;
     }
 
@@ -3040,14 +3042,14 @@ async function publishArticle() {
     for (var bi = 0; bi < articleBodyImages.length; bi++) { if (articleBodyImages[bi]) clearBodyImg(bi, 'article'); }
     setTimeout(function() {
       btn.disabled = false;
-      btn.textContent = 'Publish to Site';
+      btn.textContent = btnLabel;
       btn.style.background = 'var(--forest)';
     }, 4000);
 
   } catch(err) {
     setStatus('a', 'error', 'Publish failed: ' + err.message + (articleUploaded ? ' The article file was saved but The Source was not updated. Click Publish again to finish.' : ''));
     btn.disabled = false;
-    btn.textContent = 'Publish to Site';
+    btn.textContent = btnLabel;
     btn.style.background = 'var(--forest)';
   }
 }
@@ -3372,9 +3374,11 @@ async function publishRecipe() {
     }
   }
 
-  var btn = document.getElementById('r-pub-btn');
+  // A private preview shows its progress on its own button, so Publish to Site never looks like it fired
+  var btn = document.getElementById(PW_PUBLISH_MODE === 'preview' ? 'r-preview-btn' : 'r-pub-btn');
+  var btnLabel = btn.textContent;
   btn.disabled = true;
-  btn.textContent = 'Publishing...';
+  btn.textContent = PW_PUBLISH_MODE === 'preview' ? 'Saving preview...' : 'Publishing...';
   setStatus('r', 'active', 'Publishing to GitHub...');
 
   try {
@@ -3451,14 +3455,14 @@ async function publishRecipe() {
 
     if (!(await confirmSafeToReplace(filename, recipe.title))) {
       setStatus('r', 'error', 'Not published. Change the recipe name so it does not replace the other recipe, then publish again.');
-      btn.disabled = false; btn.textContent = 'Publish to Site';
+      btn.disabled = false; btn.textContent = btnLabel;
       return;
     }
     if (PW_PUBLISH_MODE === 'preview') {
       await pwSavePreview('recipe', filename, built.html, { title: recipe.title, tags: tags, author: d.author || 'Mr Wellness', category: d.category, prep: d.prep, cook: d.cook });
       pwResetSponsor('r');
       setStatus('r', 'done', 'Private preview ready: ' + PW_SITE + filename + ' (not listed anywhere). Find it under Manage, Private previews.');
-      btn.disabled = false; btn.textContent = 'Publish to Site';
+      btn.disabled = false; btn.textContent = btnLabel;
       return;
     }
 
@@ -3472,7 +3476,7 @@ async function publishRecipe() {
     if (!recipeImagePath && recipeImageBase64) {
       setStatus('r', 'error', 'Image still uploading. Wait a moment and try again.');
       btn.disabled = false;
-      btn.textContent = 'Publish to Site';
+      btn.textContent = btnLabel;
       return;
     }
     var cardImg = recipeImagePath
@@ -3628,7 +3632,7 @@ async function publishRecipe() {
   } catch(err) {
     setStatus('r', 'error', 'Publish failed: ' + err.message);
     btn.disabled = false;
-    btn.textContent = 'Publish to Site';
+    btn.textContent = btnLabel;
     btn.style.background = 'var(--forest)';
   }
 }
