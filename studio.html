@@ -8110,7 +8110,7 @@ async function aiFixAllRecipe() {
     <div style="padding:1rem 1.8rem;border-bottom:0.5px solid var(--border);flex-shrink:0;">
       <input type="text" id="img-picker-search" placeholder="Filter images..." oninput="filterPickerImages(this.value)" style="width:100%;padding:8px 12px;border:0.5px solid var(--border);border-radius:4px;font-size:13px;font-family:'Jost',sans-serif;outline:none;box-sizing:border-box;">
     </div>
-    <div id="img-picker-grid" style="padding:1.4rem 1.8rem;overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+    <div id="img-picker-grid" style="padding:1.4rem 1.8rem;overflow-y:auto;flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));grid-auto-rows:max-content;align-content:start;gap:12px;">
       <div style="color:var(--muted);font-size:13px;grid-column:1/-1;">Loading images...</div>
     </div>
   </div>
@@ -8189,7 +8189,7 @@ async function aiFixAllRecipe() {
     <div style="padding:1rem 1.8rem;border-bottom:0.5px solid var(--border);flex-shrink:0;">
       <input type="text" id="img-picker-search" placeholder="Filter images..." oninput="filterPickerImages(this.value)" style="width:100%;padding:8px 12px;border:0.5px solid var(--border);border-radius:4px;font-size:13px;font-family:'Jost',sans-serif;outline:none;box-sizing:border-box;">
     </div>
-    <div id="img-picker-grid" style="padding:1.4rem 1.8rem;overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+    <div id="img-picker-grid" style="padding:1.4rem 1.8rem;overflow-y:auto;flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));grid-auto-rows:max-content;align-content:start;gap:12px;">
       <div style="color:var(--muted);font-size:13px;grid-column:1/-1;">Loading images...</div>
     </div>
   </div>
