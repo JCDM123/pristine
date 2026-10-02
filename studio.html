@@ -4966,7 +4966,7 @@ function renderSlidesEditor() {
     // Only show hero text fields on first slide (shared across all)
     if (i === 0) {
       html += '<div class="slide-field-group"><span class="slide-field-label">Eyebrow text</span><input class="field" id="slide-eyebrow" value="' + escHtml(slide.eyebrow) + '" placeholder="Pristine Wellness"></div>';
-      html += '<div class="slide-field-group"><span class="slide-field-label">Headline (use \\n for line breaks)</span><input class="field" id="slide-headline" value="' + escHtml(String(slide.headline || '').replace(/\n/g, '\\n')) + '" placeholder="Live the way..."></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Headline (press Enter to start a new line, it shows the same way on the site)</span><textarea class="field" id="slide-headline" rows="3" style="min-height:0;line-height:1.4;" placeholder="Live the way...">' + escHtml(String(slide.headline || '')) + '</textarea></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Subheading</span><input class="field" id="slide-sub" value="' + escHtml(slide.sub) + '" placeholder="Subheading text"></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA text</span><input class="field" id="slide-cta1text" value="' + escHtml(slide.cta1text) + '"></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA link</span><input class="field" id="slide-cta1href" value="' + escHtml(slide.cta1href) + '"></div>';
@@ -5063,7 +5063,7 @@ function collectSlideTextFields() {
   var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
   var text = {
     eyebrow: get('slide-eyebrow'),
-    headline: get('slide-headline').replace(/\\n/g, '\n'),
+    headline: get('slide-headline').replace(/\r\n?/g, '\n').replace(/\\n/g, '\n'), // real line breaks, and the old \n code still works
     sub: get('slide-sub'),
     cta1text: get('slide-cta1text'),
     cta1href: get('slide-cta1href'),
