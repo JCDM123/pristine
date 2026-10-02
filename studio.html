@@ -263,6 +263,21 @@ sup.cite:hover { text-decoration:underline; }
 .slide-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;}
 .slide-card-title{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;}
 .slide-img-preview{width:100%;height:160px;object-fit:cover;border-radius:6px;display:block;margin-bottom:0.8rem;background:#eee;}
+/* Focal point picker: tap the photo to choose the spot that must stay in view */
+.pw-focal{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:1rem;}
+.pw-focal-pick{position:relative;flex:1 1 300px;max-width:440px;cursor:crosshair;border-radius:6px;overflow:hidden;background:#eee;align-self:flex-start;}
+.pw-focal-pick img{width:100%;height:auto;display:block;}
+.pw-focal-dot{position:absolute;width:22px;height:22px;border:2px solid #fff;border-radius:50%;background:rgba(143,149,116,0.75);box-shadow:0 0 0 2px rgba(0,0,0,0.35);transform:translate(-50%,-50%);pointer-events:none;left:50%;top:50%;}
+.pw-focal-side{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;flex:1 1 260px;}
+.pw-focal-view{position:relative;border-radius:8px;overflow:hidden;background:#333 center/cover no-repeat;box-shadow:0 2px 10px rgba(0,0,0,0.15);}
+.pw-focal-view.phone{width:120px;height:240px;}
+.pw-focal-view.desk{width:240px;height:135px;}
+.pw-focal-view:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,15,5,0.2) 0%,rgba(5,15,5,0.05) 30%,rgba(5,15,5,0.5) 65%,rgba(5,15,5,0.85) 100%);}
+.pw-focal-text{position:absolute;left:8%;right:6%;z-index:1;color:#fff;font-family:"Cormorant Garamond",serif;font-style:italic;line-height:0.9;letter-spacing:-0.5px;white-space:pre-line;}
+.pw-focal-view.phone .pw-focal-text{top:22%;font-size:20px;}
+.pw-focal-view.desk .pw-focal-text{top:11%;font-size:22px;}
+.pw-focal-cap{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:4px;}
+.pw-focal-hint{font-size:11px;color:var(--muted);line-height:1.6;flex-basis:100%;}
 .slide-img-placeholder{width:100%;height:160px;border-radius:6px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;margin-bottom:0.8rem;border:2px dashed var(--border);}
 .slide-upload-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:4px;cursor:pointer;margin-bottom:1rem;}
 .slide-upload-btn:hover{border-color:var(--sage);color:var(--sage);}
@@ -4948,7 +4963,18 @@ function renderSlidesEditor() {
   var html = '';
   slidesData.forEach(function(slide, i) {
     var imgHtml = slide.image
-      ? '<img class="slide-img-preview" id="slide-preview-' + i + '" src="' + slide.image + '" alt="Slide ' + (i+1) + '">'
+      ? '<div class="pw-focal">' +
+          '<div class="pw-focal-pick" title="Tap the most important spot in the photo" onclick="pwFocalPick(' + i + ',event)">' +
+            '<img class="slide-img-preview" id="slide-preview-' + i + '" src="' + slide.image + '" alt="Slide ' + (i+1) + '">' +
+            '<div class="pw-focal-dot" id="slide-focal-dot-' + i + '"></div>' +
+          '</div>' +
+          '<div class="pw-focal-side">' +
+            '<div><div class="pw-focal-view phone" id="slide-focal-phone-' + i + '"><div class="pw-focal-text"></div></div><div class="pw-focal-cap">Phone</div></div>' +
+            '<div><div class="pw-focal-view desk" id="slide-focal-desk-' + i + '"><div class="pw-focal-text"></div></div><div class="pw-focal-cap">Desktop</div></div>' +
+            '<div class="pw-focal-hint"><strong>Focal point:</strong> tap the spot that must stay in view (usually a face). The previews show how the photo is cropped on a phone and a desktop with the headline over it. ' +
+              '<span id="slide-focal-label-' + i + '"></span> <button class="slide-upload-btn" style="padding:3px 10px;font-size:11px;" onclick="pwFocalSet(' + i + ',\'\')">Centre</button></div>' +
+          '</div>' +
+        '</div>'
       : '<div class="slide-img-placeholder" id="slide-preview-' + i + '">No image</div>';
     html += '<div class="slide-card" id="slide-card-' + i + '">';
     html += '<div class="slide-card-header">';
@@ -4966,7 +4992,7 @@ function renderSlidesEditor() {
     // Only show hero text fields on first slide (shared across all)
     if (i === 0) {
       html += '<div class="slide-field-group"><span class="slide-field-label">Eyebrow text</span><input class="field" id="slide-eyebrow" value="' + escHtml(slide.eyebrow) + '" placeholder="Pristine Wellness"></div>';
-      html += '<div class="slide-field-group"><span class="slide-field-label">Headline (use \\n for line breaks)</span><input class="field" id="slide-headline" value="' + escHtml(String(slide.headline || '').replace(/\n/g, '\\n')) + '" placeholder="Live the way..."></div>';
+      html += '<div class="slide-field-group"><span class="slide-field-label">Headline (press Enter to start a new line, it shows the same way on the site)</span><textarea class="field" id="slide-headline" rows="3" style="min-height:0;line-height:1.4;" placeholder="Live the way..." oninput="pwFocalText()">' + escHtml(String(slide.headline || '')) + '</textarea></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Subheading</span><input class="field" id="slide-sub" value="' + escHtml(slide.sub) + '" placeholder="Subheading text"></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA text</span><input class="field" id="slide-cta1text" value="' + escHtml(slide.cta1text) + '"></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Primary CTA link</span><input class="field" id="slide-cta1href" value="' + escHtml(slide.cta1href) + '"></div>';
@@ -4976,6 +5002,7 @@ function renderSlidesEditor() {
     html += '</div>';
   });
   container.innerHTML = html;
+  slidesData.forEach(function(sl, k) { pwFocalRefresh(k); });
 }
 
 function triggerSlideUpload(idx) {
@@ -5029,6 +5056,7 @@ async function onSlideImageChange(idx, input) {
     // Also update URL input if present
     var urlInput = document.getElementById('slide-url-' + idx);
     if (urlInput) urlInput.value = url;
+    pwFocalRefresh(idx);
     setSlideStatus('Uploaded: ' + url, true);
   } catch(e) {
     setSlideStatus('Upload failed: ' + e.message, false);
@@ -5063,7 +5091,7 @@ function collectSlideTextFields() {
   var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
   var text = {
     eyebrow: get('slide-eyebrow'),
-    headline: get('slide-headline').replace(/\\n/g, '\n'),
+    headline: get('slide-headline').replace(/\r\n?/g, '\n').replace(/\\n/g, '\n'), // real line breaks, and the old \n code still works
     sub: get('slide-sub'),
     cta1text: get('slide-cta1text'),
     cta1href: get('slide-cta1href'),
@@ -7572,7 +7600,46 @@ function pickSlideImage(idx) {
       img.style.cssText = 'width:100%;height:200px;object-fit:cover;border-radius:6px;display:block;';
       pv.parentNode.replaceChild(img, pv);
     }
+    pwFocalRefresh(idx);
   });
+}
+
+/* ===== FOCAL POINT PICKER ===== */
+function pwFocalPick(i, ev) {
+  var img = document.getElementById('slide-preview-' + i);
+  if (!img || img.tagName !== 'IMG') return;
+  var r = img.getBoundingClientRect();
+  var x = Math.round(Math.min(100, Math.max(0, (ev.clientX - r.left) / r.width * 100)));
+  var y = Math.round(Math.min(100, Math.max(0, (ev.clientY - r.top) / r.height * 100)));
+  pwFocalSet(i, x + '% ' + y + '%');
+}
+function pwFocalSet(i, pos) {
+  if (!slidesData[i]) return;
+  slidesData[i].bgpos = pos;
+  pwFocalRefresh(i);
+}
+function pwFocalText() {
+  var ta = document.getElementById('slide-headline');
+  var text = ta ? ta.value.replace(/\\n/g, '\n') : (slidesData[0] ? slidesData[0].headline : '');
+  document.querySelectorAll('.pw-focal-text').forEach(function(el) { el.textContent = text; });
+}
+function pwFocalRefresh(i) {
+  var sl = slidesData[i]; if (!sl) return;
+  var img = document.getElementById('slide-preview-' + i);
+  var src = img && img.tagName === 'IMG' ? img.getAttribute('src') : '';
+  var pos = sl.bgpos || 'center';
+  var m = /^(\d+)%\s+(\d+)%$/.exec(sl.bgpos || '');
+  var dot = document.getElementById('slide-focal-dot-' + i);
+  if (dot) { dot.style.left = (m ? m[1] : 50) + '%'; dot.style.top = (m ? m[2] : 50) + '%'; }
+  ['phone', 'desk'].forEach(function(k) {
+    var v = document.getElementById('slide-focal-' + k + '-' + i);
+    if (!v) return;
+    v.style.backgroundImage = src ? 'url("' + src + '")' : 'none';
+    v.style.backgroundPosition = pos;
+  });
+  var lab = document.getElementById('slide-focal-label-' + i);
+  if (lab) lab.textContent = sl.bgpos ? 'Set to ' + sl.bgpos + '.' : 'Currently centred.';
+  pwFocalText();
 }
 
 /* ===== AUTHOR DATA (signatures + bios) ===== */
