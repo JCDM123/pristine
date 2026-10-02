@@ -1161,23 +1161,63 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">Explore Panels</h2>
-          <p class="manage-section-sub">The two panels below the hero: The Source and Ancestral Kitchen. Each shows one photo. Pick or upload a new one, then publish.</p>
+          <p class="manage-section-sub">The two panels below the hero: The Source and Ancestral Kitchen. Give each one up to 4 photos and they slowly fade from one to the next. Photo 1 shows first. Leave the others empty for a single still photo, then publish.</p>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem;">
         <div>
           <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);font-weight:600;margin-bottom:1rem;">The Source</div>
-          <div class="field"><label>Photo</label><input type="text" id="exp-source-img1" placeholder="images/source-panel-1.jpg" oninput="updateExpPreview('source',1,this.value)"></div>
-          <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-source-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
-          <input type="file" accept="image/*" id="exp-source-file1" style="display:none" onchange="uploadExpImage('source',1,this)">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img1').value=p;updateExpPreview('source',1,p);})">Pick from Library</button></div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 1 (shows first)</label><input type="text" id="exp-source-img1" placeholder="images/source-panel-1.jpg" oninput="updateExpPreview('source',1,this.value)"></div>
+            <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-source-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-source-file1" style="display:none" onchange="uploadExpImage('source',1,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img1').value=p;updateExpPreview('source',1,p);})">Pick from Library</button></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 2 (optional)</label><input type="text" id="exp-source-img2" placeholder="Leave empty to skip" oninput="updateExpPreview('source',2,this.value)"></div>
+            <div style="height:80px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-source-prev2"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-source-file2" style="display:none" onchange="uploadExpImage('source',2,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file2').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img2').value=p;updateExpPreview('source',2,p);})">Pick from Library</button><button class="slide-upload-btn" onclick="document.getElementById('exp-source-img2').value='';updateExpPreview('source',2,'')">Clear</button></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 3 (optional)</label><input type="text" id="exp-source-img3" placeholder="Leave empty to skip" oninput="updateExpPreview('source',3,this.value)"></div>
+            <div style="height:80px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-source-prev3"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-source-file3" style="display:none" onchange="uploadExpImage('source',3,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file3').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img3').value=p;updateExpPreview('source',3,p);})">Pick from Library</button><button class="slide-upload-btn" onclick="document.getElementById('exp-source-img3').value='';updateExpPreview('source',3,'')">Clear</button></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 4 (optional)</label><input type="text" id="exp-source-img4" placeholder="Leave empty to skip" oninput="updateExpPreview('source',4,this.value)"></div>
+            <div style="height:80px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-source-prev4"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-source-file4" style="display:none" onchange="uploadExpImage('source',4,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-source-file4').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-source-img4').value=p;updateExpPreview('source',4,p);})">Pick from Library</button><button class="slide-upload-btn" onclick="document.getElementById('exp-source-img4').value='';updateExpPreview('source',4,'')">Clear</button></div>
+          </div>
         </div>
         <div>
           <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);font-weight:600;margin-bottom:1rem;">Ancestral Kitchen</div>
-          <div class="field"><label>Photo</label><input type="text" id="exp-kitchen-img1" placeholder="images/kitchen-panel-1.jpg" oninput="updateExpPreview('kitchen',1,this.value)"></div>
-          <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 12px;background:#f0efeb;" id="exp-kitchen-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
-          <input type="file" accept="image/*" id="exp-kitchen-file1" style="display:none" onchange="uploadExpImage('kitchen',1,this)">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img1').value=p;updateExpPreview('kitchen',1,p);})">Pick from Library</button></div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 1 (shows first)</label><input type="text" id="exp-kitchen-img1" placeholder="images/kitchen-panel-1.jpg" oninput="updateExpPreview('kitchen',1,this.value)"></div>
+            <div style="height:120px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-kitchen-prev1"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-kitchen-file1" style="display:none" onchange="uploadExpImage('kitchen',1,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file1').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img1').value=p;updateExpPreview('kitchen',1,p);})">Pick from Library</button></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 2 (optional)</label><input type="text" id="exp-kitchen-img2" placeholder="Leave empty to skip" oninput="updateExpPreview('kitchen',2,this.value)"></div>
+            <div style="height:80px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-kitchen-prev2"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-kitchen-file2" style="display:none" onchange="uploadExpImage('kitchen',2,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file2').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img2').value=p;updateExpPreview('kitchen',2,p);})">Pick from Library</button><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-img2').value='';updateExpPreview('kitchen',2,'')">Clear</button></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 3 (optional)</label><input type="text" id="exp-kitchen-img3" placeholder="Leave empty to skip" oninput="updateExpPreview('kitchen',3,this.value)"></div>
+            <div style="height:80px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-kitchen-prev3"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-kitchen-file3" style="display:none" onchange="uploadExpImage('kitchen',3,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file3').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img3').value=p;updateExpPreview('kitchen',3,p);})">Pick from Library</button><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-img3').value='';updateExpPreview('kitchen',3,'')">Clear</button></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="field" style="margin-bottom:4px;"><label>Photo 4 (optional)</label><input type="text" id="exp-kitchen-img4" placeholder="Leave empty to skip" oninput="updateExpPreview('kitchen',4,this.value)"></div>
+            <div style="height:80px;border-radius:8px;overflow:hidden;margin:6px 0 8px;background:#f0efeb;" id="exp-kitchen-prev4"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;">No image</div></div>
+            <input type="file" accept="image/*" id="exp-kitchen-file4" style="display:none" onchange="uploadExpImage('kitchen',4,this)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-file4').click()">Upload</button><button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById('exp-kitchen-img4').value=p;updateExpPreview('kitchen',4,p);})">Pick from Library</button><button class="slide-upload-btn" onclick="document.getElementById('exp-kitchen-img4').value='';updateExpPreview('kitchen',4,'')">Clear</button></div>
+          </div>
         </div>
       </div>
       <div style="margin-top:1.5rem;">
@@ -6666,11 +6706,16 @@ async function publishExplorePanels() {
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token first.'); return; }
   var statusEl = document.getElementById('explore-status');
-  var imgs = {
-    source1: ((document.getElementById('exp-source-img1') || {}).value || '').trim(),
-    kitchen1: ((document.getElementById('exp-kitchen-img1') || {}).value || '').trim()
+  var pick = function(panel) {
+    var list = [];
+    for (var n = 1; n <= 4; n++) {
+      var v = ((document.getElementById('exp-' + panel + '-img' + n) || {}).value || '').trim();
+      if (v && list.indexOf(v) === -1) list.push(v);
+    }
+    return list;
   };
-  if (!imgs.source1 && !imgs.kitchen1) {
+  var imgs = { source: pick('source'), kitchen: pick('kitchen') };
+  if (!imgs.source.length && !imgs.kitchen.length) {
     if (statusEl) statusEl.textContent = 'Please enter at least one image path.';
     return;
   }
@@ -6704,13 +6749,23 @@ function pwExplorePanelAt(html, title) {
   }
   return null;
 }
+/* Each panel holds up to 4 photos. pw-rotate.js on the homepage fades between them; one photo stays still. */
 function rebuildExplorePanelsInHTML(html, imgs) {
-  [['The Source', imgs.source1], ['Ancestral Kitchen', imgs.kitchen1]].forEach(function(pair) {
-    if (!pair[1]) return;
+  [['The Source', imgs.source], ['Ancestral Kitchen', imgs.kitchen]].forEach(function(pair) {
+    var list = (pair[1] || []).slice(0, 4);
+    if (!list.length) return;
     var box = pwExplorePanelAt(html, pair[0]);
     if (!box) return;
-    var block = html.slice(box.start, box.end).replace(/(<img\b[^>]*?\bsrc=")[^"]*"/, function(m, pre) { return pre + pair[1].replace(/"/g, '') + '"'; });
-    html = html.slice(0, box.start) + block + html.slice(box.end);
+    var block = html.slice(box.start, box.end);
+    var first = block.match(/<img\b[^>]*>/);
+    if (!first) return;
+    var alt = (first[0].match(/\balt="([^"]*)"/) || ['', ''])[1];
+    var tags = list.map(function(src, k) {
+      return '<img src="' + src.replace(/"/g, '') + '" alt="' + (k ? '' : alt) + '"' + (k ? ' aria-hidden="true"' : '') + ' loading="lazy"/>';
+    }).join('\n        ');
+    var open = block.slice(0, block.indexOf('>') + 1);
+    var newBlock = open + '\n        ' + tags + '\n      </div>';
+    html = html.slice(0, box.start) + newBlock + html.slice(box.end);
   });
   return html;
 }
@@ -6720,9 +6775,14 @@ function loadExplorePanelValues(html) {
   if (!html) return;
   [['source', 'The Source'], ['kitchen', 'Ancestral Kitchen']].forEach(function(pair) {
     var box = pwExplorePanelAt(html, pair[1]);
-    var src = box ? (html.slice(box.start, box.end).match(/<img\b[^>]*?\bsrc="([^"]*)"/) || ['', ''])[1] : '';
-    var inp = document.getElementById('exp-' + pair[0] + '-img1');
-    if (inp && src) { inp.value = src; updateExpPreview(pair[0], 1, src); }
+    var srcs = [];
+    if (box) html.slice(box.start, box.end).replace(/<img\b[^>]*?\bsrc="([^"]*)"/g, function(m, src) { srcs.push(src); return m; });
+    for (var n = 1; n <= 4; n++) {
+      var inp = document.getElementById('exp-' + pair[0] + '-img' + n);
+      if (!inp) continue;
+      inp.value = srcs[n - 1] || '';
+      updateExpPreview(pair[0], n, inp.value);
+    }
   });
 }
 
