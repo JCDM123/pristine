@@ -4933,6 +4933,7 @@ function parseSlidesFromHTML(html) {
   }
   // Also extract shared hero text (same across all slides on this site)
   var eyebrowM = html.match(/<span class="hero-eyebrow">([^<]*)<\/span>/);
+  var shareM = html.match(/<meta property="og:image" content="([^"]*)"/);
   var headlineM = html.match(/<h1 class="hero-headline">([\s\S]*?)<\/h1>/);
   var subM = html.match(/<p class="hero-sub">([\s\S]*?)<\/p>/);
   var cta1M = html.match(/<a class="hero-cta-primary"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/);
@@ -4940,6 +4941,7 @@ function parseSlidesFromHTML(html) {
   var plainText = function(x) { var t = document.createElement('textarea'); t.innerHTML = x; return t.value; };
   var sharedText = {
     eyebrow: eyebrowM ? plainText(eyebrowM[1]) : 'Pristine Wellness',
+    share: shareM ? shareM[1].replace(/^https?:\/\/pristinewellness\.com\.au\//, '') : '',
     headline: headlineM ? plainText(headlineM[1].replace(/<br\s*\/?>/g,'\n').replace(/<[^>]+>/g,'')) : 'Live the way\nyou were\ndesigned to.',
     sub: subM ? plainText(subM[1].replace(/\s*<br\s*\/?>\s*/g, '\n').replace(/<[^>]+>/g, '')) : '',
     cta1text: cta1M ? plainText(cta1M[2].trim()) : 'Read The Source',
@@ -4991,6 +4993,12 @@ function renderSlidesEditor() {
     html += '<p style="font-size:11px;color:var(--muted);margin:0 0 1rem;line-height:1.6;">Enter an image path from your library, or click Upload to add a new image. Recommended: <strong>1920 &times; 1080px</strong>, JPG, under 300kb.</p>';
     // Only show hero text fields on first slide (shared across all)
     if (i === 0) {
+      html += '<div class="slide-field-group"><span class="slide-field-label">Share image (the picture shown when someone shares the homepage link, 1200 x 630 works best)</span>' +
+        '<div style="display:flex;gap:10px;align-items:center;">' +
+          '<div id="slide-share-prev" style="width:120px;height:63px;border-radius:4px;overflow:hidden;background:#f0efeb;flex-shrink:0;"></div>' +
+          '<input class="field" id="slide-share" value="' + escHtml(slide.share || '') + '" placeholder="images/site/share-home-family.jpg" oninput="pwSharePreview(this.value)" style="flex:1;">' +
+          '<button class="slide-upload-btn" style="background:var(--forest);color:#fff;border-color:var(--forest);" onclick="openImgPicker(function(p){document.getElementById(\'slide-share\').value=p;pwSharePreview(p);})">Pick from Library</button>' +
+        '</div></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Eyebrow text</span><input class="field" id="slide-eyebrow" value="' + escHtml(slide.eyebrow) + '" placeholder="Pristine Wellness"></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Headline (press Enter to start a new line, it shows the same way on the site)</span><textarea class="field" id="slide-headline" rows="3" style="min-height:0;line-height:1.4;" placeholder="Live the way..." oninput="pwFocalText()">' + escHtml(String(slide.headline || '')) + '</textarea></div>';
       html += '<div class="slide-field-group"><span class="slide-field-label">Subheading (press Enter to start a new line)</span><textarea class="field" id="slide-sub" rows="2" style="min-height:0;line-height:1.4;" placeholder="Subheading text">' + escHtml(String(slide.sub || '')) + '</textarea></div>';
@@ -5003,6 +5011,7 @@ function renderSlidesEditor() {
   });
   container.innerHTML = html;
   slidesData.forEach(function(sl, k) { pwFocalRefresh(k); });
+  pwSharePreview((document.getElementById('slide-share') || {}).value || '');
 }
 
 function triggerSlideUpload(idx) {
@@ -5091,6 +5100,7 @@ function collectSlideTextFields() {
   var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
   var text = {
     eyebrow: get('slide-eyebrow'),
+    share: get('slide-share').trim(),
     headline: get('slide-headline').replace(/\r\n?/g, '\n').replace(/\\n/g, '\n'), // real line breaks, and the old \n code still works
     sub: get('slide-sub').replace(/\r\n?/g, '\n'),
     cta1text: get('slide-cta1text'),
@@ -5146,6 +5156,11 @@ function rebuildSlidesInHTML(html) {
   var sd = slidesData[0];
   // eyebrow
   html = html.replace(/<span class="hero-eyebrow">[^<]*<\/span>/, '<span class="hero-eyebrow">' + escHtml(sd.eyebrow) + '</span>');
+  if (sd.share) {
+    var shareUrl = /^https?:/.test(sd.share) ? sd.share : 'https://pristinewellness.com.au/' + sd.share.replace(/^\//, '');
+    html = html.replace(/(<meta property="og:image" content=")[^"]*(")/, '$1' + shareUrl.replace(/"/g, '') + '$2');
+    html = html.replace(/(<meta name="twitter:image" content=")[^"]*(")/, '$1' + shareUrl.replace(/"/g, '') + '$2');
+  }
   // headline - convert \n to <br>
   var headlineHtml = escHtml(sd.headline).replace(/\n/g,'<br>');
   html = html.replace(/<h1 class="hero-headline">[\s\S]*?<\/h1>/, '<h1 class="hero-headline">' + headlineHtml + '</h1>');
@@ -7602,6 +7617,15 @@ function pickSlideImage(idx) {
     }
     pwFocalRefresh(idx);
   });
+}
+
+/* Share image preview on the Homepage Slides tab */
+function pwSharePreview(p) {
+  var box = document.getElementById('slide-share-prev');
+  if (!box) return;
+  if (!p) { box.innerHTML = ''; return; }
+  var u = /^https?:/.test(p) ? p : 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + p.replace(/^\//, '');
+  box.innerHTML = '<img src="' + u + '" style="width:100%;height:100%;object-fit:cover;display:block;">';
 }
 
 /* ===== FOCAL POINT PICKER ===== */
