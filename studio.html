@@ -3131,7 +3131,11 @@ async function publishArticle() {
 
     // 2. Upload article file to GitHub (only once The Source update is ready, so a parse failure never leaves an unlinked article live)
     // Going live from a private preview: publish the preview page exactly as it was checked and edited
-    if (PW_PUBLISH_MODE === 'golive') fullHTML = PW_GOLIVE_HTML;
+    if (PW_PUBLISH_MODE === 'golive') {
+      fullHTML = PW_GOLIVE_HTML;
+      // A new title means a new filename, so the page's own address lines follow it
+      if (PW_GOLIVE_SRC && PW_GOLIVE_SRC !== filename) fullHTML = fullHTML.split('pristinewellness.com.au/' + PW_GOLIVE_SRC).join('pristinewellness.com.au/' + filename);
+    }
     // Hidden Google data block (Article), read from the finished page
     try { fullHTML = pwAddSchema(fullHTML, filename); } catch(e) {}
     var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
@@ -3162,7 +3166,7 @@ async function publishArticle() {
       url: filename
     });
     await pwSitemapAdd(filename);
-    if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('a');
+    if (PW_PUBLISH_MODE === 'golive') await pwGoLiveTidy(filename); else pwResetSponsor('a');
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
     pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
@@ -3706,7 +3710,10 @@ async function publishRecipe() {
     updatedKitchen = rebuildFilterPills(updatedKitchen);
 
     // 5. Upload the recipe page (only now that the Kitchen update is ready, so a problem there never leaves a hidden recipe)
-    if (PW_PUBLISH_MODE === 'golive') built.html = PW_GOLIVE_HTML;
+    if (PW_PUBLISH_MODE === 'golive') {
+      built.html = PW_GOLIVE_HTML;
+      if (PW_GOLIVE_SRC && PW_GOLIVE_SRC !== filename) built.html = built.html.split('pristinewellness.com.au/' + PW_GOLIVE_SRC).join('pristinewellness.com.au/' + filename);
+    }
     // Hidden Google data block (Recipe), read from the finished page
     try { built.html = pwAddSchema(built.html, filename); } catch(e) {}
     var recipeContent = btoa(unescape(encodeURIComponent(built.html)));
@@ -3736,7 +3743,7 @@ async function publishRecipe() {
       url: filename
     });
     await pwSitemapAdd(filename);
-    if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('r');
+    if (PW_PUBLISH_MODE === 'golive') await pwGoLiveTidy(filename); else pwResetSponsor('r');
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
     pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
@@ -8367,7 +8374,7 @@ async function aiFixAllRecipe() {
 // 'normal' publishes as usual; 'preview' puts the story on a hidden address only;
 // 'golive' takes a checked preview and publishes it exactly as it is.
 var PW_PUBLISH_MODE = 'normal';
-var PW_GOLIVE_HTML = '';
+var PW_GOLIVE_HTML = '', PW_GOLIVE_SRC = '';
 var PW_PREVIEW_START = '<!-- PW_PREVIEW_START -->', PW_PREVIEW_END = '<!-- PW_PREVIEW_END -->';
 
 async function previewArticle() { PW_PUBLISH_MODE = 'preview'; try { await publishArticle(); } finally { PW_PUBLISH_MODE = 'normal'; } }
@@ -8434,6 +8441,19 @@ async function pwSavePreview(kind, file, html, meta) {
   pv.list.unshift(rec);
   await pwSavePreviews(pv.list, pv.sha, 'Private preview list: add ' + file);
 }
+// After Go Live: drop the preview entry, and if the title gave the story a new filename, remove the old hidden page too
+async function pwGoLiveTidy(filename) {
+  await pwForgetPreview(filename);
+  var src = PW_GOLIVE_SRC;
+  if (!src || src === filename) return;
+  await pwForgetPreview(src);
+  try {
+    var pg = await githubRequest(src, 'GET');
+    var html = decodeURIComponent(escape(atob(pg.content.replace(/\n/g, ''))));
+    if (html.indexOf(PW_PREVIEW_START) !== -1) await githubRequest(src, 'DELETE', { message: 'Remove preview page, now live as ' + filename, sha: pg.sha, branch: GITHUB_BRANCH });
+  } catch (e) {}
+}
+
 async function pwForgetPreview(file) {
   try {
     var pv = await pwLoadPreviews();
@@ -8547,7 +8567,7 @@ async function goLivePreview(i) {
       recipeImagePath = heroImg; recipeImageBase64 = ''; recipeBodyImages = [null, null, null, null, null, null];
       if (catEl) catEl.value = r.category;
     }
-    PW_GOLIVE_HTML = html;
+    PW_GOLIVE_HTML = html; PW_GOLIVE_SRC = r.url;
     PW_PUBLISH_MODE = 'golive';
     if (r.kind === 'recipe') await publishRecipe(); else await publishArticle();
     var st = (document.getElementById(statusId) || {}).textContent || '';
@@ -8555,7 +8575,7 @@ async function goLivePreview(i) {
   } catch (e) {
     setManageStatus('prev', 'Error: ' + e.message, false);
   } finally {
-    PW_PUBLISH_MODE = 'normal'; PW_GOLIVE_HTML = '';
+    PW_PUBLISH_MODE = 'normal'; PW_GOLIVE_HTML = ''; PW_GOLIVE_SRC = '';
     generatedArticleData = saved.gad; generatedRecipeData = saved.grd; articleImagePath = saved.aip; articleImageBase64 = saved.aib; articleBodyImages = saved.abi;
     recipeImagePath = saved.rip; recipeImageBase64 = saved.rib; recipeBodyImages = saved.rbi;
     if (catEl) catEl.value = savedCat;

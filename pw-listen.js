@@ -6,7 +6,11 @@
   if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return;
 
   var synth = window.speechSynthesis;
-  var chunks = [], at = 0, state = 'idle', btn, stopBtn, label;
+  var chunks = [], at = 0, state = 'idle', btn, stopBtn, label, voices = [], voice = null;
+
+  function loadVoices() { try { var v = synth.getVoices() || []; if (v.length) voices = v; } catch (e) {} }
+  loadVoices();
+  if (typeof synth.onvoiceschanged !== 'undefined') synth.onvoiceschanged = loadVoices;
 
   function addStyle() {
     var s = document.createElement('style');
@@ -72,9 +76,9 @@
 
   // Picks a natural sounding English voice, Australian first
   function pickVoice() {
-    var voices = synth.getVoices() || [];
+    loadVoices();
     if (!voices.length) return null;
-    var want = ['en-AU', 'en-GB', 'en-US', 'en'];
+    var want = ['en-AU', 'en-GB', 'en-IE', 'en-NZ', 'en-US', 'en'];
     var nice = /natural|neural|premium|enhanced|karen|catherine|lee|google|samantha|daniel|serena|moira/i;
     for (var w = 0; w < want.length; w++) {
       for (var i = 0; i < voices.length; i++) {
@@ -98,8 +102,8 @@
     if (state !== 'playing') return;
     if (at >= chunks.length) { stop(); return; }
     var u = new SpeechSynthesisUtterance(chunks[at]);
-    var v = pickVoice();
-    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'en-AU'; }
+    if (!voice) voice = pickVoice();
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'en-AU'; }
     u.rate = 0.95; u.pitch = 1;
     u.onend = function () { at++; speakNext(); };
     u.onerror = function (e) { if (e && e.error === 'interrupted') return; at++; speakNext(); };
@@ -111,7 +115,13 @@
     if (!chunks.length) return;
     at = 0; state = 'playing'; setUI();
     synth.cancel();
-    speakNext();
+    voice = pickVoice();
+    if (voice) { speakNext(); return; }
+    // Chrome hands over its voice list a moment after the page loads; give it a beat so the first line is not read in the wrong accent
+    var waited = 0, t = setInterval(function () {
+      voice = pickVoice(); waited += 100;
+      if (voice || waited >= 1000) { clearInterval(t); if (state === 'playing') speakNext(); }
+    }, 100);
   }
 
   function stop() {
@@ -139,8 +149,6 @@
     if (label && label.nextSibling) { bar.insertBefore(stopBtn, label.nextSibling); bar.insertBefore(btn, label.nextSibling); }
     else { bar.appendChild(btn); bar.appendChild(stopBtn); }
     setUI();
-    // Voices load late on some browsers; nothing to do but let them arrive
-    if (typeof synth.onvoiceschanged !== 'undefined') synth.onvoiceschanged = function () {};
     window.addEventListener('pagehide', function () { synth.cancel(); });
     // Safari on iPhone drops the voice if the tab goes to the background mid sentence; pause cleanly instead
     document.addEventListener('visibilitychange', function () { if (document.hidden && state === 'playing') { state = 'paused'; synth.pause(); setUI(); } });
