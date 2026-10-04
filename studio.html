@@ -667,23 +667,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
 
         <div class="field-row">
           <div class="field"><label>Category *</label>
-            <input type="text" id="a-category" list="a-category-list" placeholder="e.g. Nutrition" autocomplete="off">
-            <datalist id="a-category-list">
-              <option value="Nutrition">
-              <option value="Gut Health">
-              <option value="Sleep">
-              <option value="Mental Wellness">
-              <option value="Movement">
-              <option value="Ancestral Living">
-              <option value="Family Health">
-              <option value="Detox">
-              <option value="Nature">
-              <option value="Water">
-              <option value="Hormones">
-              <option value="Children">
-              <option value="Mindset">
-              <option value="Longevity">
-            </datalist>
+            <div style="display:flex;gap:8px;align-items:center;"><select id="a-category" onchange="handleCatChange('a')" style="flex:1;"><option value="">Choose a category</option><option value="Nutrition">Nutrition</option><option value="Gut Health">Gut Health</option><option value="Sleep">Sleep</option><option value="Movement">Movement</option><option value="Mind">Mind</option><option value="Family Health">Family Health</option><option value="Ancestral Living">Ancestral Living</option><option value="Water">Water</option><option value="Nature">Nature</option><option value="Longevity">Longevity</option><option value="Detox">Detox</option><option value="__other__">Other (adds a new filter to the site)</option></select><button type="button" class="slide-upload-btn" onclick="pwSuggestCategory('a')" title="Let the studio pick from the list">Suggest</button></div><input type="text" id="a-category-custom" placeholder="New category name, keep it short" style="display:none;margin-top:6px;" onchange="saveCustomCat('a',this.value)"><p class="field-hint" style="margin-top:4px;">Pick from the list. Other creates a new filter on The Source, so use it rarely.</p>
           </div>
           <div class="field"><label>Read Time</label>
             <select id="a-readtime">
@@ -890,20 +874,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
         <div class="field-row">
           <div class="field">
             <label>Category</label>
-            <input type="text" id="r-category" list="r-category-list" placeholder="e.g. Mains" autocomplete="off">
-            <datalist id="r-category-list">
-              <option value="Breakfast">
-              <option value="Lunch">
-              <option value="Mains">
-              <option value="Snacks">
-              <option value="Drinks">
-              <option value="Ferments">
-              <option value="Broths">
-              <option value="Desserts">
-              <option value="Sauces">
-              <option value="Sides">
-              <option value="Meal Prep">
-            </datalist>
+            <div style="display:flex;gap:8px;align-items:center;"><select id="r-category" onchange="handleCatChange('r')" style="flex:1;"><option value="">Choose a category</option><option value="Breakfast">Breakfast</option><option value="Mains">Mains</option><option value="Sides">Sides</option><option value="Snacks">Snacks</option><option value="Desserts">Desserts</option><option value="Drinks">Drinks</option><option value="Ferments">Ferments</option><option value="Broths">Broths</option><option value="__other__">Other (adds a new filter to the site)</option></select><button type="button" class="slide-upload-btn" onclick="pwSuggestCategory('r')" title="Let the studio pick from the list">Suggest</button></div><input type="text" id="r-category-custom" placeholder="New category name, keep it short" style="display:none;margin-top:6px;" onchange="saveCustomCat('r',this.value)"><p class="field-hint" style="margin-top:4px;">Pick from the list. Other creates a new filter on Ancestral Kitchen, so use it rarely.</p>
           </div>
           <div class="field"><label>Author</label>
             <select id="r-author">
@@ -1923,6 +1894,7 @@ async function generateArticle() {
   var topic = document.getElementById('a-topic').value.trim();
   var format = document.getElementById('a-format').value;
   var category = getCategoryValue('a');
+  if (!category) category = await pwSuggestCategory('a');
   var readtime = document.getElementById('a-readtime').value;
   var author = document.getElementById('a-author').value.trim() || 'Pristine Wellness';
   var dateVal = document.getElementById('a-date').value;
@@ -2495,8 +2467,9 @@ var selectedRTags = [];
 async function generateRecipe() {
   var name = document.getElementById('r-name').value.trim();
   var about = document.getElementById('r-about').value.trim();
-  var category = document.getElementById('r-category').value.trim();
-  if (!category) { setStatus('r','error','Please enter a category (e.g. Mains, Breakfast, Desserts) before generating.'); return; }
+  var category = getCategoryValue('r');
+  if (!category) category = await pwSuggestCategory('r');
+  if (!category) { setStatus('r','error','Please choose a category before generating.'); return; }
   var author = document.getElementById('r-author').value;
   var servings = document.getElementById('r-servings').value;
   var difficulty = document.getElementById('r-difficulty').value;
@@ -2796,7 +2769,45 @@ function saveCustomCat(prefix, val) {
 
 function getCategoryValue(prefix) {
   var el = document.getElementById(prefix + '-category');
-  return el ? el.value.trim() : '';
+  var v = el ? el.value.trim() : '';
+  return v === '__other__' ? '' : v;
+}
+
+/* Ask the studio to pick a category from the fixed list, from the topic or recipe name. */
+async function pwSuggestCategory(prefix) {
+  var sel = document.getElementById(prefix + '-category');
+  if (!sel) return '';
+  var cats = Array.from(sel.options).map(function(o){ return o.value; }).filter(function(v){ return v && v !== '__other__'; });
+  var about = '';
+  if (prefix === 'a') {
+    about = ((document.getElementById('a-topic') || {}).value || '').trim();
+    if (generatedArticleData && generatedArticleData.article) about += '. ' + (generatedArticleData.article.title || '') + '. ' + (generatedArticleData.article.intro || '');
+  } else {
+    about = ((document.getElementById('r-name') || {}).value || '').trim() + '. ' + ((document.getElementById('r-about') || {}).value || '').trim();
+  }
+  if (about.replace(/[.\s]/g, '') === '') { setStatus(prefix, 'error', 'Type the ' + (prefix === 'a' ? 'topic' : 'recipe name') + ' first, then press Suggest.'); return ''; }
+  var token = getToken();
+  if (!token) { setStatus(prefix, 'error', 'Please enter your GitHub token first.'); return ''; }
+  setStatus(prefix, 'active', 'Choosing a category...');
+  try {
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 20,
+        system: 'You file stories for a family wellness site. Reply with exactly one category name from the list and nothing else.',
+        messages: [{ role: 'user', content: 'Categories: ' + cats.join(' | ') + '\nStory: ' + about.slice(0, 600) + '\nWhich category fits best?' }] })
+    });
+    var data = await resp.json();
+    var text = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('').trim();
+    var pick = cats.find(function(c){ return c.toLowerCase() === text.toLowerCase(); }) || cats.find(function(c){ return text.toLowerCase().indexOf(c.toLowerCase()) !== -1; });
+    if (!pick) throw new Error('No match for "' + text + '"');
+    sel.value = pick; handleCatChange(prefix);
+    setStatus(prefix, 'success', 'Category: ' + pick + '. Change it if you disagree.');
+    return pick;
+  } catch (e) {
+    setStatus(prefix, 'error', 'Could not suggest a category: ' + e.message);
+    return '';
+  }
 }
 
 
@@ -2819,6 +2830,7 @@ function getToken() {
 
 // On load, restore token to input if saved
 document.addEventListener('DOMContentLoaded', function() {
+  try { loadSavedCats(); } catch (e) {}
   var saved = localStorage.getItem('gh_token');
   var inp = document.getElementById('gh-token-input');
   if (saved && inp) {
