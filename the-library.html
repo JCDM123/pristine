@@ -9,6 +9,12 @@
 <link rel="icon" type="image/png" sizes="48x48" href="/images/favicon-48.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192.png">
 <link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#8F9574">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pristine">
+<script src="/pw-app.js" defer></script>
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <link rel="canonical" href="https://pristinewellness.com.au/the-library.html">
   <meta name="description" content="Our guides and little books, free with your email. Pick one off the shelf, download it, keep it. And the Pristine app for your phone.">
@@ -1358,6 +1364,27 @@ html body .pinned-small-title{font-size:23px!important;}
   .lib-card-cover .t{padding:.6rem .6rem 0;}
   .lib-card h3{font-size:28px;}
 }
+
+.lib-done{display:none;align-items:center;gap:14px;background:#f1f3ea;border-radius:8px;padding:1rem 1.2rem;max-width:460px;}
+.lib-done.show{display:flex;}
+.lib-done svg{width:26px;height:26px;stroke:#4a5e38;fill:none;stroke-width:2;flex-shrink:0;}
+.lib-done b{display:block;font-weight:400;font-size:15px;color:#111;}
+.lib-done small{display:block;font-size:13px;color:#666;font-weight:300;line-height:1.5;}
+.lib-badge.install{background:#8F9574;border-color:#8F9574;color:#fff;}
+.lib-badge.install svg{fill:#fff;}
+.lib-ios-guide{display:flex;flex-direction:column;gap:12px;}
+.lib-ios-step{display:flex;gap:12px;align-items:flex-start;}
+.lib-ios-step .n{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#8F9574;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+.lib-ios-step small{color:#888;font-size:12px;}
+.lib-share-ico{display:inline-flex;vertical-align:middle;width:22px;height:22px;border-radius:5px;background:#fff;border:0.5px solid #ccc;align-items:center;justify-content:center;margin:0 2px;}
+.lib-share-ico svg{width:14px;height:14px;stroke:#1a73e8;fill:none;stroke-width:1.8;}
+.lib-ios-note{font-size:12px;color:#888;line-height:1.6;}
+.lib-ios-note:empty{display:none;}
+.lib-ios-note a{color:#4a5e38;}
+.lib-ios-arrow{display:none;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;background:#8F9574;box-shadow:0 8px 20px rgba(0,0,0,0.25);z-index:700;align-items:center;justify-content:center;animation:libBounce 1.1s ease-in-out infinite;}
+.lib-ios-arrow svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2.2;}
+.lib-ios-arrow.show{display:flex;}
+@keyframes libBounce{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
 @media(max-width:800px){
   .lib-books{gap:1.6rem;padding:0 0.5rem;}
   .lib-book{width:27%;}
@@ -1471,18 +1498,26 @@ html body .pinned-small-title{font-size:23px!important;}
   </div>
 </div>
 
-<div class="lib-app">
+<div class="lib-app" id="app">
   <div class="lib-app-inner">
     <div>
       <span class="lib-eyebrow">Take the library with you</span>
       <h2>The Pristine app</h2>
       <p>Every story, recipe and little book on your phone, with Listen built in. Free, nothing from the store, two taps.</p>
-      <div class="lib-badges">
-        <a class="lib-badge" onclick="libSteps('ios')"><svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.8-1.7 0-3.2 1-4.1 2.5-1.8 3-.5 7.6 1.3 10.1.9 1.2 1.9 2.6 3.2 2.5 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1-2.9-4zM13.9 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.5 2.9-1.3z"/></svg><div><small>Add to</small><b>iPhone</b></div></a>
-        <a class="lib-badge light" onclick="libSteps('android')"><svg viewBox="0 0 24 24"><path d="M17.5 8.5l1.6-2.8c.1-.2 0-.4-.1-.5-.2-.1-.4 0-.5.1l-1.6 2.9c-1.3-.6-2.7-.9-4.3-.9s-3 .3-4.3.9L6.7 5.3c-.1-.2-.3-.2-.5-.1-.2.1-.2.3-.1.5l1.6 2.8C5 10 3.3 12.6 3 15.6h18c-.3-3-2-5.6-4.5-7.1zM8.3 12.8c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9zm7.4 0c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9z"/></svg><div><small>Add to</small><b>Android</b></div></a>
+      <div class="lib-badges" id="lib-badges">
+        <a class="lib-badge" id="lib-btn-ios" onclick="libApp('ios')"><svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.8-1.7 0-3.2 1-4.1 2.5-1.8 3-.5 7.6 1.3 10.1.9 1.2 1.9 2.6 3.2 2.5 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1-2.9-4zM13.9 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.5 2.9-1.3z"/></svg><div><small>Add to</small><b>iPhone</b></div></a>
+        <a class="lib-badge light" id="lib-btn-android" onclick="libApp('android')"><svg viewBox="0 0 24 24"><path d="M17.5 8.5l1.6-2.8c.1-.2 0-.4-.1-.5-.2-.1-.4 0-.5.1l-1.6 2.9c-1.3-.6-2.7-.9-4.3-.9s-3 .3-4.3.9L6.7 5.3c-.1-.2-.3-.2-.5-.1-.2.1-.2.3-.1.5l1.6 2.8C5 10 3.3 12.6 3 15.6h18c-.3-3-2-5.6-4.5-7.1zM8.3 12.8c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9zm7.4 0c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9z"/></svg><div><small id="lib-android-small">Add to</small><b id="lib-android-b">Android</b></div></a>
       </div>
-      <div class="lib-steps" id="lib-steps-ios">On your iPhone, open <b>pristinewellness.com.au</b> in Safari. Tap the <b>Share</b> button at the bottom, then <b>Add to Home Screen</b>, then <b>Add</b>. That's it.</div>
-      <div class="lib-steps" id="lib-steps-android">On your Android phone, open <b>pristinewellness.com.au</b> in Chrome. Tap the <b>three dots</b> at the top right, then <b>Add to Home screen</b>, then <b>Add</b>. That's it.</div>
+      <div class="lib-done" id="lib-done"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><div><b>The app is on this phone.</b><small>Open it from your home screen like any other app. It updates itself.</small></div></div>
+      <div class="lib-steps" id="lib-steps-ios">
+        <div class="lib-ios-guide">
+          <div class="lib-ios-step"><span class="n">1</span><div>Tap the <b>Share</b> button in Safari <span class="lib-share-ico"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg></span><br><small>It's at the bottom of the screen on an iPhone.</small></div></div>
+          <div class="lib-ios-step"><span class="n">2</span><div>Scroll the list and tap <b>Add to Home Screen</b>, then <b>Add</b>.</div></div>
+          <div class="lib-ios-note" id="lib-ios-note"></div>
+        </div>
+        <div class="lib-ios-arrow" id="lib-ios-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+      </div>
+      <div class="lib-steps" id="lib-steps-android"><div class="lib-ios-guide"><div class="lib-ios-step"><span class="n">1</span><div>In Chrome, tap the <b>three dots</b> at the top right.</div></div><div class="lib-ios-step"><span class="n">2</span><div>Tap <b>Add to Home screen</b> (or <b>Install app</b>), then <b>Add</b>.</div></div><div class="lib-ios-note" id="lib-android-note"></div></div></div>
     </div>
     <div>
       <div class="lib-phones">
@@ -1499,7 +1534,7 @@ html body .pinned-small-title{font-size:23px!important;}
   </div>
 </div>
 
-<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+<div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a href="the-library.html#app">Get the app</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
 </div>
 
 
@@ -2163,6 +2198,7 @@ async function libOpen(ev) {
 }
 function libSteps(which) {
   ['ios', 'android'].forEach(function (k) { var el = document.getElementById('lib-steps-' + k); if (el) el.classList.toggle('show', k === which); });
+  if (!which) { var ar = document.getElementById('lib-ios-arrow'); if (ar) ar.classList.remove('show'); }
 }
 
 /* Book cards. Each book lists what it offers; anything missing shows as coming soon. */
@@ -2208,6 +2244,39 @@ function libCard(i) {
 }
 function libCardClose() { var w = document.getElementById('lib-card-wrap'); if (w) w.classList.remove('show'); document.body.style.overflow = ''; }
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape') libCardClose(); });
+
+/* The Pristine app buttons. Android installs with the phone's own sheet when it can; iPhone gets the two taps shown, not described. */
+function libAppState() {
+  var done = document.getElementById('lib-done'), badges = document.getElementById('lib-badges');
+  if (window.pwAppInstalled && window.pwAppInstalled()) { if (done) done.classList.add('show'); if (badges) badges.style.display = 'none'; return; }
+  var plat = window.pwAppPlatform ? window.pwAppPlatform() : 'desktop';
+  var a = document.getElementById('lib-btn-android');
+  if (a && window.pwAppInstallReady) { a.classList.add('install'); document.getElementById('lib-android-small').textContent = 'One tap'; document.getElementById('lib-android-b').textContent = plat === 'desktop' ? 'Install' : 'Install the app'; }
+}
+function libApp(which) {
+  var plat = window.pwAppPlatform ? window.pwAppPlatform() : 'desktop';
+  if (which === 'android' && window.pwAppInstallReady && window.pwAppInstall) {
+    window.pwAppInstall().then(function (ok) { if (ok) { libAppState(); libSteps(''); } else { libSteps('android'); } });
+    return;
+  }
+  libSteps(which);
+  if (which === 'ios') {
+    var ua = navigator.userAgent || '', inSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+    var note = document.getElementById('lib-ios-note');
+    if (plat === 'ios' && !inSafari) note.innerHTML = 'You\'re in a different browser. Open <a href="https://pristinewellness.com.au/the-library.html#app">this page in Safari</a> first, then the two taps above.';
+    else if (plat !== 'ios') note.textContent = 'Open pristinewellness.com.au on your iPhone and come back to this page.';
+    else note.textContent = '';
+    var arrow = document.getElementById('lib-ios-arrow');
+    if (arrow) { arrow.classList.toggle('show', plat === 'ios' && inSafari); setTimeout(function(){ arrow.classList.remove('show'); }, 9000); }
+  } else {
+    var an = document.getElementById('lib-android-note');
+    if (an) an.textContent = plat === 'android' ? '' : 'Open pristinewellness.com.au on your Android phone and come back to this page.';
+    var arrow2 = document.getElementById('lib-ios-arrow'); if (arrow2) arrow2.classList.remove('show');
+  }
+}
+document.addEventListener('pw-install-ready', libAppState);
+document.addEventListener('pw-installed', function () { libAppState(); libSteps(''); });
+document.addEventListener('DOMContentLoaded', libAppState);
 document.addEventListener('DOMContentLoaded', function () { if (libIsOpen()) libShowOpen(true); });
 </script>
 </body>
