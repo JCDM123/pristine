@@ -1322,6 +1322,42 @@ html body .pinned-small-title{font-size:23px!important;}
 .lib-icon.p{background:#fff;box-shadow:0 4px 10px rgba(0,0,0,0.15);overflow:hidden;}
 .lib-icon.p img{width:100%;height:100%;object-fit:cover;display:block;}
 .lib-ph-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#999;text-align:center;margin-top:12px;}
+
+/* The book card: a cover lifts off the shelf and shows its options */
+.lib-card-wrap{position:fixed;inset:0;z-index:600;background:rgba(26,26,26,0.55);display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+.lib-card-wrap.show{opacity:1;pointer-events:auto;}
+.lib-card{background:#fff;border-radius:8px;max-width:760px;width:100%;display:grid;grid-template-columns:240px 1fr;gap:2.2rem;padding:2.2rem;box-shadow:0 30px 80px rgba(0,0,0,0.35);transform:translateY(16px) scale(.98);transition:transform .3s;position:relative;}
+.lib-card-wrap.show .lib-card{transform:none;}
+.lib-card-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:26px;color:#999;cursor:pointer;line-height:1;}
+.lib-card-cover{width:200px;height:284px;border-radius:3px 8px 8px 3px;box-shadow:6px 10px 22px rgba(0,0,0,0.22),inset 4px 0 6px rgba(255,255,255,0.35);overflow:hidden;background:#fff;display:flex;flex-direction:column;margin:0 auto;}
+.lib-card-cover>img{width:100%;height:100%;object-fit:cover;display:block;}
+.lib-card-cover .img{height:50%;overflow:hidden;}
+.lib-card-cover .img img{width:100%;height:100%;object-fit:cover;display:block;}
+.lib-card-cover .t{padding:1rem 1rem 0;background:#efe9dc;flex:1;}
+.lib-card-cover .t b{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:22px;line-height:1.1;display:block;color:#1a1a1a;}
+.lib-card-cover .t small{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#999;display:block;margin-top:8px;}
+.lib-card-eyebrow{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#999;display:block;margin-bottom:8px;}
+.lib-card h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:34px;line-height:1.05;color:#111;margin:0 0 10px;}
+.lib-card p{color:#666;font-size:14px;line-height:1.75;font-weight:300;margin:0 0 1.4rem;}
+.lib-rows{border-top:0.5px solid var(--border);}
+.lib-row{display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:0.5px solid var(--border);text-decoration:none;color:#1a1a1a;cursor:pointer;transition:background .2s;}
+.lib-row:hover{background:#faf8f3;}
+.lib-row svg{width:20px;height:20px;stroke:#4a5e38;fill:none;stroke-width:1.5;flex-shrink:0;}
+.lib-row b{display:block;font-weight:400;font-size:14px;}
+.lib-row small{display:block;font-size:12px;color:#999;font-weight:300;}
+.lib-row.soon{cursor:default;color:#aaa;}
+.lib-row.soon svg{stroke:#bbb;}
+.lib-row.soon:hover{background:none;}
+.lib-card-locked{background:#f7f4ee;border-radius:6px;padding:1.2rem 1.4rem;text-align:center;}
+.lib-card-locked p{margin:0 0 .9rem;}
+.lib-card-locked button{background:#8F9574;color:#fff;border:none;padding:11px 22px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Jost',sans-serif;border-radius:30px;cursor:pointer;}
+@media(max-width:800px){
+  .lib-card{grid-template-columns:1fr;gap:1.4rem;padding:1.6rem 1.2rem 1.2rem;max-height:92vh;overflow:auto;}
+  .lib-card-cover{width:140px;height:199px;}
+  .lib-card-cover .t b{font-size:15px;}
+  .lib-card-cover .t{padding:.6rem .6rem 0;}
+  .lib-card h3{font-size:28px;}
+}
 @media(max-width:800px){
   .lib-books{gap:1.6rem;padding:0 0.5rem;}
   .lib-book{width:27%;}
@@ -1392,20 +1428,20 @@ html body .pinned-small-title{font-size:23px!important;}
   <div class="lib-shelf">
     <div class="lib-books">
       <div class="lib-book">
-        <div class="lib-cover" onclick="libFocus()"><img src="images/site/guide-cover.jpg" alt="The Essential Pristine Health Guide"><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
+        <div class="lib-cover" onclick="libCard(0)"><img src="images/site/guide-cover.jpg" alt="The Essential Pristine Health Guide"><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
       </div>
       <div class="lib-book">
-        <div class="lib-cover" onclick="libFocus()"><div class="img"><img src="images/home-slide-tarkine-falls-water-hero-2.jpg" alt=""></div><div class="t"><b>Pure Water at Home</b><small>A Pristine little book</small></div><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
+        <div class="lib-cover" onclick="libCard(1)"><div class="img"><img src="images/home-slide-tarkine-falls-water-hero-2.jpg" alt=""></div><div class="t"><b>Pure Water at Home</b><small>A Pristine little book</small></div><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
       </div>
       <div class="lib-book">
-        <div class="lib-cover" onclick="libFocus()"><div class="img"><img src="images/kitchen-panel-2-chopping-kale-process.jpg" alt=""></div><div class="t"><b>The Ancestral Pantry</b><small>A Pristine little book</small></div><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
+        <div class="lib-cover" onclick="libCard(2)"><div class="img"><img src="images/kitchen-panel-2-chopping-kale-process.jpg" alt=""></div><div class="t"><b>The Ancestral Pantry</b><small>A Pristine little book</small></div><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
       </div>
     </div>
     <div class="lib-plank"></div>
     <div class="lib-books caps">
-      <div class="lib-book"><div class="lib-cap"><b>The Essential Pristine Health Guide</b><small>Guide &middot; 24 pages</small><a class="lib-get" href="/downloads/the-essential-pristine-health-guide.pdf" target="_blank" rel="noopener">Download</a></div></div>
-      <div class="lib-book"><div class="lib-cap"><b>Pure Water at Home</b><small>Little book</small><span class="lib-soon">Coming soon. We'll email you when it's ready.</span></div></div>
-      <div class="lib-book"><div class="lib-cap"><b>The Ancestral Pantry</b><small>Little book</small><span class="lib-soon">Coming soon. We'll email you when it's ready.</span></div></div>
+      <div class="lib-book"><div class="lib-cap" onclick="libCard(0)" style="cursor:pointer"><b>The Essential Pristine Health Guide</b><small>Guide &middot; 24 pages</small><span class="lib-soon">Open to read, download or send to Kindle.</span></div></div>
+      <div class="lib-book"><div class="lib-cap" onclick="libCard(1)" style="cursor:pointer"><b>Pure Water at Home</b><small>Little book</small><span class="lib-soon">Coming soon. We'll email you when it's ready.</span></div></div>
+      <div class="lib-book"><div class="lib-cap" onclick="libCard(2)" style="cursor:pointer"><b>The Ancestral Pantry</b><small>Little book</small><span class="lib-soon">Coming soon. We'll email you when it's ready.</span></div></div>
     </div>
   </div>
 
@@ -1418,6 +1454,20 @@ html body .pinned-small-title{font-size:23px!important;}
       <button type="submit" id="lib-btn">Open</button>
     </form>
     <div class="lib-status" id="lib-status"></div>
+  </div>
+</div>
+
+
+<div class="lib-card-wrap" id="lib-card-wrap" onclick="if(event.target===this)libCardClose()">
+  <div class="lib-card" role="dialog" aria-modal="true" aria-labelledby="lib-card-title">
+    <button class="lib-card-close" onclick="libCardClose()" aria-label="Close">&times;</button>
+    <div id="lib-card-cover"></div>
+    <div>
+      <span class="lib-card-eyebrow" id="lib-card-kind"></span>
+      <h3 id="lib-card-title"></h3>
+      <p id="lib-card-blurb"></p>
+      <div id="lib-card-options"></div>
+    </div>
   </div>
 </div>
 
@@ -2114,6 +2164,50 @@ async function libOpen(ev) {
 function libSteps(which) {
   ['ios', 'android'].forEach(function (k) { var el = document.getElementById('lib-steps-' + k); if (el) el.classList.toggle('show', k === which); });
 }
+
+/* Book cards. Each book lists what it offers; anything missing shows as coming soon. */
+var LIB_BOOKS = [
+  { title: 'The Essential Pristine Health Guide', kind: 'Guide · 24 pages',
+    blurb: 'Where we would start if we were starting again. Water, light, sleep, movement and real food, in the order that made the biggest difference to our family. Short, practical, and free.',
+    cover: '<img src="images/site/guide-cover.jpg" alt="">',
+    pdf: '/downloads/the-essential-pristine-health-guide.pdf', epub: '', read: '' },
+  { title: 'Pure Water at Home', kind: 'Little book · coming soon',
+    blurb: 'What we learnt testing water in our own kitchen: what is in tap water, what the filters really do, and the simple set up we settled on. A little book you can read in an evening.',
+    cover: '<div class="img"><img src="images/home-slide-tarkine-falls-water-hero-2.jpg" alt=""></div><div class="t"><b>Pure Water at Home</b><small>A Pristine little book</small></div>',
+    pdf: '', epub: '', read: '' },
+  { title: 'The Ancestral Pantry', kind: 'Little book · coming soon',
+    blurb: 'The staples we keep, how we buy them, and the handful of recipes that use them every week. Soaking, fermenting, good fats and the rest, written for a busy family kitchen.',
+    cover: '<div class="img"><img src="images/kitchen-panel-2-chopping-kale-process.jpg" alt=""></div><div class="t"><b>The Ancestral Pantry</b><small>A Pristine little book</small></div>',
+    pdf: '', epub: '', read: '' }
+];
+var LIB_ICONS = {
+  read: '<svg viewBox="0 0 24 24"><path d="M4 5h6a3 3 0 0 1 3 3v11a2 2 0 0 0-2-2H4z"/><path d="M20 5h-6a3 3 0 0 0-3 3v11a2 2 0 0 1 2-2h7z"/></svg>',
+  pdf: '<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/></svg>',
+  kindle: '<svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6M9 10h6M9 13h4"/></svg>'
+};
+function libRow(icon, title, sub, href) {
+  if (href) return '<a class="lib-row" href="' + href + '" target="_blank" rel="noopener">' + LIB_ICONS[icon] + '<span><b>' + title + '</b><small>' + sub + '</small></span></a>';
+  return '<div class="lib-row soon">' + LIB_ICONS[icon] + '<span><b>' + title + '</b><small>Coming soon</small></span></div>';
+}
+function libCard(i) {
+  var bk = LIB_BOOKS[i]; if (!bk) return;
+  document.getElementById('lib-card-cover').innerHTML = '<div class="lib-card-cover">' + bk.cover + '</div>';
+  document.getElementById('lib-card-kind').textContent = bk.kind;
+  document.getElementById('lib-card-title').textContent = bk.title;
+  document.getElementById('lib-card-blurb').textContent = bk.blurb;
+  var opt = document.getElementById('lib-card-options');
+  if (!libIsOpen()) {
+    opt.innerHTML = '<div class="lib-card-locked"><p>This one is free with your email. Pop it in below and the whole shelf opens.</p><button onclick="libCardClose(); libFocus();">Open the library</button></div>';
+  } else {
+    opt.innerHTML = '<div class="lib-rows">' +
+      libRow('read', 'Read here', 'In your browser, like a Kindle', bk.read) +
+      libRow('pdf', 'Download', 'PDF, yours to keep', bk.pdf) +
+      libRow('kindle', 'Send to Kindle', 'EPUB for your Kindle', bk.epub) + '</div>';
+  }
+  var w = document.getElementById('lib-card-wrap'); w.classList.add('show'); document.body.style.overflow = 'hidden';
+}
+function libCardClose() { var w = document.getElementById('lib-card-wrap'); if (w) w.classList.remove('show'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') libCardClose(); });
 document.addEventListener('DOMContentLoaded', function () { if (libIsOpen()) libShowOpen(true); });
 </script>
 </body>
