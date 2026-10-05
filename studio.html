@@ -8684,9 +8684,9 @@ var PW_KREA_SYSTEM = [
   '- Say inside or outside plainly, and name the room (inside a kitchen at night, on a timber deck, in a living room by a big window). Settings: an Australian home, white marble bench, timber, sage and oatmeal linen, eucalyptus in a ceramic vase, big windows, garden light, beach, long grass at golden hour.',
   '- At most one person. Prefer objects, hands, backs, profiles and side views. Never groups, never children with pets, never faces smiling at the camera, never text, screens, pills or hospital settings.',
   '- Not literal. Find the calm everyday moment that carries the idea: a glass of water, a hand resting on a chest, a cushion in afternoon sun, a mug with steam.',
-  'For an article: shot 1 is the hero, aspect 3:2, wide or from behind, a moment that sets the mood of the opening. Shots 2 to 4 are aspect 4:3 and follow the story in order, each one matching a section.',
-  'For a recipe: shot 1 is the hero, aspect 4:3, the finished dish close and low at table height with light raking across the surface, never top down. Shot 2 the raw ingredients on marble. Shot 3 one pair of hands mid step (stirring, pouring, folding). Shot 4 the dish being served or a slice on a plate.',
-  'Reply with JSON only, no commentary: {"shots":[{"label":"Hero","aspect":"3:2","why":"one short line on what moment this is","prompt":"pristine, ..."}, ... four shots total]}'
+  'For an article: shot 1 is the hero, aspect 3:2, wide or from behind, a moment that sets the mood of the opening. Shots 2 to 6 are aspect 4:3 and follow the story in order, each one matching a section, so the editor can pick the three or four that work.',
+  'For a recipe: shot 1 is the hero, aspect 4:3, the finished dish close and low at table height with light raking across the surface, never top down. Shot 2 the raw ingredients on marble. Shots 3 and 4 one pair of hands at two different steps (stirring, pouring, folding). Shot 5 the dish being served or a slice on a plate. Shot 6 a close detail of texture, a drip, a crumb or steam.',
+  'Reply with JSON only, no commentary: {"shots":[{"label":"Hero","aspect":"3:2","why":"one short line on what moment this is","prompt":"pristine, ..."}, ... six shots total]}'
 ].join('\n');
 
 function pwKreaStoryText(doc, kind) {
@@ -8707,7 +8707,7 @@ async function openKreaPrompts(kind, url) {
   if (!url) { alert('This story has no page yet.'); return; }
   var token = getToken();
   if (!token) { alert('Please enter your GitHub token first.'); return; }
-  seOpenModal('Krea prompts', '<div style="color:var(--muted);font-size:13px;">Reading the story and writing four shots...</div>', '');
+  seOpenModal('Krea prompts', '<div style="color:var(--muted);font-size:13px;">Reading the story and writing six shots...</div>', '');
   try {
     var pg = await seGet(url);
     var doc = new DOMParser().parseFromString(pg.html, 'text/html');
@@ -8715,8 +8715,8 @@ async function openKreaPrompts(kind, url) {
     var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 900, system: PW_KREA_SYSTEM,
-        messages: [{ role: 'user', content: 'This is ' + (kind === 'recipe' ? 'a recipe' : 'an article') + '. Write the four shots.\n\n' + story }] })
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1400, system: PW_KREA_SYSTEM,
+        messages: [{ role: 'user', content: 'This is ' + (kind === 'recipe' ? 'a recipe' : 'an article') + '. Write six shots.\n\n' + story }] })
     });
     var data = await resp.json();
     if (data.error) throw new Error(data.error.message || 'The AI did not answer');
@@ -8734,7 +8734,7 @@ async function openKreaPrompts(kind, url) {
 function pwRenderKreaPrompts(shots, kind) {
   var body = document.getElementById('se-body');
   if (!body) return;
-  var html = '<div style="font-size:12px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">In Krea: Image, model <b>Flux.1 Dev</b>, LoRA <b>Pristine Wellness</b> on, moodboard off. Paste one prompt, set the aspect shown, make four, keep the calmest. Fix a hand in Nano Banana if needed, then Enhancer 2x before adding the photo here with the PHOTOS button.</div>';
+  var html = '<div style="font-size:12px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">In Krea: Image, model <b>Flux.1 Dev</b>, LoRA <b>Pristine Wellness</b> on, moodboard off. Six to choose from, use three or four. Paste one prompt, set the aspect shown, make four, keep the calmest. Fix a hand in Nano Banana if needed, then Enhancer 2x before adding the photo here with the PHOTOS button.</div>';
   shots.forEach(function(sh, i) {
     var p = String(sh.prompt || '').trim();
     html += '<div style="border:0.5px solid var(--border);border-radius:8px;padding:0.9rem 1rem;margin-bottom:0.8rem;background:#fafaf7;">' +
