@@ -3131,7 +3131,11 @@ async function publishArticle() {
 
     // 2. Upload article file to GitHub (only once The Source update is ready, so a parse failure never leaves an unlinked article live)
     // Going live from a private preview: publish the preview page exactly as it was checked and edited
-    if (PW_PUBLISH_MODE === 'golive') fullHTML = PW_GOLIVE_HTML;
+    if (PW_PUBLISH_MODE === 'golive') {
+      fullHTML = PW_GOLIVE_HTML;
+      // A new title means a new filename, so the page's own address lines follow it
+      if (PW_GOLIVE_SRC && PW_GOLIVE_SRC !== filename) fullHTML = fullHTML.split('pristinewellness.com.au/' + PW_GOLIVE_SRC).join('pristinewellness.com.au/' + filename);
+    }
     // Hidden Google data block (Article), read from the finished page
     try { fullHTML = pwAddSchema(fullHTML, filename); } catch(e) {}
     var articleContent = btoa(unescape(encodeURIComponent(fullHTML)));
@@ -3162,7 +3166,7 @@ async function publishArticle() {
       url: filename
     });
     await pwSitemapAdd(filename);
-    if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('a');
+    if (PW_PUBLISH_MODE === 'golive') await pwGoLiveTidy(filename); else pwResetSponsor('a');
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
     pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
@@ -3706,7 +3710,10 @@ async function publishRecipe() {
     updatedKitchen = rebuildFilterPills(updatedKitchen);
 
     // 5. Upload the recipe page (only now that the Kitchen update is ready, so a problem there never leaves a hidden recipe)
-    if (PW_PUBLISH_MODE === 'golive') built.html = PW_GOLIVE_HTML;
+    if (PW_PUBLISH_MODE === 'golive') {
+      built.html = PW_GOLIVE_HTML;
+      if (PW_GOLIVE_SRC && PW_GOLIVE_SRC !== filename) built.html = built.html.split('pristinewellness.com.au/' + PW_GOLIVE_SRC).join('pristinewellness.com.au/' + filename);
+    }
     // Hidden Google data block (Recipe), read from the finished page
     try { built.html = pwAddSchema(built.html, filename); } catch(e) {}
     var recipeContent = btoa(unescape(encodeURIComponent(built.html)));
@@ -3736,7 +3743,7 @@ async function publishRecipe() {
       url: filename
     });
     await pwSitemapAdd(filename);
-    if (PW_PUBLISH_MODE === 'golive') await pwForgetPreview(filename); else pwResetSponsor('r');
+    if (PW_PUBLISH_MODE === 'golive') await pwGoLiveTidy(filename); else pwResetSponsor('r');
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
     pwRefreshShareQuietly(filename);
     btn.textContent = 'Published!';
@@ -4552,7 +4559,7 @@ function renderSourceList() {
       '<button class="manage-pin-btn' + (a.pinned ? ' pinned' : '') + '" onclick="toggleSourcePin(' + i + ')" title="Toggle Essential Reading">' +
         (a.pinned ? '&#128204; Essential' : '&#128204; Pin') +
       '</button>' +
-      '<button class="manage-del-btn" onclick="deleteSourceArticle(' + i + ')" title="Delete article">&#215;</button>' + '<button onclick="openStoryPhotos(\'article\', manageSourceData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openStoryText(\'article\', manageSourceData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'article\', manageSourceData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
+      '<button class="manage-del-btn" onclick="deleteSourceArticle(' + i + ')" title="Delete article">&#215;</button>' + '<button onclick="openStoryPhotos(\'article\', manageSourceData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openKreaPrompts(\'article\', manageSourceData[' + i + '].url)" style="background:#3b5bdb;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">KREA</button>' + '<button onclick="openStoryText(\'article\', manageSourceData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'article\', manageSourceData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
     '</div>';
   });
   html += '<button class="manage-save-btn" id="src-save-btn" onclick="saveSourceChanges()">Save Changes to The Source</button>';
@@ -4574,7 +4581,7 @@ function renderKitchenList() {
       '<button class="manage-pin-btn' + (r.pinned ? ' pinned' : '') + '" onclick="toggleKitchenPin(' + i + ')" title="Toggle Essential Recipes">' +
         (r.pinned ? '&#128204; Essential' : '&#128204; Pin') +
       '</button>' +
-      '<button class="manage-del-btn" onclick="deleteKitchenRecipe(' + i + ')" title="Delete recipe">&#215;</button>' + '<button onclick="openStoryPhotos(\'recipe\', manageKitchenData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openStoryText(\'recipe\', manageKitchenData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'recipe\', manageKitchenData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
+      '<button class="manage-del-btn" onclick="deleteKitchenRecipe(' + i + ')" title="Delete recipe">&#215;</button>' + '<button onclick="openStoryPhotos(\'recipe\', manageKitchenData[' + i + '].url)" style="background:var(--sage);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">PHOTOS</button>' + '<button onclick="openKreaPrompts(\'recipe\', manageKitchenData[' + i + '].url)" style="background:#3b5bdb;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">KREA</button>' + '<button onclick="openStoryText(\'recipe\', manageKitchenData[' + i + '].url)" style="background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">EDIT TEXT</button>' + '<button onclick="openSocialFromManage(\'recipe\', manageKitchenData[' + i + '])" style="background:#7B6FAB;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">&#9889; Social</button>' +
     '</div>';
   });
   html += '<button class="manage-save-btn" id="kit-save-btn" onclick="saveKitchenChanges()">Save Changes to Ancestral Kitchen</button>';
@@ -8367,7 +8374,7 @@ async function aiFixAllRecipe() {
 // 'normal' publishes as usual; 'preview' puts the story on a hidden address only;
 // 'golive' takes a checked preview and publishes it exactly as it is.
 var PW_PUBLISH_MODE = 'normal';
-var PW_GOLIVE_HTML = '';
+var PW_GOLIVE_HTML = '', PW_GOLIVE_SRC = '';
 var PW_PREVIEW_START = '<!-- PW_PREVIEW_START -->', PW_PREVIEW_END = '<!-- PW_PREVIEW_END -->';
 
 async function previewArticle() { PW_PUBLISH_MODE = 'preview'; try { await publishArticle(); } finally { PW_PUBLISH_MODE = 'normal'; } }
@@ -8434,6 +8441,19 @@ async function pwSavePreview(kind, file, html, meta) {
   pv.list.unshift(rec);
   await pwSavePreviews(pv.list, pv.sha, 'Private preview list: add ' + file);
 }
+// After Go Live: drop the preview entry, and if the title gave the story a new filename, remove the old hidden page too
+async function pwGoLiveTidy(filename) {
+  await pwForgetPreview(filename);
+  var src = PW_GOLIVE_SRC;
+  if (!src || src === filename) return;
+  await pwForgetPreview(src);
+  try {
+    var pg = await githubRequest(src, 'GET');
+    var html = decodeURIComponent(escape(atob(pg.content.replace(/\n/g, ''))));
+    if (html.indexOf(PW_PREVIEW_START) !== -1) await githubRequest(src, 'DELETE', { message: 'Remove preview page, now live as ' + filename, sha: pg.sha, branch: GITHUB_BRANCH });
+  } catch (e) {}
+}
+
 async function pwForgetPreview(file) {
   try {
     var pv = await pwLoadPreviews();
@@ -8482,6 +8502,7 @@ async function loadPreviewsForManage() {
         b('COPY LINK', 'copyPreviewLink(' + i + ', this)', '#7a8163') +
         b('OPEN', 'window.open(\'' + PW_SITE + r.url + '\', \'_blank\')', '#7a8163') +
         b('PHOTOS', 'openStoryPhotos(\'' + r.kind + '\', managePreviewData[' + i + '].url)', 'var(--sage)') +
+        b('KREA', 'openKreaPrompts(\'' + r.kind + '\', managePreviewData[' + i + '].url)', '#3b5bdb') +
         b('EDIT TEXT', 'openStoryText(\'' + r.kind + '\', managePreviewData[' + i + '].url)', '#1a1a1a') +
         b('GO LIVE', 'goLivePreview(' + i + ')', '#C9A96E') +
         '<button class="manage-del-btn" onclick="deletePreview(' + i + ')" title="Delete preview">&#215;</button>' +
@@ -8547,7 +8568,7 @@ async function goLivePreview(i) {
       recipeImagePath = heroImg; recipeImageBase64 = ''; recipeBodyImages = [null, null, null, null, null, null];
       if (catEl) catEl.value = r.category;
     }
-    PW_GOLIVE_HTML = html;
+    PW_GOLIVE_HTML = html; PW_GOLIVE_SRC = r.url;
     PW_PUBLISH_MODE = 'golive';
     if (r.kind === 'recipe') await publishRecipe(); else await publishArticle();
     var st = (document.getElementById(statusId) || {}).textContent || '';
@@ -8555,7 +8576,7 @@ async function goLivePreview(i) {
   } catch (e) {
     setManageStatus('prev', 'Error: ' + e.message, false);
   } finally {
-    PW_PUBLISH_MODE = 'normal'; PW_GOLIVE_HTML = '';
+    PW_PUBLISH_MODE = 'normal'; PW_GOLIVE_HTML = ''; PW_GOLIVE_SRC = '';
     generatedArticleData = saved.gad; generatedRecipeData = saved.grd; articleImagePath = saved.aip; articleImageBase64 = saved.aib; articleBodyImages = saved.abi;
     recipeImagePath = saved.rip; recipeImageBase64 = saved.rib; recipeBodyImages = saved.rbi;
     if (catEl) catEl.value = savedCat;
@@ -8675,6 +8696,88 @@ function sePickFile(cb) {
 }
 
 /* ---------- CHANGE PHOTOS ---------- */
+/* ===== KREA PROMPTS: one click turns a story into four photo prompts for Krea (Flux.1 Dev + Pristine Wellness LoRA) ===== */
+var PW_KREA_SYSTEM = [
+  'You write photo prompts for Pristine Wellness, an Australian family wellness site. The prompts go into Krea on Flux.1 Dev with a trained style LoRA, so never describe style, camera brand, film or colour grading: the LoRA carries all of that. Describe only the subject, the distance, the setting and the light.',
+  'Rules for every prompt:',
+  '- Start with the word "pristine," then the camera distance in the first few words (close detail, waist up, wide shot, low angle at table height, over the shoulder from behind), then the scene. Under 40 words. One picture per prompt, nothing abstract.',
+  '- Say inside or outside plainly, and name the room (inside a kitchen at night, on a timber deck, in a living room by a big window). Settings: an Australian home, white marble bench, timber, sage and oatmeal linen, eucalyptus in a ceramic vase, big windows, garden light, beach, long grass at golden hour.',
+  '- At most one person. Prefer objects, hands, backs, profiles and side views. Never groups, never children with pets, never faces smiling at the camera, never text, screens, pills or hospital settings.',
+  '- Not literal. Find the calm everyday moment that carries the idea: a glass of water, a hand resting on a chest, a cushion in afternoon sun, a mug with steam.',
+  'For an article: shot 1 is the hero, aspect 3:2, wide or from behind, a moment that sets the mood of the opening. Shots 2 to 6 are aspect 4:3 and follow the story in order, each one matching a section, so the editor can pick the three or four that work.',
+  'For a recipe: shot 1 is the hero, aspect 4:3, the finished dish close and low at table height with light raking across the surface, never top down. Shot 2 the raw ingredients on marble. Shots 3 and 4 one pair of hands at two different steps (stirring, pouring, folding). Shot 5 the dish being served or a slice on a plate. Shot 6 a close detail of texture, a drip, a crumb or steam.',
+  'Reply with JSON only, no commentary: {"shots":[{"label":"Hero","aspect":"3:2","why":"one short line on what moment this is","prompt":"pristine, ..."}, ... six shots total]}'
+].join('\n');
+
+function pwKreaStoryText(doc, kind) {
+  var t = function(sel) { var e = doc.querySelector(sel); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
+  var out = [t('h1')];
+  if (kind === 'recipe') {
+    out.push(t('.recipe-about'));
+    out.push('Ingredients: ' + Array.prototype.map.call(doc.querySelectorAll('.ingredient-item'), function(e){ return e.textContent.replace(/\s+/g, ' ').trim(); }).join(', '));
+    out.push('Method: ' + Array.prototype.map.call(doc.querySelectorAll('.step-text'), function(e){ return e.textContent.replace(/\s+/g, ' ').trim(); }).join(' '));
+  } else {
+    out.push(t('.article-intro'));
+    Array.prototype.forEach.call(doc.querySelectorAll('.article-text > h2, .article-text > p'), function(e) { out.push((e.tagName === 'H2' ? '## ' : '') + e.textContent.replace(/\s+/g, ' ').trim()); });
+  }
+  return out.filter(Boolean).join('\n').slice(0, 7000);
+}
+
+async function openKreaPrompts(kind, url) {
+  if (!url) { alert('This story has no page yet.'); return; }
+  var token = getToken();
+  if (!token) { alert('Please enter your GitHub token first.'); return; }
+  seOpenModal('Krea prompts', '<div style="color:var(--muted);font-size:13px;">Reading the story and writing six shots...</div>', '');
+  try {
+    var pg = await seGet(url);
+    var doc = new DOMParser().parseFromString(pg.html, 'text/html');
+    var story = pwKreaStoryText(doc, kind);
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1400, system: PW_KREA_SYSTEM,
+        messages: [{ role: 'user', content: 'This is ' + (kind === 'recipe' ? 'a recipe' : 'an article') + '. Write six shots.\n\n' + story }] })
+    });
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error.message || 'The AI did not answer');
+    var text = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('');
+    var m = text.match(/\{[\s\S]*\}/);
+    var shots = m ? (JSON.parse(m[0]).shots || []) : [];
+    if (!shots.length) throw new Error('No prompts came back. Try again.');
+    pwRenderKreaPrompts(shots, kind);
+  } catch (e) {
+    var b = document.getElementById('se-body');
+    if (b) b.innerHTML = '<div style="color:#c44;font-size:13px;">Could not write the prompts: ' + escHtml(e.message) + '</div>';
+  }
+}
+
+function pwRenderKreaPrompts(shots, kind) {
+  var body = document.getElementById('se-body');
+  if (!body) return;
+  var html = '<div style="font-size:12px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">In Krea: Image, model <b>Flux.1 Dev</b>, LoRA <b>Pristine Wellness</b> on, moodboard off. Six to choose from, use three or four. Paste one prompt, set the aspect shown, make four, keep the calmest. Fix a hand in Nano Banana if needed, then Enhancer 2x before adding the photo here with the PHOTOS button.</div>';
+  shots.forEach(function(sh, i) {
+    var p = String(sh.prompt || '').trim();
+    html += '<div style="border:0.5px solid var(--border);border-radius:8px;padding:0.9rem 1rem;margin-bottom:0.8rem;background:#fafaf7;">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
+        '<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);font-weight:500;">' + escHtml(sh.label || ('Shot ' + (i + 1))) + '</span>' +
+        '<span style="font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:10px;border:0.5px solid var(--border);color:#666;">' + escHtml(sh.aspect || '4:3') + '</span>' +
+        '<span style="flex:1;font-size:12px;color:#888;">' + escHtml(sh.why || '') + '</span>' +
+        '<button onclick="pwCopyKrea(this, ' + i + ')" style="background:#3b5bdb;color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:5px 12px;border-radius:4px;font-family:Jost,sans-serif;">COPY</button>' +
+      '</div>' +
+      '<textarea id="krea-p-' + i + '" style="width:100%;min-height:64px;border:0.5px solid var(--border);border-radius:4px;padding:8px 10px;font-family:Jost,sans-serif;font-size:13px;line-height:1.5;color:#222;background:#fff;resize:vertical;">' + escHtml(p) + '</textarea>' +
+    '</div>';
+  });
+  body.innerHTML = html;
+}
+
+function pwCopyKrea(btn, i) {
+  var ta = document.getElementById('krea-p-' + i);
+  if (!ta) return;
+  try { navigator.clipboard.writeText(ta.value); } catch (e) { ta.select(); try { document.execCommand('copy'); } catch (e2) {} }
+  btn.textContent = 'COPIED';
+  setTimeout(function() { btn.textContent = 'COPY'; }, 1800);
+}
+
 async function openStoryPhotos(kind, url) {
   if (!url) { alert('This story has no page to edit.'); return; }
   seOpenModal('Change photos', '<div style="color:var(--muted);font-size:13px;">Loading the story...</div>', '');
