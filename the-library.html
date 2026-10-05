@@ -1517,7 +1517,7 @@ html body .pinned-small-title{font-size:23px!important;}
         </div>
         <div class="lib-ios-arrow" id="lib-ios-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
       </div>
-      <div class="lib-steps" id="lib-steps-android"><div class="lib-ios-guide"><div class="lib-ios-step"><span class="n">1</span><div>In Chrome, tap the <b>three dots</b> at the top right.</div></div><div class="lib-ios-step"><span class="n">2</span><div>Tap <b>Add to Home screen</b> (or <b>Install app</b>), then <b>Add</b>.</div></div><div class="lib-ios-note" id="lib-android-note"></div></div></div>
+      <div class="lib-steps" id="lib-steps-android"><div class="lib-ios-guide" id="lib-android-guide"></div></div>
     </div>
     <div>
       <div class="lib-phones">
@@ -2269,8 +2269,13 @@ function libApp(which) {
     var arrow = document.getElementById('lib-ios-arrow');
     if (arrow) { arrow.classList.toggle('show', plat === 'ios' && inSafari); setTimeout(function(){ arrow.classList.remove('show'); }, 9000); }
   } else {
-    var an = document.getElementById('lib-android-note');
-    if (an) an.textContent = plat === 'android' ? '' : 'Open pristinewellness.com.au on your Android phone and come back to this page.';
+    var ua2 = navigator.userAgent || '', g = document.getElementById('lib-android-guide');
+    var steps;
+    if (/Firefox|FxiOS/.test(ua2)) steps = [['Tap the <b>three dots</b> at the bottom right of Firefox.'], ['Tap <b>Install</b> (or <b>Add to Home screen</b>), then <b>Add</b>.']];
+    else if (/SamsungBrowser/.test(ua2)) steps = [['Tap the <b>menu</b> (three lines) at the bottom right of Samsung Internet.'], ['Tap <b>Add page to</b>, then <b>Home screen</b>, then <b>Add</b>.']];
+    else steps = [['In Chrome, tap the <b>three dots</b> at the top right.'], ['Tap <b>Add to Home screen</b> (or <b>Install app</b>), then <b>Add</b>.']];
+    var note = plat === 'android' ? '' : '<div class="lib-ios-note">Open pristinewellness.com.au on your Android phone and come back to this page.</div>';
+    if (g) g.innerHTML = steps.map(function (st, i) { return '<div class="lib-ios-step"><span class="n">' + (i + 1) + '</span><div>' + st[0] + '</div></div>'; }).join('') + note;
     var arrow2 = document.getElementById('lib-ios-arrow'); if (arrow2) arrow2.classList.remove('show');
   }
 }
