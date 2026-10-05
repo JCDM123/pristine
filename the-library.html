@@ -1371,6 +1371,8 @@ html body .pinned-small-title{font-size:23px!important;}
 .lib-done b{display:block;font-weight:400;font-size:15px;color:#111;}
 .lib-done small{display:block;font-size:13px;color:#666;font-weight:300;line-height:1.5;}
 .lib-badge.install{background:#8F9574;border-color:#8F9574;color:#fff;}
+.lib-badge.pulse{animation:libPulse 1.4s ease-in-out 6;}
+@keyframes libPulse{0%,100%{box-shadow:0 0 0 0 rgba(143,149,116,0.55)}50%{box-shadow:0 0 0 12px rgba(143,149,116,0)}}
 .lib-badge.install svg{fill:#fff;}
 .lib-ios-guide{display:flex;flex-direction:column;gap:12px;}
 .lib-ios-step{display:flex;gap:12px;align-items:flex-start;}
@@ -2260,6 +2262,14 @@ function libApp(which) {
     window.pwAppInstall().then(function (ok) { if (ok) { libAppState(); libSteps(''); } else { libSteps('android'); } });
     return;
   }
+  if (which === 'android' && plat === 'android' && !/Chrome\//.test(navigator.userAgent || '') || which === 'android' && /SamsungBrowser|Firefox/.test(navigator.userAgent || '')) {
+    // Hand the page to Chrome, where the install is one tap. If Chrome is not on the phone, Android brings us back here and the steps show.
+    var t = 'pristinewellness.com.au/the-library.html?pw_install=1#app';
+    try { sessionStorage.setItem('pw_handoff', '1'); } catch (e) {}
+    location.href = 'intent://' + t + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2F' + encodeURIComponent(t) + ';end';
+    setTimeout(function () { libSteps('android'); }, 1500);
+    return;
+  }
   libSteps(which);
   if (which === 'ios') {
     var ua = navigator.userAgent || '', inSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
@@ -2287,7 +2297,14 @@ function libApp(which) {
 }
 document.addEventListener('pw-install-ready', libAppState);
 document.addEventListener('pw-installed', function () { libAppState(); libSteps(''); });
-document.addEventListener('DOMContentLoaded', libAppState);
+document.addEventListener('DOMContentLoaded', function () {
+  libAppState();
+  if (/[?&]pw_install=1/.test(location.search)) {
+    var sec = document.getElementById('app'); if (sec) setTimeout(function () { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
+    var a = document.getElementById('lib-btn-android'); if (a) a.classList.add('pulse');
+    try { history.replaceState(null, '', location.pathname + '#app'); } catch (e) {}
+  }
+});
 document.addEventListener('DOMContentLoaded', function () { if (libIsOpen()) libShowOpen(true); });
 </script>
 </body>
