@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <script src="/site-status.js"></script>
-<script src="/pw-rotate.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ancestral Kitchen | Pristine Wellness</title>
+<title>The Library | Pristine Wellness</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/images/favicon-48.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-<link rel="canonical" href="https://pristinewellness.com.au/ancestral-kitchen.html">
-  <meta name="description" content="Wholefood recipes rooted in ancestral wisdom. Real ingredients, no shortcuts, nourishing your family one meal at a time.">
-  <meta property="og:title" content="Ancestral Kitchen | Pristine Wellness">
-  <meta property="og:description" content="Wholefood recipes rooted in ancestral wisdom. Real ingredients, nourishing your family.">
-  <meta property="og:image" content="https://pristinewellness.com.au/images/organic-micro-salad-hero.jpg">
-  <meta property="og:url" content="https://pristinewellness.com.au/ancestral-kitchen.html">
+<link rel="canonical" href="https://pristinewellness.com.au/the-library.html">
+  <meta name="description" content="Our guides and little books, free with your email. Pick one off the shelf, download it, keep it. And the Pristine app for your phone.">
+  <meta property="og:title" content="The Library | Pristine Wellness">
+  <meta property="og:description" content="Our guides and little books, free with your email. And the Pristine app for your phone.">
+  <meta property="og:image" content="https://pristinewellness.com.au/images/newsletter-bg.jpg">
+  <meta property="og:url" content="https://pristinewellness.com.au/the-library.html">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Ancestral Kitchen | Pristine Wellness">
-  <meta name="twitter:description" content="Wholefood recipes rooted in ancestral wisdom. Real ingredients, nourishing your family.">
-  <meta name="twitter:image" content="https://pristinewellness.com.au/images/organic-micro-salad-hero.jpg">
+  <meta name="twitter:title" content="The Source | Pristine Wellness">
+  <meta name="twitter:description" content="Evidence-based wellness articles rooted in ancestral wisdom. Nutrition, gut health, sleep and more.">
+  <meta name="twitter:image" content="https://pristinewellness.com.au/images/newsletter-bg.jpg">
 <meta name="robots" content="index, follow"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 <style>
@@ -52,8 +51,6 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
   flex-direction:column;
 }
 .site-wrap > .footer{margin-top:auto;}
-.site-wrap > .inner{flex:1;display:flex;flex-direction:column;}
-.site-wrap > .inner > #recipe-grid{flex:1;align-content:center;}
 
 /* ── NAV ── */
 
@@ -215,13 +212,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 }
 
 /* ── ESSENTIAL READING ── */
-.pinned-section{
-  background:transparent;
-  padding:3rem 2.5rem;
-  margin:0 0 0 0;
-  position:relative;
-  overflow:hidden;
-}
+.pinned-section{ background:transparent; padding:0; margin:0; position:relative; }
 .pinned-section::before{content:none;}
 .pinned-header{
   display:flex;align-items:center;gap:1rem;
@@ -234,7 +225,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 }
 .pinned-title{
   font-family:'Cormorant Garamond',serif;font-style:italic;
-  font-size:32px;font-weight:400;color:#fff;
+  font-size:32px;font-weight:400;color:#1a1a1a;
   margin-left:auto;
 }
 .pinned-line{
@@ -378,14 +369,8 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
   display:flex;align-items:center;gap:6px;
 }
 .pinned-hero-meta svg{width:12px;height:12px;stroke:rgba(255,255,255,0.4);fill:none;stroke-width:1.5;}
-.pinned-small{
-  border-radius:12px;overflow:hidden;
-  border:0.5px solid var(--border);
-  background:#fff;
-  cursor:pointer;display:flex;flex-direction:column;
-  transition:transform 0.3s ease,background 0.3s ease;
-}
-.pinned-small:hover{transform:translateY(-4px);background:rgba(255,255,255,0.1);}
+.pinned-small{ border-radius:12px;overflow:hidden; border:0.5px solid var(--border); background:#fff; cursor:pointer;display:flex;flex-direction:column;transition:box-shadow 0.2s; }
+.pinned-small:hover{ box-shadow:0 4px 20px rgba(0,0,0,0.06); transform:translateY(-2px); }
 .pinned-small-img{
   height:140px;position:relative;overflow:hidden;flex-shrink:0;
 }
@@ -402,21 +387,10 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
   font-family:'Jost',sans-serif;font-weight:500;
 }
 .pinned-small-body{padding:1.2rem;flex:1;display:flex;flex-direction:column;}
-.pinned-small-cat{
-  font-size:10px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--sage);margin-bottom:6px;
-  display:block;font-weight:500;font-family:'Jost',sans-serif;
-}
-.pinned-small-title{
-  font-family:'Cormorant Garamond',serif;font-style:italic;
-  font-size:18px;font-weight:400;color:#1a1a1a;
-  line-height:1.3;margin-bottom:6px;transition:color 0.2s;flex:1;
-}
-.pinned-small:hover .pinned-small-title{color:rgba(168,187,138,1);}
-.pinned-small-meta{
-  font-size:11px;color:var(--muted);font-weight:300;
-  display:flex;align-items:center;gap:6px;margin-top:auto;
-}
+.pinned-small-cat{ font-size:10px;letter-spacing:2px;text-transform:uppercase; color:var(--sage);margin-bottom:6px; display:block;font-weight:500; }
+.pinned-small-title{ font-family:'Cormorant Garamond',serif;font-style:italic; font-size:18px;font-weight:500;color:#1a1a1a; line-height:1.3;margin-bottom:6px; }
+.pinned-small:hover .pinned-small-title{ color:#1a1a1a; }
+.pinned-small-meta{ font-size:11px;color:var(--muted);font-weight:400; display:flex;align-items:center;gap:6px;margin-top:auto; }
 .pinned-small-meta svg{width:12px;height:12px;stroke:rgba(255,255,255,0.4);fill:none;stroke-width:1.5;}
 @media(max-width:1100px){
   .pinned-asymmetric{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
@@ -430,10 +404,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 
 /* PAGE SPECIFIC */
 #recipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-bottom:2.5rem;}
-#recipe-grid .card {
-  display:flex;flex-direction:column;
-  min-width:0;overflow:hidden;
-}
+#recipe-grid .card{display:flex;flex-direction:column;}
 #recipe-grid .card-img{height:200px;position:relative;overflow:hidden;flex-shrink:0;}
 #recipe-grid .card-img-inner{position:absolute;inset:0;background-size:cover;background-position:center;}
 .time-badge{position:absolute;bottom:12px;right:12px;z-index:2;font-size:11px;background:rgba(0,0,0,0.55);color:#fff;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;}
@@ -442,7 +413,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 @media(max-width:700px){#recipe-grid{grid-template-columns:1fr;}}
 .time-badge{position:absolute;bottom:12px;right:12px;z-index:2;font-size:11px;background:rgba(0,0,0,0.55);color:#fff;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;}
 .time-badge svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:1.5;}
-/* ── NAV CONSISTENCY | matches The Source exactly ── */
+/* ── NAV CONSISTENCY - matches The Source exactly ── */
 
 .nav.scrolled{min-height:64px;padding:0.6rem 2.5rem;box-shadow:0 1px 0 var(--border);}
 
@@ -454,7 +425,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 .nav-right svg:hover{stroke:var(--sage);}
 
 /* ════════════════════════════════════════════════
-   PRISTINE WELLNESS | MASTER CSS
+   PRISTINE WELLNESS - MASTER CSS
    Applied to every page for full consistency
    ════════════════════════════════════════════════ */
 
@@ -583,7 +554,7 @@ p, li, .card-excerpt, .feat-excerpt,
   font-size: 18px; color: #888;
 }
 
-/* ── HOVER EFFECTS | everything clickable ── */
+/* ── HOVER EFFECTS - everything clickable ── */
 .card { transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer; }
 .card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(0,0,0,0.1); }
 .card:hover .card-title { color: var(--sage-dark) !important; }
@@ -685,7 +656,7 @@ p, li, .card-excerpt, .feat-excerpt,
 .search-empty { text-align: center; padding: 3rem 0; }
 .search-empty p { font-size: 16px; color: #bbb; font-weight: 300; }
 
-/* ── ESSENTIAL READING | mobile stack ── */
+/* ── ESSENTIAL READING - mobile stack ── */
 @media (max-width: 700px) {
   #essential-reading > div[style*="grid-template-columns:1.4fr"],
   #pinned-section > div[style*="grid-template-columns:1.4fr"] {
@@ -699,7 +670,7 @@ p, li, .card-excerpt, .feat-excerpt,
 }
 
 /* ════════════════════════════════════════
-   TABLET | 1100px
+   TABLET - 1100px
    ════════════════════════════════════════ */
 @media (max-width: 1100px) {
   .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:2.5rem;}
@@ -729,7 +700,7 @@ p, li, .card-excerpt, .feat-excerpt,
 }
 
 /* ════════════════════════════════════════
-   MOBILE | 700px
+   MOBILE - 700px
    ════════════════════════════════════════ */
 @media (max-width: 700px) {
   body { font-size: 15px; }
@@ -977,7 +948,7 @@ p, li, .card-excerpt, .feat-excerpt,
 .modal-overlay.open { display: flex !important; opacity: 1 !important; pointer-events: all !important; }
 
 /* ════════════════════════════════════════
-   COMPREHENSIVE FIX | ALL 14 ISSUES
+   COMPREHENSIVE FIX - ALL 14 ISSUES
    ════════════════════════════════════════ */
 
 /* ISSUE 1: Home nav icons white over hero, visible when scrolled */
@@ -1057,7 +1028,7 @@ p, li, .card-excerpt, .feat-excerpt,
   .pillars-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
-/* ISSUE 13: Inner padding | proper breathing room on all screens */
+/* ISSUE 13: Inner padding - proper breathing room on all screens */
 .inner { padding: 0 3.5rem !important; }
 @media (max-width: 1100px) { .inner { padding: 0 2.5rem !important; } }
 @media (max-width: 700px) { .inner { padding: 0 1.5rem !important; } }
@@ -1095,9 +1066,8 @@ p, li, .card-excerpt, .feat-excerpt,
 .filter-pill:hover{border-color:var(--sage);color:var(--sage);}
 .filter-pill.active{background:var(--sage);border-color:var(--sage);color:#fff;}
 .page-header{padding:2.8rem 2.5rem 2rem;border-bottom:0.5px solid var(--border);display:flex;flex-direction:column;gap:1.2rem;}
-@media(max-width:900px){.page-header{padding-top:2rem;}}
 .page-header-left{display:flex;align-items:center;gap:2rem;flex-wrap:wrap;}
-.page-header{padding:1.5rem;}
+.page-header{padding:2.8rem 2.5rem 2rem;border-bottom:0.5px solid var(--border);display:flex;flex-direction:column;gap:1.2rem;}
 .page-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#aaa;font-weight:400;line-height:1.6;max-width:260px;padding-left:2rem;border-left:0.5px solid var(--border);}
 .page-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#aaa;font-weight:400;line-height:1.6;max-width:260px;padding-left:2rem;border-left:0.5px solid var(--border);}
 
@@ -1283,12 +1253,102 @@ html body .pinned-small-title{font-size:23px!important;}
   html body .nav.scrolled .logo-img{width:44px !important;height:44px !important;margin-bottom:0 !important;}
 }
 </style>
+
+<style>
+/* ── THE LIBRARY ── */
+.lib{background:radial-gradient(ellipse 60% 30% at 20% 10%,rgba(201,169,110,0.10),transparent 60%),radial-gradient(ellipse 50% 25% at 80% 60%,rgba(201,169,110,0.10),transparent 60%),radial-gradient(ellipse 40% 20% at 50% 95%,rgba(143,149,116,0.08),transparent 60%),linear-gradient(180deg,#faf8f3,#f3efe6);padding-bottom:4rem;}
+.lib-hero{text-align:center;padding:4.5rem 5% 2.5rem;}
+.lib-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#999;display:block;margin-bottom:1rem;font-weight:400;}
+.lib-hero h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(56px,7vw,84px);line-height:1;color:#111;}
+.lib-sub{color:#666;font-size:16px;line-height:1.8;max-width:520px;margin:1.2rem auto 0;font-weight:300;}
+.lib-shelf{max-width:1100px;margin:2rem auto 0;padding:0 5%;position:relative;}
+.lib-books{position:relative;z-index:2;display:flex;justify-content:center;gap:7rem;align-items:flex-end;padding:0 2rem;}
+.lib-books.caps{align-items:flex-start;margin-top:1.2rem;}
+.lib-book{width:200px;position:relative;}
+.lib-cover{width:200px;height:284px;border-radius:3px 8px 8px 3px;box-shadow:6px 10px 22px rgba(0,0,0,0.22),inset 4px 0 6px rgba(255,255,255,0.35);overflow:hidden;background:#fff;position:relative;display:flex;flex-direction:column;cursor:pointer;transition:transform .3s;}
+.lib-cover:hover{transform:translateY(-4px);}
+.lib-cover>img{width:100%;height:100%;object-fit:cover;display:block;}
+.lib-cover .img{height:50%;overflow:hidden;}
+.lib-cover .img img{width:100%;height:100%;object-fit:cover;display:block;}
+.lib-cover .t{padding:1rem 1rem 0;background:#efe9dc;flex:1;}
+.lib-cover .t b{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:22px;line-height:1.1;display:block;color:#1a1a1a;}
+.lib-cover .t small{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#999;display:block;margin-top:8px;}
+.lib-lock{position:absolute;inset:0;background:rgba(245,240,232,0.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:opacity .4s;}
+.lib-lock .pad{width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.12);}
+.lib-lock .pad svg{width:18px;height:18px;stroke:#4a5e38;fill:none;stroke-width:1.6;}
+.lib-lock span{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#4a5e38;background:#fff;padding:5px 10px;border-radius:20px;text-align:center;line-height:1.5;}
+.lib.open .lib-lock{opacity:0;pointer-events:none;}
+.lib-cap{text-align:center;}
+.lib-cap b{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:20px;display:block;line-height:1.15;color:#111;}
+.lib-cap small{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#999;display:block;margin-top:6px;}
+.lib-cap .lib-get{display:none;margin-top:10px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#fff;background:#8F9574;padding:8px 14px;border-radius:30px;text-decoration:none;}
+.lib-cap .lib-soon{display:none;margin-top:10px;font-size:11px;color:#888;line-height:1.5;}
+.lib.open .lib-cap .lib-get{display:inline-block;}
+.lib.open .lib-cap .lib-soon{display:block;}
+.lib-plank{height:34px;margin:-6px 2rem 0;border-radius:3px;background:linear-gradient(180deg,#c9a46c 0%,#b8924f 45%,#a57f3f 100%);box-shadow:0 10px 18px rgba(0,0,0,0.25);position:relative;z-index:1;}
+.lib-plank:after{content:"";position:absolute;left:12px;right:12px;bottom:-10px;height:10px;background:#8c6a33;border-radius:0 0 4px 4px;opacity:0.9;}
+.lib-plank:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,0.08) 0 6px,transparent 6px 17px,rgba(0,0,0,0.05) 17px 20px);border-radius:3px;}
+.lib-unlock{max-width:560px;margin:3rem auto 0;background:#fff;border-radius:6px;padding:2.2rem 2.4rem;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.06);}
+.lib-unlock h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:30px;color:#111;}
+.lib-unlock p{color:#666;font-size:14px;line-height:1.7;margin:0.6rem 0 1.3rem;font-weight:300;}
+.lib-form{display:flex;max-width:420px;margin:0 auto;}
+.lib-form input{flex:1;min-width:0;border:0.5px solid var(--border);padding:13px 16px;font-family:'Jost',sans-serif;font-size:14px;border-radius:2px 0 0 2px;background:#fff;}
+.lib-form button{background:#8F9574;color:#fff;border:none;padding:0 22px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Jost',sans-serif;border-radius:0 2px 2px 0;cursor:pointer;}
+.lib-form button:disabled{opacity:.6;cursor:default;}
+.lib-status{font-size:13px;color:#8F9574;margin-top:12px;min-height:18px;}
+.lib.open .lib-unlock form{display:none;}
+.lib-app{background:#fff;padding:5rem 5%;}
+.lib-app-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.lib-app h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(40px,4.6vw,56px);line-height:1.05;color:#111;}
+.lib-app p{color:#666;font-size:16px;line-height:1.8;margin:1.2rem 0 1.8rem;max-width:460px;font-weight:300;}
+.lib-badges{display:flex;gap:12px;flex-wrap:wrap;}
+.lib-badge{display:flex;align-items:center;gap:10px;background:#1a1a1a;color:#fff;border-radius:8px;padding:10px 16px;text-decoration:none;min-width:190px;cursor:pointer;border:0.5px solid #1a1a1a;}
+.lib-badge svg{width:24px;height:24px;fill:#fff;}
+.lib-badge small{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.7;}
+.lib-badge b{display:block;font-weight:400;font-size:16px;line-height:1.1;}
+.lib-badge.light{background:#fff;color:#1a1a1a;border-color:#ccc;}
+.lib-badge.light svg{fill:#1a1a1a;}
+.lib-steps{display:none;margin-top:1.4rem;background:#f7f4ee;border-radius:8px;padding:1.2rem 1.4rem;font-size:14px;line-height:1.8;color:#444;max-width:460px;}
+.lib-steps.show{display:block;}
+.lib-steps b{font-weight:500;color:#111;}
+.lib-phones{display:flex;justify-content:center;gap:2rem;align-items:flex-end;}
+.lib-phone{width:250px;height:510px;border-radius:38px;background:#111;padding:12px;box-shadow:0 30px 60px rgba(0,0,0,0.25);position:relative;}
+.lib-phone .screen{width:100%;height:100%;border-radius:28px;overflow:hidden;background:#000;position:relative;}
+.lib-phone .screen img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;}
+.lib-phone .notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:90px;height:22px;background:#111;border-radius:0 0 14px 14px;z-index:2;}
+.lib-phone.home .screen{background:linear-gradient(160deg,#dfe6d3,#b9c4a4 60%,#8f9574);padding:38px 14px 14px;}
+.lib-icons{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.lib-icon{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,0.35);}
+.lib-icon.p{background:#fff;box-shadow:0 4px 10px rgba(0,0,0,0.15);overflow:hidden;}
+.lib-icon.p img{width:100%;height:100%;object-fit:cover;display:block;}
+.lib-ph-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#999;text-align:center;margin-top:12px;}
+@media(max-width:800px){
+  .lib-books{gap:1.6rem;padding:0 0.5rem;}
+  .lib-book{width:27%;}
+  .lib-cover{width:100%;height:auto;aspect-ratio:200/284;}
+  .lib-cover .t b{font-size:15px;}
+  .lib-cover .t{padding:0.6rem 0.6rem 0;}
+  .lib-plank{margin:-6px 0.5rem 0;}
+  .lib-cap b{font-size:15px;}
+  .lib-lock span{font-size:8px;letter-spacing:1.5px;padding:4px 8px;}
+  .lib-lock .pad{width:36px;height:36px;}
+  .lib-unlock{padding:1.6rem 1.2rem;margin:2rem 5% 0;}
+  .lib-app{padding:3.5rem 5%;}
+  .lib-app-inner{grid-template-columns:1fr;gap:2.5rem;}
+  .lib-phones{gap:1rem;}
+  .lib-phone{width:150px;height:306px;padding:7px;border-radius:24px;}
+  .lib-phone .screen{border-radius:18px;}
+  .lib-phone.home .screen{padding:24px 8px 8px;}
+  .lib-icons{gap:6px;}
+  .lib-icon{border-radius:7px;}
+}
+</style>
 </head>
 <body>
 <div class="site-wrap">
 <nav class="nav" id="main-nav">
   <img class="logo-img" src="/images/site/logo.jpg" alt="Pristine Wellness" onclick="window.location='index.html'"/>
-  <div class="nav-links"><a href="index.html">Home</a><a href="the-source.html">The Source</a><a href="ancestral-kitchen.html" class="active">Ancestral Kitchen</a><a href="experiment.html">The Experiment</a><a href="the-library.html">The Library</a><a href="about.html">About</a><a href="social-feed.html">Social Feed</a></div>
+  <div class="nav-links"><a href="index.html">Home</a><a href="the-source.html">The Source</a><a href="ancestral-kitchen.html">Ancestral Kitchen</a><a href="experiment.html">The Experiment</a><a href="the-library.html" class="active">The Library</a><a href="about.html">About</a><a href="social-feed.html">Social Feed</a></div>
   <div class="nav-right">
     <svg onclick="openSearch()" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#999" stroke-width="1.5" style="cursor:pointer"><circle cx="11" cy="11" r="8" fill="none"/><path d="m21 21-4.35-4.35" fill="none"/></svg>
     <button class="mobile-menu-btn" id="mobile-btn" onclick="openMobileMenu()">
@@ -1308,9 +1368,9 @@ html body .pinned-small-title{font-size:23px!important;}
   <div class="mobile-drawer-results" id="mobile-drawer-results"></div>
   <a href="index.html">Home</a>
   <a href="the-source.html">The Source</a>
-  <a href="ancestral-kitchen.html" class="active">Ancestral Kitchen</a>
+  <a href="ancestral-kitchen.html">Ancestral Kitchen</a>
   <a href="experiment.html">The Experiment</a>
-  <a href="the-library.html">The Library</a>
+  <a href="the-library.html" class="active">The Library</a>
   <a href="about.html">About</a>
   <a href="social-feed.html">Social Feed</a>
   <a href="terms.html" style="font-size:14px;color:#999;">Terms</a>
@@ -1322,144 +1382,75 @@ html body .pinned-small-title{font-size:23px!important;}
     <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" width="22" height="22" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
 </div>
-<div class="page-header">
-  <div class="page-header-left">
-    <h1 class="page-title">Ancestral Kitchen</h1>
-    <p class="page-tagline">Wholefood cooking rooted<br>in ancestral wisdom,<br>nourishing your family.</p>
+<div class="lib" id="lib">
+  <div class="lib-hero">
+    <span class="lib-eyebrow">For our community</span>
+    <h1>The Library</h1>
+    <p class="lib-sub">Our guides and little books, free with your email. Pick one off the shelf, download it, keep it.</p>
   </div>
-  <div class="filter-pills">
-  <button class="filter-pill active" onclick="filterCards(this,'All')">All</button>
-  <button class="filter-pill" onclick="filterCards(this,'Mains')">Mains</button>
-  <button class="filter-pill" onclick="filterCards(this,'Sides')">Sides</button>
-  <button class="filter-pill" onclick="filterCards(this,'Breakfast')">Breakfast</button>
-  <button class="filter-pill" onclick="filterCards(this,'Desserts')">Desserts</button>
-  <button class="filter-pill" onclick="filterCards(this,'Snacks')">Snacks</button>
-</div>
-</div>
 
-
-
-
-
-<div class="inner">
-
-<div class="featured" onclick="window.location='recipe-soaked-and-slow-cooked-lentil-dal-with-ghee-tarka.html'" style="cursor:pointer">
-      <div class="feat-img" style="background-image:url('images/dal-bowl.jpg');background-size:cover;background-position:center;">
-        <div class="feat-img-overlay"></div>
-        <div class="feat-label">
-          <span class="feat-badge">Latest recipe</span>
-          <div class="feat-img-title">Soaked & Slow-Cooked Lentil Dal with Ghee Tarka</div>
-        </div>
+  <div class="lib-shelf">
+    <div class="lib-books">
+      <div class="lib-book">
+        <div class="lib-cover" onclick="libFocus()"><img src="images/site/guide-cover.jpg" alt="The Essential Pristine Health Guide"><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
       </div>
-      <div class="feat-body">
-        <span class="feat-cat">Mains</span>
-        <h2 class="feat-title">Soaked & Slow-Cooked Lentil Dal with Ghee Tarka</h2>
-        <p class="feat-excerpt">Dal has been feeding families across generations not because it is simple, but because it is wise: soaking the lentils overnight breaks down the anti-nutrients that make legumes hard on digestion, and</p>
-        <div class="feat-meta">15 min prep &nbsp;&middot;&nbsp; 45 min total</div>
-        <a class="read-link" href="recipe-soaked-and-slow-cooked-lentil-dal-with-ghee-tarka.html">View recipe <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <div class="lib-book">
+        <div class="lib-cover" onclick="libFocus()"><div class="img"><img src="images/home-slide-tarkine-falls-water-hero-2.jpg" alt=""></div><div class="t"><b>Pure Water at Home</b><small>A Pristine little book</small></div><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
+      </div>
+      <div class="lib-book">
+        <div class="lib-cover" onclick="libFocus()"><div class="img"><img src="images/kitchen-panel-2-chopping-kale-process.jpg" alt=""></div><div class="t"><b>The Ancestral Pantry</b><small>A Pristine little book</small></div><div class="lib-lock"><div class="pad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><span>Free with<br>your email</span></div></div>
       </div>
     </div>
+    <div class="lib-plank"></div>
+    <div class="lib-books caps">
+      <div class="lib-book"><div class="lib-cap"><b>The Essential Pristine Health Guide</b><small>Guide &middot; 24 pages</small><a class="lib-get" href="/downloads/the-essential-pristine-health-guide.pdf" target="_blank" rel="noopener">Download</a></div></div>
+      <div class="lib-book"><div class="lib-cap"><b>Pure Water at Home</b><small>Little book</small><span class="lib-soon">Coming soon. We'll email you when it's ready.</span></div></div>
+      <div class="lib-book"><div class="lib-cap"><b>The Ancestral Pantry</b><small>Little book</small><span class="lib-soon">Coming soon. We'll email you when it's ready.</span></div></div>
+    </div>
+  </div>
 
-<div class="recipe-grid" id="recipe-grid">
-<!-- RECIPE_CARDS_PLACEHOLDER -->
-<div class="card" data-cat="Mains" onclick="window.location='recipe-chickpea-and-green-bean-curry.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/chickpea-curry-hero.jpg');"></div><span class="card-badge">Mains</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Chickpea & Green Bean Curry</h3>
-    <p class="card-excerpt">A deeply nourishing, plant-based curry that celebrates the anti-inflammatory power of turmeric and the wholesome goodness of chickpeas, a staple in our family kitchen.</p>
-    <div class="card-footer"><span class="card-date">10 min prep &nbsp;&middot;&nbsp; 35 min total</span></div>
+  <div class="lib-unlock" id="lib-unlock">
+    <h3 id="lib-unlock-title">Open the library</h3>
+    <p id="lib-unlock-text">Pop in your email and the shelf unlocks on this device. You'll get our welcome email too, and you can leave any time.</p>
+    <form class="lib-form" onsubmit="return libOpen(event)">
+      <input type="email" id="lib-email" placeholder="you@email.com" autocomplete="email" required>
+      <input type="text" name="pw_hp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
+      <button type="submit" id="lib-btn">Open</button>
+    </form>
+    <div class="lib-status" id="lib-status"></div>
   </div>
 </div>
-<div class="card" data-cat="Sides" onclick="window.location='recipe-organic-micro-garden-salad.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/organic-micro-salad-hero.jpg');"></div><span class="card-badge">Sides</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Organic Micro Garden Salad</h3>
-    <p class="card-excerpt">This salad is absolutely delectable. Every time we serve it, someone asks for the recipe. The secret isn't just the ingredients, it's the preparation. Taking the time to finely chop everything creates</p>
-    <div class="card-footer"><span class="card-date">1 hr prep &nbsp;&middot;&nbsp; 1 hr total</span></div>
+
+<div class="lib-app">
+  <div class="lib-app-inner">
+    <div>
+      <span class="lib-eyebrow">Take the library with you</span>
+      <h2>The Pristine app</h2>
+      <p>Every story, recipe and little book on your phone, with Listen built in. Free, nothing from the store, two taps.</p>
+      <div class="lib-badges">
+        <a class="lib-badge" onclick="libSteps('ios')"><svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.8-1.7 0-3.2 1-4.1 2.5-1.8 3-.5 7.6 1.3 10.1.9 1.2 1.9 2.6 3.2 2.5 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1-2.9-4zM13.9 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.5 2.9-1.3z"/></svg><div><small>Add to</small><b>iPhone</b></div></a>
+        <a class="lib-badge light" onclick="libSteps('android')"><svg viewBox="0 0 24 24"><path d="M17.5 8.5l1.6-2.8c.1-.2 0-.4-.1-.5-.2-.1-.4 0-.5.1l-1.6 2.9c-1.3-.6-2.7-.9-4.3-.9s-3 .3-4.3.9L6.7 5.3c-.1-.2-.3-.2-.5-.1-.2.1-.2.3-.1.5l1.6 2.8C5 10 3.3 12.6 3 15.6h18c-.3-3-2-5.6-4.5-7.1zM8.3 12.8c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9zm7.4 0c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9z"/></svg><div><small>Add to</small><b>Android</b></div></a>
+      </div>
+      <div class="lib-steps" id="lib-steps-ios">On your iPhone, open <b>pristinewellness.com.au</b> in Safari. Tap the <b>Share</b> button at the bottom, then <b>Add to Home Screen</b>, then <b>Add</b>. That's it.</div>
+      <div class="lib-steps" id="lib-steps-android">On your Android phone, open <b>pristinewellness.com.au</b> in Chrome. Tap the <b>three dots</b> at the top right, then <b>Add to Home screen</b>, then <b>Add</b>. That's it.</div>
+    </div>
+    <div>
+      <div class="lib-phones">
+        <div>
+          <div class="lib-phone home"><div class="screen"><div class="lib-icons"><div class="lib-icon"></div><div class="lib-icon"></div><div class="lib-icon"></div><div class="lib-icon p"><img src="images/site/logo.jpg" alt=""></div><div class="lib-icon"></div><div class="lib-icon"></div><div class="lib-icon"></div><div class="lib-icon"></div></div></div></div>
+          <div class="lib-ph-label">On the home screen</div>
+        </div>
+        <div>
+          <div class="lib-phone"><div class="notch"></div><div class="screen"><img src="images/site/app-home-phone.jpg" alt="The Pristine site on a phone"></div></div>
+          <div class="lib-ph-label">Full screen, no browser</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-<div class="card" data-cat="Breakfast" onclick="window.location='recipe-fermented-overnight-oats-with-raw-honey-and-seasonal-fruit.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/fermented-overnight-oats-with--hero.jpg');"></div><span class="card-badge">Breakfast</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Fermented Overnight Oats with Raw Honey and Seasonal Fruit</h3>
-    <p class="card-excerpt">Soaked, fermented, wholefood school-morning fuel no refined sugar needed</p>
-    <div class="card-footer"><span class="card-date">15 min prep &nbsp;&middot;&nbsp; 20 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="Mains" onclick="window.location='recipe-wild-fermented-beetroot-and-goats-cheese-salad.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/wild-fermented-beetroot-and-goats-cheese-muim5xlq.jpg');background-size:cover;background-position:center;"></div><span class="card-badge">Mains</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Wild Fermented Beetroot and Goat's Cheese Salad</h3>
-    <p class="card-excerpt">This salad came about because we wanted something that could hold its own as a proper main, not just a side thought, and the lacto-fermented beetroot we had sitting quietly in the pantry turned out to</p>
-    <div class="card-footer"><span class="card-date">35 min prep &nbsp;&middot;&nbsp; 40 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="Desserts" onclick="window.location='recipe-no-wheat-chocolate-mud-cake.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg');"></div><span class="card-badge">Desserts</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">No Wheat Chocolate Mud Cake</h3>
-    <p class="card-excerpt">This is the cake we make whenever someone in our house has a birthday, and it is amazing. It is rich, dense and fudgy, and it can be sugar free depending on the sweetener and chocolate you choose. Bui</p>
-    <div class="card-footer"><span class="card-date">15 min prep &nbsp;&middot;&nbsp; 50 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="Snacks" onclick="window.location='recipe-lamb-liver-pate-with-sourdough-toast.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/lamb-liver-p-t-with-sourdough--hero.jpg');"></div><span class="card-badge">Snacks</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Lamb Liver Pâté with Sourdough Toast</h3>
-    <p class="card-excerpt">Pasture-raised lamb liver is one of the most nutrient-dense foods we can put on the table, rich in fat-soluble vitamins, iron, and folate in forms the body actually absorbs. We make this pâté often be</p>
-    <div class="card-footer"><span class="card-date">1 hr prep &nbsp;&middot;&nbsp; 1 hr 20 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="Sides" onclick="window.location='recipe-creamy-cauliflower-soup.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/creamy-cauliflower-soup-muim61au.jpg');background-size:cover;background-position:center;"></div><span class="card-badge">Sides</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Creamy Cauliflower Soup</h3>
-    <p class="card-excerpt">This is the kind of soup we return to again and again through the cooler months, simple enough for a weeknight but nourishing enough to feel like real care on a plate. Cauliflower is rich in sulforaph</p>
-    <div class="card-footer"><span class="card-date">10 min prep &nbsp;&middot;&nbsp; 45 min total</span></div>
-  </div>
-</div>
-<div class="card" data-cat="Snacks" onclick="window.location='recipe-banana-spelt-choc-chip-muffins.html'">
-  <div class="card-img"><div class="card-img-inner" style="background-image:url('images/bannana-spelt-choc-chip-muffin-hero.jpg');background-size:cover;background-position:center;"></div><span class="card-badge">Snacks</span></div>
-  <div class="card-body">
-    <div class="card-tags"></div>
-    <h3 class="card-title">Banana Spelt Choc Chip Muffins</h3>
-    <p class="card-excerpt">These banana spelt choc chip muffins are a Sunday staple in our house. We make a batch every week and they are gone by Tuesday, which tells you everything you need to know. They are made with organic </p>
-    <div class="card-footer"><span class="card-date">15 min prep &nbsp;&middot;&nbsp; 35 min total</span></div>
-  </div>
-</div>
-</div>
-<div id="pinned-recipes">
-<div class="pinned-intro"><span class="pinned-intro-eyebrow">Curated by us</span><div class="pinned-intro-title">Essential Recipes</div></div>
-<div class="pinned-section"><div class="pinned-grid">
-<div class="pinned-small" onclick="window.location='recipe-organic-micro-garden-salad.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/organic-micro-salad-hero.jpg')"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Sides</span><div class="pinned-small-title">Organic Micro Garden Salad</div><div class="pinned-small-meta">1 hr prep · 1 hr total</div></div></div>
-<div class="pinned-small" onclick="window.location='recipe-no-wheat-chocolate-mud-cake.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/no-wheat-chocolate-mud-cake-hero.jpg')"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Desserts</span><div class="pinned-small-title">No Wheat Chocolate Mud Cake</div><div class="pinned-small-meta">15 min prep · 50 min total</div></div></div>
-<div class="pinned-small" onclick="window.location='recipe-chickpea-and-green-bean-curry.html'"><div class="pinned-small-img"><span class="pinned-pin-badge">Essential</span><div class="pinned-small-img-inner" style="background-image:url('images/chickpea-curry-hero.jpg')"></div></div><div class="pinned-small-body"><span class="pinned-small-cat">Mains</span><div class="pinned-small-title">Chickpea &amp; Green Bean Curry</div><div class="pinned-small-meta">10 min prep · 35 min total</div></div></div>
-</div></div>
-</div>
-
-
-
-<div class="pw-signup pw-guide-box"><div class="pw-guide-cover"><img class="pw-guide-page pw-guide-page-back" src="/images/site/guide-page-light.jpg" alt="" aria-hidden="true" loading="lazy" width="560" height="794"><img class="pw-guide-page pw-guide-page-mid" src="/images/site/guide-page-water.jpg" alt="" aria-hidden="true" loading="lazy" width="560" height="794"><img class="pw-guide-front" src="/images/site/guide-cover.jpg" alt="Cover of The Essential Pristine Health Guide" loading="lazy" width="560" height="794"></div><div class="pw-guide-text"><span class="pw-eyebrow">Free guide</span><h3>The Essential Pristine Health Guide</h3><p>Six changes we believe make the biggest difference to how you feel, with one small thing to try today for each. Free when you join our newsletter.</p><div class="pw-signup-row"><input type="email" placeholder="your@email.com" aria-label="Email address"/><input type="text" name="pw_hp" style="position:absolute;left:-9999px;opacity:0;" tabindex="-1" autocomplete="off" aria-hidden="true" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other"><button type="button" onclick="pwSubscribe(this)">Get the free guide</button></div><p class="pw-small">No spam. Unsubscribe anytime. Your details are never shared.</p></div></div>
-</div>
-
-
-
-  
-
-
-
 
 <div class="footer"><div class="footer-inner"><div class="footer-left"><span class="footer-copy">&copy; 2026 Pristine Wellness</span></div><div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="disclaimer.html">Disclaimer</a><a onclick="openContactModal()">Contact</a></div><div class="footer-socials"><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://x.com/getpristinewell')"><path d="M4 4l16 16M4 20L20 4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://instagram.com/getpristinewell')"><rect x="2" y="2" width="20" height="20" rx="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="20" height="20" onclick="window.open('https://pinterest.com/getpristinewell')"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="none"/><path d="M10.6 21.4l2.1-8.6M9.6 14.6c-.9-.7-1.3-1.8-1.3-3 0-2.6 2.1-4.6 4.9-4.6 2.6 0 4.4 1.8 4.4 4.1 0 2.7-1.6 4.8-3.8 4.8-1.3 0-2.2-.8-2.1-1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
 </div>
-
-
 
 
 
@@ -1467,7 +1458,7 @@ html body .pinned-small-title{font-size:23px!important;}
 <div class="modal-overlay" id="contact-modal" style="display:none;" onclick="handleModalClick(event)"><div class="modal"><button class="modal-close" onclick="closeContactModal()">×</button><h3>Get in touch</h3><p>We read every message and aim to respond within 48 hours.</p><div class="mfg"><input class="mi" type="text" placeholder="Your name"/></div><div class="mfg"><input class="mi" type="email" placeholder="Your email"/></div><div class="mfg"><input class="mi" type="text" placeholder="Subject"/></div><div class="mfg"><textarea class="mt" placeholder="Your message..."></textarea></div><p class="mn">Your details are never shared. </p><button class="ms" type="button" onclick="closeContactModal()">Send message</button></div></div>
 <script>
 /* ════════════════════════════════════════════════
-   PRISTINE WELLNESS | MASTER JS v2 CLEAN
+   PRISTINE WELLNESS - MASTER JS v2 CLEAN
    Single source of truth. Applied once per page.
    ════════════════════════════════════════════════ */
 
@@ -1530,7 +1521,6 @@ function handleModalClick(e) {
 
 // SEARCH
 var searchDocs = [];
-
 function openSearch() {
   var so=document.getElementById('search-overlay');if(so)so.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1584,7 +1574,7 @@ document.addEventListener('keydown', function(e) {
 
 
 /* ════════════════════════════════════════
-   COMPREHENSIVE FIX JS | ALL ISSUES
+   COMPREHENSIVE FIX JS - ALL ISSUES
    ════════════════════════════════════════ */
 
 // ISSUE 4: Mobile menu
@@ -1737,75 +1727,14 @@ document.addEventListener('keydown', function(e) {
 
 
 
-
-// ── PAGINATION ──
-(function() {
-  var CARDS_PER_PAGE = 9;
-  var currentPage = 1;
-
-  function getVisibleCards() {
-    // respect active filter
-    var activeFilter = document.querySelector('.filter-pill.active');
-    var activeCat = activeFilter ? activeFilter.textContent.trim() : 'All';
-    var allCards = Array.from(document.querySelectorAll('.card-grid .card'));
-    if (activeCat === 'All') return allCards;
-    return allCards.filter(function(c) {
-      return (c.getAttribute('data-cat') || '') === activeCat;
-    });
-  }
-
-  function showPage(page) {
-    var visible = getVisibleCards();
-    var total = Math.ceil(visible.length / CARDS_PER_PAGE);
-    currentPage = Math.max(1, Math.min(page, total));
-    var start = (currentPage - 1) * CARDS_PER_PAGE;
-    var end = start + CARDS_PER_PAGE;
-
-    // Show/hide all cards
-    var allCards = document.querySelectorAll('.card-grid .card');
-    // Show/hide featured card based on filter
-  var featEl = document.querySelector('.featured');
-  if (featEl && currentPage > 1) {
-    featEl.style.display = 'none'; // the featured post belongs on page 1 only
-  } else if (featEl) {
-    if (currentFilter === 'All') {
-      featEl.style.display = '';
-    } else {
-      var fc = featEl.querySelector('.feat-cat');
-      var featCat = fc ? fc.textContent.trim() : '';
-      featEl.style.display = (featCat === currentFilter) ? '' : 'none';
-    }
-  }
-  allCards.forEach(function(c) { c.style.display = 'none'; });
-    visible.forEach(function(c, i) {
-      c.style.display = (i >= start && i < end) ? '' : 'none';
-    });
-
-    // Update button states
-    document.querySelectorAll('.page-btn').forEach(function(btn) {
-      var t = btn.textContent.trim();
-      var n = parseInt(t);
-      if (!isNaN(n)) {
-        btn.classList.toggle('active', n === currentPage);
-        btn.style.display = n <= total ? '' : 'none';
-      }
-    });
-
-  }
-
-  document.querySelectorAll('.page-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var t = btn.textContent.trim();
-      var n = parseInt(t);
-      if (!isNaN(n)) showPage(n);
-      else showPage(currentPage + 1);
-      var grid = document.querySelector('.card-grid');
-      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+document.querySelectorAll('.page-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.page-btn').forEach(function(b){b.classList.remove('active');});
+    this.classList.add('active');
+    var ps=document.getElementById('pinned-section');
+    if(ps){ps.style.display=this.textContent.trim()==='1'?'block':'none';}
   });
-
-  // Init on load and re-run when filter changes
-})();
+});
 
 
 /* ════════════════════════════════════════
@@ -1888,7 +1817,7 @@ var currentFilter = 'All';
 function getFilteredCards() {
   var grid = document.querySelector('.article-grid, .recipe-grid');
   if (!grid) return [];
-  var cards = Array.prototype.slice.call(grid.querySelectorAll('.article-card, .recipe-card, .card'));
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.article-card, .recipe-card'));
   if (currentFilter === 'All') return cards;
   return cards.filter(function(card) {
     var cardCat = card.getAttribute('data-cat') || '';
@@ -1900,16 +1829,16 @@ function renderPage() {
   var grid = document.querySelector('.article-grid, .recipe-grid');
   if (!grid) return;
   var allCards = Array.prototype.slice.call(grid.querySelectorAll('.article-card, .recipe-card, .card'));
-  // Empty state: show a styled message when no content exists yet
+  var hasFeatured = !!document.querySelector('.featured');
   var emptyState = document.getElementById('grid-empty-state');
-  if (allCards.length === 0) {
+  if (allCards.length === 0 && !hasFeatured) {
     if (!emptyState) {
       emptyState = document.createElement('div');
       emptyState.id = 'grid-empty-state';
       emptyState.style.cssText = 'grid-column:1/-1;text-align:center;padding:6rem 2rem;';
-      emptyState.innerHTML = '<div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#8F9574;font-weight:500;font-family:Jost,sans-serif;margin-bottom:14px;">From our kitchen to yours</div>' +
-        '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:clamp(32px,4vw,52px);color:#1a1a1a;font-weight:400;line-height:1.2;">First recipes coming soon</div>' +
-        '<p style="font-size:15px;color:#888;margin-top:1rem;font-weight:300;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.8;">Wholefood recipes rooted in ancestral wisdom, made for real family tables.</p>';
+      emptyState.innerHTML = '<div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#8F9574;font-weight:500;font-family:Jost,sans-serif;margin-bottom:14px;">The Source</div>' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:clamp(32px,4vw,52px);color:#1a1a1a;font-weight:400;line-height:1.2;">New stories coming soon</div>' +
+        '<p style="font-size:15px;color:#888;margin-top:1rem;font-weight:300;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.8;">Research-backed wellness writing, rooted in ancestral wisdom.</p>';
       grid.appendChild(emptyState);
     }
     return;
@@ -1921,12 +1850,18 @@ function renderPage() {
   if (currentPage > totalPages) currentPage = totalPages;
 
   // Hide all, show only current page of filtered
-  // Featured recipe: page 1 only, and only under All or its own category
+  // Show/hide featured card based on filter
   var featEl = document.querySelector('.featured');
-  if (featEl) {
-    var fc = featEl.querySelector('.feat-cat');
-    var featCat = fc ? fc.textContent.trim() : '';
-    featEl.style.display = (currentPage > 1 || (currentFilter !== 'All' && featCat !== currentFilter)) ? 'none' : '';
+  if (featEl && currentPage > 1) {
+    featEl.style.display = 'none'; // the featured post belongs on page 1 only
+  } else if (featEl) {
+    if (currentFilter === 'All') {
+      featEl.style.display = '';
+    } else {
+      var fc = featEl.querySelector('.feat-cat');
+      var featCat = fc ? fc.textContent.trim() : '';
+      featEl.style.display = (featCat === currentFilter) ? '' : 'none';
+    }
   }
   allCards.forEach(function(c) { c.style.display = 'none'; });
   var start = (currentPage - 1) * PAGE_SIZE;
@@ -2063,7 +1998,7 @@ if (typeof initFilters === 'undefined') { window.initFilters = function() {}; }
 buildSearchIndex();
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Read category from URL (?cat=Desserts) and apply filter
+  // Read category from URL (?cat=Sleep) and apply filter
     try {
       var urlCat = new URLSearchParams(window.location.search).get('cat');
       if (urlCat) {
@@ -2079,7 +2014,7 @@ document.addEventListener('DOMContentLoaded', function() {
             p.classList.remove('active');
           }
         });
-        if (!matched) { currentFilter = decoded; }
+        if (!matched) { currentFilter = decoded; }  // filter by URL cat even without a pill
       }
     } catch(e) {}
     renderPage();
@@ -2142,6 +2077,44 @@ document.addEventListener('DOMContentLoaded', function() {
     b.onclick = function (e) { e.preventDefault(); window.sendContactMessage(b); };
   });
 })();
+</script>
+
+<script>
+/* The Library: one email opens the shelf on this device. The address joins the list the same way the newsletter box does. */
+function libIsOpen() { try { return localStorage.getItem('pw_library') === '1'; } catch (e) { return false; } }
+function libShowOpen(already) {
+  var lib = document.getElementById('lib'); if (lib) lib.classList.add('open');
+  var t = document.getElementById('lib-unlock-title'), p = document.getElementById('lib-unlock-text');
+  if (t) t.textContent = 'The shelf is open';
+  if (p) p.textContent = already ? 'Welcome back. Take whatever you like.' : 'Thank you. Your guide is ready above, and the little books will follow by email as they are finished.';
+}
+function libFocus() { if (libIsOpen()) return; var e = document.getElementById('lib-email'); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function(){ e.focus(); }, 400); } }
+async function libOpen(ev) {
+  ev.preventDefault();
+  var input = document.getElementById('lib-email'), btn = document.getElementById('lib-btn'), st = document.getElementById('lib-status');
+  var hp = document.querySelector('#lib-unlock input[name="pw_hp"]');
+  var email = (input.value || '').trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { st.textContent = 'Please enter your email.'; input.focus(); return false; }
+  btn.disabled = true; btn.textContent = 'Opening...'; st.textContent = '';
+  try {
+    var resp = await fetch('https://pristine-api.jc-a7f.workers.dev/subscribe', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, source: 'library', pw_hp: hp ? hp.value : '', ref: (window.pwGetRef ? window.pwGetRef() : '') })
+    });
+    var data = await resp.json();
+    if (!data.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+    try { localStorage.setItem('pw_library', '1'); } catch (e) {}
+    libShowOpen(/on the list/i.test(data.message || ''));
+  } catch (e) {
+    st.textContent = e.message || 'Something went wrong. Please try again.';
+    btn.disabled = false; btn.textContent = 'Open';
+  }
+  return false;
+}
+function libSteps(which) {
+  ['ios', 'android'].forEach(function (k) { var el = document.getElementById('lib-steps-' + k); if (el) el.classList.toggle('show', k === which); });
+}
+document.addEventListener('DOMContentLoaded', function () { if (libIsOpen()) libShowOpen(true); });
 </script>
 </body>
 </html>
