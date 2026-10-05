@@ -281,6 +281,9 @@ sup.cite:hover { text-decoration:underline; }
 .slide-img-placeholder{width:100%;height:160px;border-radius:6px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;margin-bottom:0.8rem;border:2px dashed var(--border);}
 .slide-upload-btn{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:4px;cursor:pointer;margin-bottom:1rem;}
 .slide-upload-btn:hover{border-color:var(--sage);color:var(--sage);}
+.slide-move-btn{background:transparent;border:1px solid var(--border);color:#555;width:30px;height:28px;border-radius:4px;cursor:pointer;font-size:11px;line-height:1;}
+.slide-move-btn:hover:not(:disabled){border-color:var(--sage);color:var(--sage);}
+.slide-move-btn:disabled{opacity:.3;cursor:default;}
 .slide-delete-btn{background:transparent;border:none;color:#c0392b;font-size:12px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;padding:6px 10px;}
 .slide-delete-btn:hover{text-decoration:underline;}
 .slide-field-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;display:block;}
@@ -4999,8 +5002,11 @@ function renderSlidesEditor() {
       : '<div class="slide-img-placeholder" id="slide-preview-' + i + '">No image</div>';
     html += '<div class="slide-card" id="slide-card-' + i + '">';
     html += '<div class="slide-card-header">';
-    html += '<span class="slide-card-title">Slide ' + (i+1) + '</span>';
-    html += '<button class="slide-delete-btn" onclick="deleteSlide(' + i + ')">Remove slide</button>';
+    html += '<span class="slide-card-title">Slide ' + (i+1) + (i === 0 ? ' <span style="font-weight:400;color:var(--muted);letter-spacing:0;text-transform:none;">(shows first)</span>' : '') + '</span>';
+    html += '<span style="display:flex;gap:4px;align-items:center;">' +
+      '<button class="slide-move-btn" title="Move up" onclick="moveSlide(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + '>&#9650;</button>' +
+      '<button class="slide-move-btn" title="Move down" onclick="moveSlide(' + i + ',1)"' + (i === slidesData.length - 1 ? ' disabled' : '') + '>&#9660;</button>' +
+      '<button class="slide-delete-btn" onclick="deleteSlide(' + i + ')">Remove slide</button></span>';
     html += '</div>';
     html += imgHtml;
     html += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">';
@@ -5089,6 +5095,17 @@ async function onSlideImageChange(idx, input) {
   } catch(e) {
     setSlideStatus('Upload failed: ' + e.message, false);
   }
+}
+
+function moveSlide(idx, dir) {
+  collectSlideTextFields();
+  var j = idx + dir;
+  if (j < 0 || j >= slidesData.length) return;
+  var t = slidesData[idx]; slidesData[idx] = slidesData[j]; slidesData[j] = t;
+  renderSlidesEditor();
+  var card = document.getElementById('slide-card-' + j);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setSlideStatus('Slide moved to position ' + (j + 1) + '. Publish to make it live.', true);
 }
 
 function deleteSlide(idx) {
