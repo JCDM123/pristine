@@ -1381,6 +1381,7 @@ html body .pinned-small-title{font-size:23px!important;}
 .lib-ios-note{font-size:12px;color:#888;line-height:1.6;}
 .lib-ios-note:empty{display:none;}
 .lib-ios-note a{color:#4a5e38;}
+.lib-chrome{display:inline-block;margin-top:4px;font-size:13px;color:#4a5e38;text-decoration:underline;text-underline-offset:3px;}
 .lib-ios-arrow{display:none;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;background:#8F9574;box-shadow:0 8px 20px rgba(0,0,0,0.25);z-index:700;align-items:center;justify-content:center;animation:libBounce 1.1s ease-in-out infinite;}
 .lib-ios-arrow svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2.2;}
 .lib-ios-arrow.show{display:flex;}
@@ -2275,6 +2276,11 @@ function libApp(which) {
     else if (/SamsungBrowser/.test(ua2)) steps = [['Tap the <b>menu</b> (three lines) at the bottom right of Samsung Internet.'], ['Tap <b>Add page to</b>, then <b>Home screen</b>, then <b>Add</b>.']];
     else steps = [['In Chrome, tap the <b>three dots</b> at the top right.'], ['Tap <b>Add to Home screen</b> (or <b>Install app</b>), then <b>Add</b>.']];
     var note = plat === 'android' ? '' : '<div class="lib-ios-note">Open pristinewellness.com.au on your Android phone and come back to this page.</div>';
+    // From another Android browser, offer to hop into Chrome where it is one tap
+    if (plat === 'android' && !/Chrome\//.test(ua2) || /SamsungBrowser|Firefox/.test(ua2) && plat === 'android') {
+      var target = 'pristinewellness.com.au/the-library.html#app';
+      note = '<a class="lib-chrome" href="intent://' + target + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2F' + encodeURIComponent(target) + ';end">Or open this page in Chrome, where it\'s one tap</a>' + note;
+    }
     if (g) g.innerHTML = steps.map(function (st, i) { return '<div class="lib-ios-step"><span class="n">' + (i + 1) + '</span><div>' + st[0] + '</div></div>'; }).join('') + note;
     var arrow2 = document.getElementById('lib-ios-arrow'); if (arrow2) arrow2.classList.remove('show');
   }
