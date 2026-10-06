@@ -1,0 +1,47 @@
+name: Release scheduled stories
+
+# Every hour, a few minutes past. Anything scheduled in the studio for a time that has passed goes live.
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency: release-scheduled
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Anything due?
+        id: due
+        run: python3 scripts/release_due.py --check >> "$GITHUB_OUTPUT"
+
+      - if: steps.due.outputs.due == 'yes'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - if: steps.due.outputs.due == 'yes'
+        name: Browser
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - if: steps.due.outputs.due == 'yes'
+        name: Go live
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PW_TZ: Australia/Sydney
+        run: python scripts/release_due.py
+
+      - if: steps.due.outputs.due == 'yes' && always()
+        name: Ask GitHub Pages to publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || true

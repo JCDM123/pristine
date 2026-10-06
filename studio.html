@@ -1242,7 +1242,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
       <div class="manage-section-head">
         <div>
           <h2 class="manage-section-title">Private previews</h2>
-          <p class="manage-section-sub">Stories on a hidden address for someone to check (for example an advertiser). Not on The Source or Kitchen, not in search, hidden from Google. Edit them, then press Go live.</p>
+          <p class="manage-section-sub">Stories on a hidden address for someone to check (for example an advertiser). Not on The Source or Kitchen, not in search, hidden from Google. Edit them, then press Go live, or press Schedule and the site releases the story on the day and time you pick. The site checks every hour.</p>
         </div>
         <div class="manage-status-bar"><div class="status-dot" id="prev-dot"></div><span id="prev-status">Ready</span></div>
       </div>
@@ -5982,6 +5982,7 @@ async function confirmSafeToReplace(filename, title) {
   var oldTitle = tx.value.replace(/\s+/g, ' ').trim();
   var norm = function(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); };
   if (!oldTitle || norm(oldTitle) === norm(title)) return true;
+  if (PW_AUTO_RELEASE) return false; // the timer never overwrites another story; a person decides that
   return confirm('The web address ' + filename + ' already holds a different story:\n\n"' + oldTitle + '"\n\nPublishing will REPLACE that story with "' + title + '".\n\nCancel to change the title first.');
 }
 
@@ -8510,17 +8511,20 @@ async function loadPreviewsForManage() {
   try {
     managePreviewData = (await pwLoadPreviews()).list;
     if (!managePreviewData.length) { el.innerHTML = '<div class="manage-empty">No private previews. Use "Private preview" instead of "Publish to Site" when someone needs to check a story first.</div>'; return; }
-    var b = function(label, fn, colour) { return '<button onclick="' + fn + '" style="background:' + colour + ';color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">' + label + '</button>'; };
+    var b = pwMiniBtn;
     el.innerHTML = managePreviewData.map(function(r, i) {
-      return '<div class="manage-row">' +
+      var when = r.release ? '<span class="manage-row-meta" style="color:#2C4A2E;font-weight:500;">Goes live ' + escHtml(pwFmtRelease(r.release)) + '</span>' : '';
+      var err = r.releaseError ? '<span class="manage-row-meta" style="color:#c44;">Could not go live: ' + escHtml(r.releaseError) + '</span>' : '';
+      return '<div class="manage-row" id="pv-row-' + i + '">' +
         '<div class="manage-row-title">' + escHtml(r.title) + '</div>' +
         '<span class="manage-row-cat">' + (r.kind === 'recipe' ? 'Recipe' : 'Article') + (r.tags && r.tags.indexOf('Sponsored') !== -1 ? ' &middot; Sponsored' : '') + '</span>' +
-        '<span class="manage-row-meta">' + escHtml(r.created || '') + '</span>' +
+        '<span class="manage-row-meta">' + escHtml(r.created || '') + '</span>' + when + err +
         b('COPY LINK', 'copyPreviewLink(' + i + ', this)', '#7a8163') +
         b('OPEN', 'window.open(\'' + PW_SITE + r.url + '\', \'_blank\')', '#7a8163') +
         b('PHOTOS', 'openStoryPhotos(\'' + r.kind + '\', managePreviewData[' + i + '].url)', 'var(--sage)') +
         b('KREA', 'openKreaPrompts(\'' + r.kind + '\', managePreviewData[' + i + '].url)', '#3b5bdb') +
         b('EDIT TEXT', 'openStoryText(\'' + r.kind + '\', managePreviewData[' + i + '].url)', '#1a1a1a') +
+        (r.release ? b('UNSCHEDULE', 'unschedulePreview(' + i + ')', '#999') : b('SCHEDULE', 'schedulePreview(' + i + ')', '#2C4A2E')) +
         b('GO LIVE', 'goLivePreview(' + i + ')', '#C9A96E') +
         '<button class="manage-del-btn" onclick="deletePreview(' + i + ')" title="Delete preview">&#215;</button>' +
         '</div>';
@@ -8557,7 +8561,8 @@ async function deletePreview(i) {
 
 async function goLivePreview(i) {
   var r = managePreviewData[i];
-  if (!confirm('Publish "' + r.title + '" now?\n\nIt goes on ' + (r.kind === 'recipe' ? 'Ancestral Kitchen' : 'The Source') + ' as the latest story, exactly as it looks in the preview.')) return;
+  var liveOk = false;
+  if (!PW_AUTO_RELEASE && !confirm('Publish "' + r.title + '" now?\n\nIt goes on ' + (r.kind === 'recipe' ? 'Ancestral Kitchen' : 'The Source') + ' as the latest story, exactly as it looks in the preview.')) return;
   setManageStatus('prev', 'Publishing...', true);
   var statusId = r.kind === 'recipe' ? 'r-status' : 'a-status';
   var saved = { gad: generatedArticleData, grd: generatedRecipeData, aip: articleImagePath, aib: articleImageBase64, abi: articleBodyImages, rip: recipeImagePath, rib: recipeImageBase64, rbi: recipeBodyImages };
@@ -8589,7 +8594,8 @@ async function goLivePreview(i) {
     PW_PUBLISH_MODE = 'golive';
     if (r.kind === 'recipe') await publishRecipe(); else await publishArticle();
     var st = (document.getElementById(statusId) || {}).textContent || '';
-    setManageStatus('prev', /Published!/.test(st) ? 'Live! It will appear in 1-2 minutes.' : 'Error: ' + st.replace(/^Publish failed:\s*/, ''), false);
+    liveOk = /Published!/.test(st);
+    setManageStatus('prev', liveOk ? 'Live! It will appear in 1-2 minutes.' : 'Error: ' + st.replace(/^Publish failed:\s*/, ''), false);
   } catch (e) {
     setManageStatus('prev', 'Error: ' + e.message, false);
   } finally {
@@ -8599,6 +8605,91 @@ async function goLivePreview(i) {
     if (catEl) catEl.value = savedCat;
   }
   loadManageTab();
+  return liveOk;
+}
+
+/* ===== SCHEDULED RELEASE =====
+   A preview can carry a "release" time. Every hour a GitHub timer opens this studio headless and calls
+   pwReleaseDue(), which presses Go live on anything whose time has come. Oldest first, so the newest story ends on top. */
+var PW_AUTO_RELEASE = false;
+function pwMiniBtn(label, fn, colour) { return '<button onclick="' + fn + '" style="background:' + colour + ';color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;padding:4px 10px;border-radius:4px;margin-left:6px;font-family:Jost,sans-serif;">' + label + '</button>'; }
+function pwFmtRelease(iso) {
+  var d = new Date(iso);
+  if (isNaN(d)) return iso;
+  try { return d.toLocaleString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }); } catch (e) { return d.toString(); }
+}
+function pwLocalOffset(d) {
+  var o = -d.getTimezoneOffset(), sign = o >= 0 ? '+' : '-';
+  o = Math.abs(o);
+  return sign + String(Math.floor(o / 60)).padStart(2, '0') + ':' + String(o % 60).padStart(2, '0');
+}
+function schedulePreview(i) {
+  var row = document.getElementById('pv-row-' + i);
+  if (!row) return;
+  var old = document.getElementById('pv-sched-' + i);
+  if (old) { old.remove(); return; }
+  var d = new Date(); d.setDate(d.getDate() + 1);
+  var box = document.createElement('div');
+  box.id = 'pv-sched-' + i;
+  box.className = 'manage-row';
+  box.style.cssText = 'background:#f7f4ee;flex-wrap:wrap;gap:8px;';
+  box.innerHTML = '<span class="manage-row-meta">Goes live on</span>' +
+    '<input type="datetime-local" id="pv-when-' + i + '" value="' + localISODate(d) + 'T07:00" style="font-family:Jost,sans-serif;font-size:13px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;">' +
+    '<span class="manage-row-meta">your local time, to the nearest hour</span>' +
+    pwMiniBtn('SAVE', 'saveSchedule(' + i + ')', '#2C4A2E') + pwMiniBtn('CANCEL', 'schedulePreview(' + i + ')', '#999');
+  row.insertAdjacentElement('afterend', box);
+}
+async function pwSetRelease(url, release, error) {
+  var pv = await pwLoadPreviews();
+  pv.list.forEach(function (r) {
+    if (r.url !== url) return;
+    if (release) r.release = release; else delete r.release;
+    if (error) r.releaseError = error; else delete r.releaseError;
+  });
+  await pwSavePreviews(pv.list, pv.sha, release ? 'Schedule: ' + url + ' goes live ' + release : (error ? 'Schedule: ' + url + ' could not go live' : 'Schedule: ' + url + ' unscheduled'));
+}
+async function saveSchedule(i) {
+  var r = managePreviewData[i], inp = document.getElementById('pv-when-' + i);
+  if (!inp || !inp.value) { alert('Pick a day and time first.'); return; }
+  var d = new Date(inp.value);
+  if (isNaN(d)) { alert('That day and time did not make sense. Try again.'); return; }
+  if (d.getTime() < Date.now() - 60000 && !confirm('That time has already passed, so it will go live within the hour. Continue?')) return;
+  var iso = (inp.value.length === 16 ? inp.value + ':00' : inp.value) + pwLocalOffset(d);
+  setManageStatus('prev', 'Saving...', true);
+  try { await pwSetRelease(r.url, iso, ''); setManageStatus('prev', 'Scheduled for ' + pwFmtRelease(iso) + '. The site checks every hour and releases it on time.', false); }
+  catch (e) { setManageStatus('prev', 'Error: ' + e.message, false); }
+  loadPreviewsForManage();
+}
+async function unschedulePreview(i) {
+  var r = managePreviewData[i];
+  setManageStatus('prev', 'Saving...', true);
+  try { await pwSetRelease(r.url, '', ''); setManageStatus('prev', 'Unscheduled. It stays a private preview.', false); }
+  catch (e) { setManageStatus('prev', 'Error: ' + e.message, false); }
+  loadPreviewsForManage();
+}
+async function pwReleaseDue() {
+  var out = [];
+  var pv = await pwLoadPreviews();
+  var now = Date.now();
+  var due = pv.list.filter(function (r) { var t = Date.parse(r.release || ''); return !isNaN(t) && t <= now; });
+  due.sort(function (a, b) { return Date.parse(a.release) - Date.parse(b.release); });
+  PW_AUTO_RELEASE = true;
+  try {
+    for (var k = 0; k < due.length; k++) {
+      var url = due[k].url;
+      managePreviewData = (await pwLoadPreviews()).list;
+      var idx = -1;
+      managePreviewData.forEach(function (r, i) { if (r.url === url) idx = i; });
+      if (idx === -1) continue;
+      var ok = false, status = '';
+      try { ok = await goLivePreview(idx); status = (document.getElementById('prev-status') || {}).textContent || ''; }
+      catch (e) { status = 'Error: ' + e.message; }
+      if (ok) { await pwForgetPreview(url); } // belt and braces: a released story is never released twice
+      if (!ok) { try { await pwSetRelease(url, '', status.replace(/^Error:\s*/, '') || 'unknown error'); } catch (e2) {} }
+      out.push({ title: due[k].title, url: url, ok: ok, status: status });
+    }
+  } finally { PW_AUTO_RELEASE = false; }
+  return out;
 }
 
 /* ===== EDIT PUBLISHED STORIES: change photos and edit text =====
