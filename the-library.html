@@ -1315,7 +1315,7 @@ html body .pinned-small-title{font-size:23px!important;}
 .lib-steps{display:none;margin-top:1.4rem;background:#f7f4ee;border-radius:8px;padding:1.2rem 1.4rem;font-size:14px;line-height:1.8;color:#444;max-width:460px;}
 .lib-steps.show{display:block;}
 .lib-steps b{font-weight:500;color:#111;}
-.lib-phones{display:flex;justify-content:center;gap:2rem;align-items:flex-end;}
+.lib-phones{display:flex;justify-content:center;gap:2rem;align-items:flex-start;}
 .lib-phone{width:250px;height:510px;border-radius:38px;background:#111;padding:12px;box-shadow:0 30px 60px rgba(0,0,0,0.25);position:relative;flex-shrink:0;}
 .lib-phone:after{content:"";position:absolute;top:22px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#111;z-index:3;}
 .lib-phone .screen{width:100%;height:100%;border-radius:28px;overflow:hidden;position:relative;}
@@ -2285,7 +2285,7 @@ function libApp(which) {
     var t = 'pristinewellness.com.au/the-library.html?pw_install=1#app';
     try { sessionStorage.setItem('pw_handoff', '1'); } catch (e) {}
     location.href = 'intent://' + t + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2F' + encodeURIComponent(t) + ';end';
-    setTimeout(function () { libSteps('android'); }, 1500);
+    setTimeout(function () { libAndroidGuide(plat); libSteps('android'); }, 1500);
     return;
   }
   libSteps(which);
@@ -2298,6 +2298,10 @@ function libApp(which) {
     var arrow = document.getElementById('lib-ios-arrow');
     if (arrow) { arrow.classList.toggle('show', plat === 'ios' && inSafari); setTimeout(function(){ arrow.classList.remove('show'); }, 9000); }
   } else {
+    libAndroidGuide(plat);
+  }
+}
+function libAndroidGuide(plat) {
     var ua2 = navigator.userAgent || '', g = document.getElementById('lib-android-guide');
     var steps;
     if (/Firefox|FxiOS/.test(ua2)) steps = [['Tap the <b>three dots</b> at the bottom right of Firefox.'], ['Tap <b>Install</b> (or <b>Add to Home screen</b>), then <b>Add</b>.']];
@@ -2311,7 +2315,6 @@ function libApp(which) {
     }
     if (g) g.innerHTML = steps.map(function (st, i) { return '<div class="lib-ios-step"><span class="n">' + (i + 1) + '</span><div>' + st[0] + '</div></div>'; }).join('') + note;
     var arrow2 = document.getElementById('lib-ios-arrow'); if (arrow2) arrow2.classList.remove('show');
-  }
 }
 document.addEventListener('pw-install-ready', libAppState);
 document.addEventListener('pw-installed', function () { libAppState(); libSteps(''); });
