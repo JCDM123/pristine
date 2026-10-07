@@ -3174,7 +3174,8 @@ async function publishArticle() {
       title: article.title,
       cat: (generatedArticleData && generatedArticleData.category) || 'Articles',
       excerpt: String(article.intro || (article.sections && article.sections[0] && article.sections[0].content) || '').slice(0, 140),
-      url: filename
+      url: filename,
+      image: articleImagePath || ''
     });
     await pwSitemapAdd(filename);
     await pwFeedAdd('article', article.title, filename, articleImagePath, articleImageBase64, article.intro);
@@ -3752,7 +3753,8 @@ async function publishRecipe() {
       title: recipe.title,
       cat: 'Recipes \u00b7 ' + (getCategoryValue('r') || 'Recipe'),
       excerpt: String(recipe.intro || (generatedRecipeData && generatedRecipeData.about) || '').slice(0, 140),
-      url: filename
+      url: filename,
+      image: recipeImagePath || ''
     });
     await pwSitemapAdd(filename);
     await pwFeedAdd('recipe', recipe.title, filename, recipeImagePath, recipeImageBase64, recipe.intro || (generatedRecipeData && generatedRecipeData.about));
