@@ -3177,6 +3177,7 @@ async function publishArticle() {
       url: filename
     });
     await pwSitemapAdd(filename);
+    await pwFeedAdd('article', article.title, filename, articleImagePath, articleImageBase64, article.intro);
     if (PW_PUBLISH_MODE === 'golive') await pwGoLiveTidy(filename); else pwResetSponsor('a');
     setStatus('a', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au');
     pwRefreshShareQuietly(filename);
@@ -3754,6 +3755,7 @@ async function publishRecipe() {
       url: filename
     });
     await pwSitemapAdd(filename);
+    await pwFeedAdd('recipe', recipe.title, filename, recipeImagePath, recipeImageBase64, recipe.intro || (generatedRecipeData && generatedRecipeData.about));
     if (PW_PUBLISH_MODE === 'golive') await pwGoLiveTidy(filename); else pwResetSponsor('r');
     setStatus('r', 'done', 'Published! Live in 1-2 minutes at pristinewellness.com.au/ancestral-kitchen.html');
     pwRefreshShareQuietly(filename);
@@ -7141,8 +7143,9 @@ function pwTileImg(src) {
   return new Promise(function (res) {
     if (!src) { res(null); return; }
     var im = new Image();
+    if (/^https?:/.test(src)) im.crossOrigin = 'anonymous';
     im.onload = function () { res(im); }; im.onerror = function () { res(null); };
-    im.src = /^https?:/.test(src) ? src : ('/' + src.replace(/^\/+/, ''));
+    im.src = /^(https?:|data:)/.test(src) ? src : ('/' + src.replace(/^\/+/, ''));
   });
 }
 function pwTileWrap(ctx, text, maxW, maxLines) {
@@ -7172,6 +7175,57 @@ function pwTileCover(ctx, im, x, y, w, h) {
   var r = Math.max(w / im.width, h / im.height), sw = w / r, sh = h / r;
   ctx.drawImage(im, (im.width - sw) / 2, Math.max(0, (im.height - sh) * 0.35), sw, sh, x, y, w, h);
 }
+function pwDrawStoryTile(c, kind, title, hero, mark) {
+  var SER = "'Cormorant Garamond', Georgia, serif", SANS = "Jost, Arial, sans-serif";
+  var ctx = c.getContext('2d'), lines, y, i;
+  ctx.fillStyle = '#F5F0E8'; ctx.fillRect(0, 0, 1080, 1350);
+  if (hero) pwTileCover(ctx, hero, 0, 0, 1080, 900); else { ctx.fillStyle = '#8F9574'; ctx.fillRect(0, 0, 1080, 900); }
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.18)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10; pwTileCircleImg(ctx, mark, 880, 840, 120); ctx.restore();
+  ctx.fillStyle = '#8F9574'; ctx.font = '500 22px ' + SANS; pwTileSpaced(ctx, (kind === 'recipe' ? 'ANCESTRAL KITCHEN' : 'NEW ON THE SOURCE'), 80, 985, 'left', 6);
+  ctx.fillStyle = '#1a1a1a'; ctx.font = '500 70px ' + SER; ctx.textAlign = 'left';
+  lines = pwTileWrap(ctx, title, 920, 3); y = 1070;
+  for (i = 0; i < lines.length; i++) { ctx.fillText(lines[i], 80, y); y += 78; }
+  y += 20; ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.5; ctx.font = '400 20px ' + SANS;
+  var cta = kind === 'recipe' ? 'RECIPE, LINK IN BIO' : 'LINK IN BIO', cw = cta.length * 6 + ctx.measureText(cta).width + 56;
+  ctx.beginPath(); ctx.roundRect(80, y, cw, 54, 27); ctx.stroke();
+  ctx.fillStyle = '#1a1a1a'; pwTileSpaced(ctx, cta, 108, y + 34, 'left', 6);
+}
+
+/* The site's own social wall (social-feed.html) fills itself: every story that goes live adds its tile and a line
+   to the X, Instagram and Pinterest columns, linking to the story. Never stops a publish if it fails. */
+async function pwFeedAdd(kind, title, filename, heroPath, heroData, intro) {
+  try {
+    try { await Promise.all(["500 70px 'Cormorant Garamond'", "500 22px Jost"].map(function (f) { return document.fonts.load(f); })); } catch (e) {}
+    var heroSrc = heroData || (heroPath ? 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/' + GITHUB_BRANCH + '/' + heroPath.replace(/^\/+/, '') + '?cb=' + Date.now() : '');
+    var res = await Promise.all([pwTileImg(heroSrc), pwTileImg('images/site/pristine-avatar-512.png')]);
+    var c = document.createElement('canvas'); c.width = 1080; c.height = 1350;
+    pwDrawStoryTile(c, kind, title, res[0], res[1]);
+    var slug = pwSlug(title), tilePath = 'images/social/' + slug + '-tile.jpg';
+    var dataUrl = c.toDataURL('image/jpeg', 0.86);
+    var body = { message: 'Social wall tile: ' + title, content: dataUrl.split(',')[1], branch: GITHUB_BRANCH };
+    var sha = await getFileSHA(tilePath); if (sha) body.sha = sha;
+    await githubRequest(tilePath, 'PUT', body);
+    var cur = null, list = [], fsha = null;
+    try { cur = await githubRequest('data/social-feed.json', 'GET'); list = JSON.parse(decodeURIComponent(escape(atob((cur.content || '').replace(/\s/g, ''))))); fsha = cur.sha; } catch (e) { list = []; }
+    if (!Array.isArray(list)) list = [];
+    var link = PW_SITE + filename, today = localISODate();
+    var line = String(intro || '').replace(/\s+/g, ' ').trim();
+    var sent = (line.match(/^(.{20,180}?[.!?])(\s|$)/) || [])[1] || line.slice(0, 160) || title;
+    list = list.filter(function (p) { return p && p.link !== link; });
+    var adds = [
+      { platform: 'instagram', link: link, caption: title + '. ' + sent, image: tilePath, date: today },
+      { platform: 'x', link: link, caption: title, image: tilePath, date: today },
+      { platform: 'pinterest', link: link, caption: title, image: tilePath, date: today }
+    ];
+    list = adds.concat(list);
+    // keep the wall light: the newest twelve per column
+    var count = {}; list = list.filter(function (p) { var k = p.platform || 'instagram'; count[k] = (count[k] || 0) + 1; return count[k] <= 12; });
+    var fb = { message: 'Social wall: ' + title, content: btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), branch: GITHUB_BRANCH };
+    if (fsha) fb.sha = fsha;
+    await githubRequest('data/social-feed.json', 'PUT', fb);
+  } catch (e) { console.warn('Social wall not updated:', e && e.message); }
+}
+
 var pwTileDrawing = false, pwTileAgain = false;
 async function pwDrawTiles() {
   if (pwTileDrawing) { pwTileAgain = true; return; }
@@ -7187,18 +7241,8 @@ async function pwDrawTiles() {
     var c, ctx, lines, y, i;
 
     // 0: story link tile
-    c = document.getElementById('pw-tile-0'); if (!c) return; ctx = c.getContext('2d');
-    ctx.fillStyle = '#F5F0E8'; ctx.fillRect(0, 0, 1080, 1350);
-    if (hero) pwTileCover(ctx, hero, 0, 0, 1080, 900); else { ctx.fillStyle = '#8F9574'; ctx.fillRect(0, 0, 1080, 900); }
-    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.18)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10; pwTileCircleImg(ctx, mark, 880, 840, 120); ctx.restore();
-    ctx.fillStyle = '#8F9574'; ctx.font = '500 22px ' + SANS; pwTileSpaced(ctx, (PW_TILE.kind === 'recipe' ? 'ANCESTRAL KITCHEN' : 'NEW ON THE SOURCE'), 80, 985, 'left', 6);
-    ctx.fillStyle = '#1a1a1a'; ctx.font = '500 70px ' + SER; ctx.textAlign = 'left';
-    lines = pwTileWrap(ctx, PW_TILE.title, 920, 3); y = 1070;
-    for (i = 0; i < lines.length; i++) { ctx.fillText(lines[i], 80, y); y += 78; }
-    y += 20; ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.5; ctx.font = '400 20px ' + SANS;
-    var cta = PW_TILE.kind === 'recipe' ? 'RECIPE, LINK IN BIO' : 'LINK IN BIO', cw = cta.length * 6 + ctx.measureText(cta).width + 56;
-    ctx.beginPath(); ctx.roundRect(80, y, cw, 54, 27); ctx.stroke();
-    ctx.fillStyle = '#1a1a1a'; pwTileSpaced(ctx, cta, 108, y + 34, 'left', 6);
+    c = document.getElementById('pw-tile-0'); if (!c) return;
+    pwDrawStoryTile(c, PW_TILE.kind, PW_TILE.title, hero, mark);
 
     // 1: quote tile, cream
     c = document.getElementById('pw-tile-1'); ctx = c.getContext('2d');
