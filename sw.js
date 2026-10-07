@@ -3,7 +3,7 @@
    so they still read with no signal. Pages are always fetched fresh when there is a connection, so a new
    story or a fix shows straight away; the saved copy is only used when the network fails.
    The studio, the Worker and the tracked /go/ links are never touched. */
-var VERSION = 'pw-v1';
+var VERSION = 'pw-v2';
 var PAGES = VERSION + '-pages', FILES = VERSION + '-files';
 var MAX_PAGES = 60, MAX_FILES = 300;
 
