@@ -1,23 +1,23 @@
 [
   {
+    "platform": "instagram",
+    "link": "https://instagram.com/getpristinewell",
+    "caption": "We're live. Pristine Wellness is a home for families who want to live the way they were designed to. Real food, pure water, light, sleep and movement, with the science explained in plain words. Stories in The Source. Recipes in the Ancestral Kitchen. A little library of free guides. And a free app, straight from the site, no store.",
+    "image": "images/social/launch-were-live.jpg",
+    "date": "2026-10-07"
+  },
+  {
     "platform": "x",
-    "link": "",
-    "caption": "https://pristinewellness.com.au/article-beef-tallow-why-we-brought-this-ancestral-fat-back.html",
-    "image": "images/social-1781534588323-editor-result.jpg",
-    "date": "2026-06-15"
+    "link": "https://x.com/getpristinewell",
+    "caption": "We're live. Pristine Wellness: real food, pure water, light, sleep and movement, for the whole family. Stories, recipes, a free little library and a free app.",
+    "image": "images/social/launch-were-live.jpg",
+    "date": "2026-10-07"
   },
   {
     "platform": "pinterest",
-    "link": "",
-    "caption": "https://pristinewellness.com.au/article-beef-tallow-why-we-brought-this-ancestral-fat-back.html",
-    "image": "images/social-1781534571695-socials-friends-sharing-water.jpg",
-    "date": "2026-06-15"
-  },
-  {
-    "platform": "instagram",
-    "link": "",
-    "caption": "https://pristinewellness.com.au/article-beef-tallow-why-we-brought-this-ancestral-fat-back.html",
-    "image": "images/social-1781533817197-slow-cooker-roast-hands-in-fra.jpg",
-    "date": "2026-06-15"
+    "link": "https://pinterest.com/getpristinewell",
+    "caption": "Pristine Wellness is live. Evidence based wellness and wholefood living rooted in ancestral wisdom. Stories, recipes, free guides and a free app for families.",
+    "image": "images/social/launch-were-live.jpg",
+    "date": "2026-10-07"
   }
 ]
