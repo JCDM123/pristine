@@ -6997,6 +6997,11 @@ function openSocialGenerator(type) {
   document.getElementById('social-loading').style.display = 'block';
   document.getElementById('social-content').style.display = 'none';
   document.getElementById('social-status').style.display = 'none';
+  var hero = type === 'article' ? articleImagePath : recipeImagePath;
+  var lines = type === 'article'
+    ? [data.article && data.article.pullQuote, data.article && data.article.intro].concat(((data.article && data.article.sections) || []).map(function (sc) { return String(sc.body || sc.content || '').replace(/<[^>]+>/g, ''); }))
+    : [data.recipe && (data.recipe.about || data.recipe.intro), data.recipe && data.recipe.chefNote];
+  pwTilesSet(type, title || '', hero || '', lines);
   generateSocialContent(type, data);
 }
 
@@ -7094,12 +7099,141 @@ async function openSocialFromManage(kind, item) {
   if (subtitle) subtitle.textContent = item.title;
   if (statusEl) { statusEl.style.display = 'none'; }
   if (loadingEl) { loadingEl.style.display = 'block'; }
-  if (contentEl) { contentEl.style.display = 'none'; contentEl.innerHTML = ''; }
+  if (contentEl) { contentEl.style.display = 'none'; }
   
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
-  
+
+  var heroEl = page && page.querySelector(kind === 'recipe' ? '.recipe-hero' : '.article-hero');
+  var hero = heroEl ? (((heroEl.getAttribute('style') || '').match(/url\(['"]?([^'")]+)/) || [])[1] || '') : '';
+  var lines = kind === 'article'
+    ? [pageText('.pull-quote blockquote'), data.article.intro].concat(data.article.sections.map(function (sc) { return sc.content; }))
+    : [data.recipe.intro].concat(Array.prototype.map.call(page ? page.querySelectorAll('.recipe-about p, .chef-tip p') : [], function (e) { return e.textContent; }));
+  pwTilesSet(kind, item.title, hero, lines);
   generateSocialContent(kind, data);
+}
+
+/* ===== POST TILES =====
+   Three 1080 x 1350 tiles drawn on canvas from the story's own words and hero photo: a story link tile, and two
+   quote tiles (cream and sage). Nothing is generated; the lines are picked from the text and can be edited. */
+var PW_TILE = { kind: 'article', title: '', hero: '', q1: '', q2: '', slug: '' };
+function pwTileSentences(lines) {
+  var out = [];
+  (lines || []).forEach(function (t) {
+    String(t || '').replace(/\s+/g, ' ').split(/(?<=[.!?])\s+/).forEach(function (x) { x = x.trim(); if (x && out.indexOf(x) === -1) out.push(x); });
+  });
+  return out;
+}
+function pwTilesSet(kind, title, hero, lines) {
+  var sents = pwTileSentences(lines);
+  var q1 = '', q2 = '';
+  for (var i = 0; i < sents.length; i++) { if (sents[i].length >= 40 && sents[i].length <= 160 && !/^\d|http/.test(sents[i])) { q1 = sents[i]; break; } }
+  var short = sents.filter(function (x) { return x !== q1 && x.length >= 20 && x.length <= 90 && !/http/.test(x); });
+  short.sort(function (a, b) { return a.length - b.length; });
+  q2 = short.length ? short[Math.floor(short.length / 3)] : '';
+  PW_TILE = { kind: kind, title: title, hero: hero, q1: q1 || title, q2: q2 || title, slug: (typeof pwSlug === 'function' ? pwSlug(title) : 'story') };
+  var a = document.getElementById('pw-tile-q1'), b = document.getElementById('pw-tile-q2');
+  if (a) a.value = PW_TILE.q1; if (b) b.value = PW_TILE.q2;
+  var box = document.getElementById('social-tiles'); if (box) box.style.display = 'block';
+  pwDrawTiles();
+}
+function pwTileImg(src) {
+  return new Promise(function (res) {
+    if (!src) { res(null); return; }
+    var im = new Image();
+    im.onload = function () { res(im); }; im.onerror = function () { res(null); };
+    im.src = /^https?:/.test(src) ? src : ('/' + src.replace(/^\/+/, ''));
+  });
+}
+function pwTileWrap(ctx, text, maxW, maxLines) {
+  var words = String(text || '').split(/\s+/), lines = [], cur = '';
+  for (var i = 0; i < words.length; i++) {
+    var t = (cur + ' ' + words[i]).trim();
+    if (ctx.measureText(t).width <= maxW) cur = t; else { if (cur) lines.push(cur); cur = words[i]; }
+  }
+  if (cur) lines.push(cur);
+  if (lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] = lines[maxLines - 1].replace(/[,;:]?\s*\S*$/, '') + '...'; }
+  return lines;
+}
+function pwTileSpaced(ctx, text, x, y, align, spacing) {
+  // letter spaced small caps for the eyebrows; works where canvas letterSpacing is missing
+  try { ctx.letterSpacing = spacing + 'px'; ctx.textAlign = align; ctx.fillText(text, x, y); ctx.letterSpacing = '0px'; return; } catch (e) {}
+  var w = 0, i; for (i = 0; i < text.length; i++) w += ctx.measureText(text[i]).width + spacing;
+  var sx = align === 'center' ? x - w / 2 : (align === 'right' ? x - w : x);
+  ctx.textAlign = 'left';
+  for (i = 0; i < text.length; i++) { ctx.fillText(text[i], sx, y); sx += ctx.measureText(text[i]).width + spacing; }
+}
+function pwTileCircleImg(ctx, im, x, y, d) {
+  ctx.save(); ctx.beginPath(); ctx.arc(x + d / 2, y + d / 2, d / 2, 0, Math.PI * 2); ctx.closePath(); ctx.clip();
+  if (im) ctx.drawImage(im, x, y, d, d); else { ctx.fillStyle = '#8F9574'; ctx.fillRect(x, y, d, d); }
+  ctx.restore();
+}
+function pwTileCover(ctx, im, x, y, w, h) {
+  var r = Math.max(w / im.width, h / im.height), sw = w / r, sh = h / r;
+  ctx.drawImage(im, (im.width - sw) / 2, Math.max(0, (im.height - sh) * 0.35), sw, sh, x, y, w, h);
+}
+var pwTileDrawing = false, pwTileAgain = false;
+async function pwDrawTiles() {
+  if (pwTileDrawing) { pwTileAgain = true; return; }
+  pwTileDrawing = true;
+  try {
+    try { await Promise.all(["italic 500 84px 'Cormorant Garamond'", "500 70px 'Cormorant Garamond'", "500 22px Jost", "300 22px Jost"].map(function (f) { return document.fonts.load(f); })); } catch (e) {}
+    var q1 = (document.getElementById('pw-tile-q1') || {}).value || PW_TILE.q1;
+    var q2 = (document.getElementById('pw-tile-q2') || {}).value || PW_TILE.q2;
+    var res = await Promise.all([pwTileImg(PW_TILE.hero), pwTileImg('images/site/pristine-avatar-512.png')]);
+    var hero = res[0], mark = res[1];
+    var eyebrow = PW_TILE.kind === 'recipe' ? 'ANCESTRAL KITCHEN' : 'THE SOURCE';
+    var SER = "'Cormorant Garamond', Georgia, serif", SANS = "Jost, Arial, sans-serif";
+    var c, ctx, lines, y, i;
+
+    // 0: story link tile
+    c = document.getElementById('pw-tile-0'); if (!c) return; ctx = c.getContext('2d');
+    ctx.fillStyle = '#F5F0E8'; ctx.fillRect(0, 0, 1080, 1350);
+    if (hero) pwTileCover(ctx, hero, 0, 0, 1080, 900); else { ctx.fillStyle = '#8F9574'; ctx.fillRect(0, 0, 1080, 900); }
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.18)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10; pwTileCircleImg(ctx, mark, 880, 840, 120); ctx.restore();
+    ctx.fillStyle = '#8F9574'; ctx.font = '500 22px ' + SANS; pwTileSpaced(ctx, (PW_TILE.kind === 'recipe' ? 'ANCESTRAL KITCHEN' : 'NEW ON THE SOURCE'), 80, 985, 'left', 6);
+    ctx.fillStyle = '#1a1a1a'; ctx.font = '500 70px ' + SER; ctx.textAlign = 'left';
+    lines = pwTileWrap(ctx, PW_TILE.title, 920, 3); y = 1070;
+    for (i = 0; i < lines.length; i++) { ctx.fillText(lines[i], 80, y); y += 78; }
+    y += 20; ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.5; ctx.font = '400 20px ' + SANS;
+    var cta = PW_TILE.kind === 'recipe' ? 'RECIPE, LINK IN BIO' : 'LINK IN BIO', cw = cta.length * 6 + ctx.measureText(cta).width + 56;
+    ctx.beginPath(); ctx.roundRect(80, y, cw, 54, 27); ctx.stroke();
+    ctx.fillStyle = '#1a1a1a'; pwTileSpaced(ctx, cta, 108, y + 34, 'left', 6);
+
+    // 1: quote tile, cream
+    c = document.getElementById('pw-tile-1'); ctx = c.getContext('2d');
+    ctx.fillStyle = '#F5F0E8'; ctx.fillRect(0, 0, 1080, 1350);
+    ctx.font = 'italic 500 84px ' + SER; lines = pwTileWrap(ctx, q1, 880, 7);
+    var block = 120 + 60 + lines.length * 96 + 40 + 1 + 40 + 30 + 36; y = (1350 - block) / 2;
+    pwTileCircleImg(ctx, mark, 480, y, 120); y += 120 + 60 + 70;
+    ctx.fillStyle = '#1a1a1a'; ctx.textAlign = 'center';
+    for (i = 0; i < lines.length; i++) { ctx.fillText(lines[i], 540, y); y += 96; }
+    y += 10; ctx.fillStyle = '#8F9574'; ctx.fillRect(510, y, 60, 1); y += 50;
+    ctx.font = '500 22px ' + SANS; pwTileSpaced(ctx, eyebrow, 540, y, 'center', 6); y += 36;
+    ctx.fillStyle = '#666'; ctx.font = '300 22px ' + SANS; ctx.textAlign = 'center'; ctx.fillText(PW_TILE.title, 540, y);
+
+    // 2: quote tile, sage
+    c = document.getElementById('pw-tile-2'); ctx = c.getContext('2d');
+    ctx.fillStyle = '#8F9574'; ctx.fillRect(0, 0, 1080, 1350);
+    ctx.font = 'italic 500 112px ' + SER; lines = pwTileWrap(ctx, q2, 860, 5);
+    y = (1350 - lines.length * 122) / 2 + 80;
+    ctx.fillStyle = '#F5F0E8'; ctx.textAlign = 'center';
+    for (i = 0; i < lines.length; i++) { ctx.fillText(lines[i], 540, y); y += 122; }
+    y += 20; ctx.globalAlpha = 0.85; ctx.font = '500 22px ' + SANS;
+    pwTileSpaced(ctx, String(PW_TILE.title).toUpperCase(), 540, y, 'center', 5);
+    ctx.font = '400 20px ' + SANS; pwTileSpaced(ctx, 'PRISTINEWELLNESS.COM.AU', 540, 1290, 'center', 5); ctx.globalAlpha = 1;
+  } finally {
+    pwTileDrawing = false;
+    if (pwTileAgain) { pwTileAgain = false; pwDrawTiles(); }
+  }
+}
+function pwTileDownload(i) {
+  var c = document.getElementById('pw-tile-' + i); if (!c) return;
+  var names = ['story-tile', 'quote-cream', 'quote-sage'];
+  c.toBlob(function (blob) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = PW_TILE.slug + '-' + names[i] + '.png';
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }, 'image/png');
 }
 
 function closeSocialModal() {
@@ -8253,6 +8387,24 @@ async function aiFixAllRecipe() {
     </div>
     <!-- Status -->
     <div id="social-status" style="padding:1rem 1.8rem;border-bottom:0.5px solid var(--border);font-size:13px;color:var(--muted);display:none;"></div>
+    <!-- Post tiles: drawn in the browser from the story's own words and photo -->
+    <div id="social-tiles" style="display:none;padding:1.6rem 1.8rem;border-bottom:0.5px solid var(--border);">
+      <div style="font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#333;margin-bottom:4px;">Post tiles</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:1rem;">1080 x 1350, ready for Instagram, X and Pinterest. Edit a line and the tile redraws. Story tile on the day it goes live, then the two quote tiles over the week.</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+        <div><canvas id="pw-tile-0" width="1080" height="1350" style="width:100%;height:auto;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.12);display:block;"></canvas>
+          <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:10px 0 6px;">Story tile</div>
+          <button onclick="pwTileDownload(0)" style="font-size:10px;padding:5px 10px;background:var(--sage);color:#fff;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;font-family:Jost,sans-serif;">Download</button></div>
+        <div><canvas id="pw-tile-1" width="1080" height="1350" style="width:100%;height:auto;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.12);display:block;"></canvas>
+          <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:10px 0 6px;">Quote tile, cream</div>
+          <textarea id="pw-tile-q1" rows="3" oninput="pwDrawTiles()" style="width:100%;font-family:Jost,sans-serif;font-size:12px;padding:6px 8px;border:0.5px solid var(--border);border-radius:4px;box-sizing:border-box;margin-bottom:6px;"></textarea>
+          <button onclick="pwTileDownload(1)" style="font-size:10px;padding:5px 10px;background:var(--sage);color:#fff;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;font-family:Jost,sans-serif;">Download</button></div>
+        <div><canvas id="pw-tile-2" width="1080" height="1350" style="width:100%;height:auto;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.12);display:block;"></canvas>
+          <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:10px 0 6px;">Quote tile, sage</div>
+          <textarea id="pw-tile-q2" rows="3" oninput="pwDrawTiles()" style="width:100%;font-family:Jost,sans-serif;font-size:12px;padding:6px 8px;border:0.5px solid var(--border);border-radius:4px;box-sizing:border-box;margin-bottom:6px;"></textarea>
+          <button onclick="pwTileDownload(2)" style="font-size:10px;padding:5px 10px;background:var(--sage);color:#fff;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;font-family:Jost,sans-serif;">Download</button></div>
+      </div>
+    </div>
     <!-- Loading -->
     <div id="social-loading" style="padding:3rem 1.8rem;text-align:center;display:none;">
       <div style="font-size:13px;color:var(--muted);letter-spacing:1px;">Generating content across all platforms...</div>
