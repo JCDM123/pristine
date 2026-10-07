@@ -3,12 +3,12 @@
    so they still read with no signal. Pages are always fetched fresh when there is a connection, so a new
    story or a fix shows straight away; the saved copy is only used when the network fails.
    The studio, the Worker and the tracked /go/ links are never touched. */
-var VERSION = 'pw-v1';
+var VERSION = 'pw-v2';
 var PAGES = VERSION + '-pages', FILES = VERSION + '-files';
 var MAX_PAGES = 60, MAX_FILES = 300;
 
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(PAGES).then(function (c) { return c.addAll(['/', '/the-source.html', '/ancestral-kitchen.html', '/the-library.html']).catch(function () {}); }).then(function () { return self.skipWaiting(); }));
+  e.waitUntil(caches.open(PAGES).then(function (c) { return c.addAll(['/', '/the-source.html', '/ancestral-kitchen.html', '/the-library.html', '/images/icon-192.png', '/images/site/splash/1.jpg', '/images/site/splash/2.jpg', '/images/site/splash/3.jpg', '/images/site/splash/4.jpg', '/images/site/splash/5.jpg', '/images/site/splash/6.jpg', '/images/site/splash/7.jpg', '/images/site/splash/8.jpg', '/images/site/splash/9.jpg']).catch(function () {}); }).then(function () { return self.skipWaiting(); }));
 });
 
 self.addEventListener('activate', function (e) {
