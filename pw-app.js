@@ -34,17 +34,17 @@
     var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (standalone && !calm && !sessionStorage.getItem('pw_opened')) {
       sessionStorage.setItem('pw_opened', '1');
-      var css = '#pw-open{position:fixed;inset:0;z-index:99999;background:#F5F0E8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:6px;padding:6px;transition:opacity .6s ease}' +
-        '#pw-open img{width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transform:scale(.94);animation:pwOpenIn .5s ease forwards}' +
+      var css = '#pw-open{position:fixed;inset:0;z-index:99999;background:#2b3326;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:0;padding:0;transition:opacity .6s ease}' +
+        '#pw-open img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transform:scale(1.06);animation:pwOpenIn .5s ease forwards}' +
         '#pw-open .m{position:absolute;left:50%;top:50%;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;box-shadow:0 12px 40px rgba(0,0,0,.28);opacity:0;animation:pwOpenIn .5s .45s ease forwards}' +
         '@keyframes pwOpenIn{to{opacity:1;transform:scale(1)}}';
       var st = document.createElement('style'); st.textContent = css;
       var box = document.createElement('div'); box.id = 'pw-open';
-      var order = [5, 1, 9, 3, 7, 2, 8, 4, 6];
-      for (var i = 1; i <= 9; i++) {
+      var order = [6, 11, 1, 16, 7, 10, 4, 13, 2, 15, 9, 12, 3, 14, 5, 8];
+      for (var i = 1; i <= 16; i++) {
         var im = document.createElement('img');
         im.src = '/images/site/splash/' + i + '.jpg'; im.alt = '';
-        im.style.animationDelay = (order.indexOf(i) * 0.06) + 's';
+        im.style.animationDelay = (order.indexOf(i) * 0.045) + 's';
         box.appendChild(im);
       }
       var mark = document.createElement('img'); mark.className = 'm'; mark.src = '/images/icon-192.png'; mark.alt = 'Pristine Wellness';
