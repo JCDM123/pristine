@@ -5728,7 +5728,7 @@ async function buildEmailHTML(tplNum) {
   // Logo floats straight on the hero (photo or marble), no white box.
   // Centred unless an email asks for it on the left (to keep it off someone's head).
   var logoAlign = window._emailLogoAlign === 'left' ? 'left' : 'center';
-  var logoImg = '<a href="' + SITE + '"><img src="' + SITE + 'images/pw-logo-email.png" alt="Pristine Wellness" width="116" height="116" style="display:block;border:0;width:116px;height:116px;"></a>';
+  var logoImg = '<a href="' + SITE + '"><img src="' + SITE + 'images/pw-logo-email-round.png" alt="Pristine Wellness" width="116" height="116" style="display:block;border:0;width:116px;height:116px;"></a>';
   function bgHero(img, h, inner) {
     return '<tr><td background="' + img + '" bgcolor="#F5F0E8" valign="top" align="center" height="' + h + '" style="background-image:url(\'' + img + '\');background-size:cover;background-position:center;background-color:#F5F0E8;height:' + h + 'px;">'
       + '<!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' + h + 'px;"><v:fill type="frame" src="' + img + '" color="#F5F0E8" /><v:textbox inset="0,0,0,0"><![endif]-->'
