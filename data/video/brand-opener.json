@@ -1,0 +1,33 @@
+{
+  "story": "index.html",
+  "beats": [
+    {"kind": "hook", "pic": "images/home-slide-tarkine-falls-water-hero-2.jpg",
+     "say": "What if the way you were designed to live is still the best way to live?",
+     "caption": "What if the way you were designed to live is still the best way to live?"},
+    {"kind": "title", "pic": "images/home-slide-tarkine-falls-water-hero-2.jpg", "eyebrow": "Pristine Wellness",
+     "say": "Pristine Wellness. Live the way you were designed to.", "caption": "Live the way you were designed to."},
+    {"kind": "section", "pic": "images/10-proven-ways-to-build-lasting-health-a-muikmfbz.jpg", "eyebrow": "Who we are",
+     "say": "We're an Australian family who live, breathe, eat and drink this. Real food. Pure water. Light, sleep and movement. With the science explained in plain words, and the hype left out.",
+     "caption": "Real food, pure water, light, sleep and movement."},
+    {"kind": "section", "pic": "images/home-slide-socials-friends-sharing-water.jpg", "eyebrow": "The Source",
+     "say": "The Source is where the stories live. What stress really does to your body. What's in your tap water. Why your teeth talk to the rest of you.",
+     "caption": "Stories, with the research behind them."},
+    {"kind": "section", "pic": "images/kitchen-panel-2-chopping-kale-process.jpg", "eyebrow": "The Ancestral Kitchen",
+     "say": "The Ancestral Kitchen is the food we actually cook. Soaked, fermented, slow, and good.",
+     "caption": "The food we actually cook."},
+    {"kind": "section", "pic": "images/site/library-shelf.png", "eyebrow": "The Library",
+     "say": "The Library is a shelf of little books, free with your email. Start with the Essential Pristine Health Guide, where we'd begin if we were starting again.",
+     "caption": "Little books, free with your email."},
+    {"kind": "section", "pic": "images/kitchen-panel-1-veg-soaking-in-mea-water-marble-fla.jpg", "eyebrow": "The Experiment",
+     "say": "And the Experiment. Two sealed jars of water on one shelf, photographed every week, for years. We don't know what we'll see. That's the point.",
+     "caption": "Two jars. One photo a week. For years."},
+    {"kind": "section", "pic": "images/site/video-app-phone-wide.jpg", "pic_tall": "images/site/video-app-phone-tall.jpg", "eyebrow": "The Pristine app",
+     "say": "It's all in the free Pristine app. Straight from the site, no store, two taps. With a Listen button that reads the stories to you while you cook.",
+     "caption": "Free app. No store. Two taps."},
+    {"kind": "quote", "pic": "images/home-slide-aussie-dawn-grass-tree-bushland.jpg",
+     "say": "We believe the body is an amazing creation. Give it a clear run, and it knows what to do.",
+     "caption": "The body is an amazing creation. Give it a clear run, and it knows what to do."},
+    {"kind": "closing", "pic": "images/home-slide-tarkine-falls-water-hero-2.jpg", "eyebrow": "Welcome to the family",
+     "say": "Subscribe, and come and find us at pristine wellness dot com dot a u.", "caption": "Welcome to the family"}
+  ]
+}

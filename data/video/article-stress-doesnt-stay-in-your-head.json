@@ -1,0 +1,30 @@
+{
+  "story": "article-stress-doesnt-stay-in-your-head.html",
+  "beats": [
+    {"kind": "hook", "pic": "images/stress-story-hand-on-the-wheel-hero.jpg",
+     "say": "You're driving along, calm, and a set of flashing lights appears in the mirror. Your heart jumps. Your hands tighten. The police car sweeps past, and a full minute later your body is still braced. Your mind knew you'd done nothing wrong. Something deeper didn't care.",
+     "caption": "Your mind knew. Something deeper didn't care."},
+    {"kind": "title", "pic": "images/stress-story-hand-on-the-wheel-hero.jpg", "eyebrow": "Pristine Wellness",
+     "say": "Stress doesn't stay in your head.", "caption": "Stress Doesn't Stay in Your Head"},
+    {"kind": "section", "pic": "images/stress-story-slow-breath-at-the-bench.jpg", "eyebrow": "What stress does",
+     "say": "When your brain decides something is a threat, it fires the same alarm through your nerves, your hormones and your immune system, all at once. In a short burst, that's brilliant. Focus sharpens, blood goes to your muscles, and repair goes on hold until the danger passes.",
+     "caption": "One alarm, through nerves, hormones and immune system at once."},
+    {"kind": "section", "pic": "images/10-proven-ways-to-build-lasting-health-a-muikmg4e.jpg", "eyebrow": "",
+     "say": "The catch is that the brain can't reliably tell a real danger from a worry. A deadline, a memory, a thought you keep circling back to, sets off the same chemistry as a snake on the path.",
+     "caption": "A worry sets off the same chemistry as a snake on the path."},
+    {"kind": "section", "pic": "images/article-body-1-1781495298053.jpg", "eyebrow": "",
+     "say": "When the alarm never fully switches off, the effects pile up. Wounds heal more slowly. Immune responses weaken. And digestion is often where people feel it first.",
+     "caption": "When the alarm never switches off, the effects pile up."},
+    {"kind": "quote", "pic": "images/article-body-2-1781703865449.jpg", "eyebrow": "",
+     "say": "A feeling is not a thought with a physical side effect. It is one event, happening in the whole of you at once.",
+     "caption": "A feeling is not a thought with a physical side effect. It is one event in the whole of you at once."},
+    {"kind": "section", "pic": "images/stress-story-rest-by-the-window.jpg", "eyebrow": "What the scans showed",
+     "say": "Brain scans back this up. Cancer survivors still ambushed by memories of their diagnosis had four or five short sessions of Neuro Emotional Technique. Afterwards, the region of the brain most tied to traumatic memory had largely gone quiet. It was in the scans, not just in how people said they felt.",
+     "caption": "After four or five sessions, the fear memory region had gone quiet."},
+    {"kind": "section", "pic": "images/home-slide-aussie-dawn-grass-tree-bushland.jpg", "eyebrow": "",
+     "say": "None of this means every headache is a buried feeling. But ease what's pressing on the body, and it does what it already knows how to do. The body is an amazing creation. The mind and the body were never two things. They are one thing, and it's worth listening to.",
+     "caption": "The mind and the body were never two things."},
+    {"kind": "closing", "pic": "images/10-proven-ways-to-build-lasting-health-a-muikmgd9.jpg", "eyebrow": "The Source",
+     "say": "The full story, with the research behind it, is at pristine wellness dot com dot a u.", "caption": "Read the full story"}
+  ]
+}
