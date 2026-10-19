@@ -7279,19 +7279,14 @@ function pwDrawTile(c, o) {
   } else if (o.style === 'collage') {
     // the story's own photos in a grid: 2 x 3 for six, 2 x 2 for four or five, one wide over two for three
     var ims = (o.images || []).filter(Boolean), g = 12, n = ims.length >= 6 ? 6 : ims.length >= 4 ? 4 : ims.length;
-    var cbg2 = pick([K.cream, K.sand]), strip = R() < 0.6 ? 150 : 0, gh = H - strip, cells = [];
+    // photos only: the story name goes in the post's caption
+    var cbg2 = pick([K.cream, K.sand]), gh = H, cells = [];
     ctx.fillStyle = cbg2; ctx.fillRect(0, 0, W, H);
     var cw2 = (W - g * 3) / 2;
     if (n === 6) { var rh = (gh - g * 4) / 3; for (i = 0; i < 6; i++) cells.push([g + (i % 2) * (cw2 + g), g + Math.floor(i / 2) * (rh + g), cw2, rh]); }
     else if (n === 4) { var rh4 = (gh - g * 3) / 2; for (i = 0; i < 4; i++) cells.push([g + (i % 2) * (cw2 + g), g + Math.floor(i / 2) * (rh4 + g), cw2, rh4]); }
     else { var top3 = (gh - g * 3) * 0.58; cells.push([g, g, W - g * 2, top3]); cells.push([g, g * 2 + top3, cw2, gh - g * 3 - top3]); cells.push([g * 2 + cw2, g * 2 + top3, cw2, gh - g * 3 - top3]); }
     for (i = 0; i < cells.length; i++) { var im = ims[i % ims.length]; if (im) pwTileCover(ctx, im, cells[i][0], cells[i][1], cells[i][2], cells[i][3], 1, 0.5, 0.45); }
-    if (strip) {
-      size = 46; ctx.font = 'italic 500 ' + size + 'px ' + SER; ctx.fillStyle = K.ink;
-      lines = pwTileWrap(ctx, words, 760, 2);
-      text(lines, 40, H - strip + (lines.length > 1 ? 62 : 90), size + 4);
-      ctx.globalAlpha = 0.7; ctx.font = '300 22px ' + SANS; ctx.textAlign = 'right'; ctx.fillText('pristinewellness.com.au', W - 40, H - 40);
-    }
   } else if (o.style === 'notebook') {
     if (o.paper) pwTileCover(ctx, o.paper, 0, 0, W, H, 1, 0.5, 0.5); else { ctx.fillStyle = K.cream; ctx.fillRect(0, 0, W, H); }
     ctx.fillStyle = 'rgba(245,240,232,0.35)'; ctx.fillRect(0, 0, W, H);
