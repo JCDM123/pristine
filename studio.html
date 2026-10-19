@@ -7190,7 +7190,7 @@ function pwTileStyles(slug, shift, photos) {
 function pwTileDark(hex) { var n = parseInt(hex.slice(1), 16); return (((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11) < 150; }
 // o: { style, kind, title, text, quote, hero, sig, paper, seed }
 function pwDrawTile(c, o) {
-  var W = 1080, H = 1350, ctx = c.getContext('2d'), R = pwTileRand(o.seed || 1);
+  var W = c.width, H = c.height, ctx = c.getContext('2d'), R = pwTileRand(o.seed || 1);
   var SER = "'Cormorant Garamond', Georgia, serif", SANS = "Jost, Arial, sans-serif", K = PW_TILE_INK;
   var pick = function (a) { return a[Math.floor(R() * a.length)]; };
   var foot = o.kind === 'recipe' ? 'the recipe is on our site' : 'read the full story on our site';
@@ -7312,41 +7312,94 @@ function pwDrawTile(c, o) {
   }
   ctx.restore();
 }
-// the story tile on its own, used for the site's social wall when a story goes live
-function pwDrawStoryTile(c, kind, title, hero) {
-  var slug = typeof pwSlug === 'function' ? pwSlug(title) : title;
-  pwDrawTile(c, { style: pwTileStyles(slug)[0], kind: kind, title: title, text: title, hero: hero, seed: pwTileHash(slug + ':0') });
+
+/* Social wall pictures: 1200 x 700, one look per column so the three columns never show the same picture twice.
+   x: a line from the story beside a slice of the photo. instagram: the story's photos side by side. pinterest: a close
+   crop of the photo with the name on it. */
+function pwDrawWall(c, look, o) {
+  var W = c.width, H = c.height, ctx = c.getContext('2d'), R = pwTileRand(o.seed || 1), K = PW_TILE_INK;
+  var SER = "'Cormorant Garamond', Georgia, serif", SANS = "Jost, Arial, sans-serif", i, lines, size, y;
+  var pick = function (a) { return a[Math.floor(R() * a.length)]; };
+  var ims = (o.images || []).filter(Boolean); if (!ims.length && o.hero) ims = [o.hero];
+  var photo = function (im, x, y0, w, h, zoom, fx, fy) { if (im) pwTileCover(ctx, im, x, y0, w, h, zoom, fx, fy); else { ctx.fillStyle = K.sage; ctx.fillRect(x, y0, w, h); } };
+  ctx.save(); ctx.clearRect(0, 0, W, H); ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+  if (look === 'x') {
+    var bg = pick([K.cream, K.sand, K.sage]), dark = bg === K.sage, pw = Math.round(W * 0.36), left = R() < 0.5;
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    photo(ims[0], left ? 0 : W - pw, 0, pw, H, 1.3, 0.5, 0.45);
+    var tx = left ? pw + 70 : 70, tw = W - pw - 140;
+    size = 58; ctx.font = 'italic 500 ' + size + 'px ' + SER;
+    lines = pwTileWrap(ctx, o.text, tw, 5);
+    while (lines.length > 4 && size > 42) { size -= 4; ctx.font = 'italic 500 ' + size + 'px ' + SER; lines = pwTileWrap(ctx, o.text, tw, 5); }
+    y = (H - lines.length * (size + 10)) / 2 + size - 10;
+    ctx.fillStyle = dark ? K.cream : K.ink;
+    for (i = 0; i < lines.length; i++) ctx.fillText(lines[i], tx, y + i * (size + 10));
+    ctx.globalAlpha = 0.7; ctx.font = '300 22px ' + SANS; ctx.fillText(o.title, tx, H - 50);
+  } else if (look === 'instagram') {
+    var n = Math.min(ims.length, 3) || 1, g = 8, cw = (W - g * (n + 1)) / n;
+    ctx.fillStyle = pick([K.cream, K.sand]); ctx.fillRect(0, 0, W, H);
+    if (n === 1) photo(ims[0], 0, 0, W, H, 1.15, 0.5, 0.45);
+    else for (i = 0; i < n; i++) photo(ims[i], g + i * (cw + g), g, cw, H - g * 2, 1, 0.5, 0.45);
+  } else {
+    photo(ims[0], 0, 0, W, H, pick([1.6, 1.8]), 0.4 + R() * 0.2, 0.4 + R() * 0.2);
+    var gr = ctx.createLinearGradient(0, H, 0, H * 0.3);
+    gr.addColorStop(0, 'rgba(18,22,15,0.75)'); gr.addColorStop(1, 'rgba(18,22,15,0)');
+    ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+    ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 20;
+    size = 64; ctx.font = '500 ' + size + 'px ' + SER; ctx.fillStyle = '#fff';
+    lines = pwTileWrap(ctx, o.title, W - 160, 2);
+    y = H - 70 - (lines.length - 1) * (size + 6);
+    for (i = 0; i < lines.length; i++) ctx.fillText(lines[i], 70, y + i * (size + 6));
+  }
+  ctx.restore();
 }
 
-/* The site's own social wall (social-feed.html) fills itself: every story that goes live adds its tile and a line
-   to the X, Instagram and Pinterest columns, linking to the story. Never stops a publish if it fails. */
+/* The site's own social wall (social-feed.html) fills itself: every story that goes live adds a picture and a line
+   to the X, Instagram and Pinterest columns, each column with its own picture and words, linking to the story.
+   Never stops a publish if it fails. */
 async function pwFeedAdd(kind, title, filename, heroPath, heroData, intro) {
   try {
-    try { await Promise.all(["italic 500 84px 'Cormorant Garamond'", "500 70px 'Cormorant Garamond'", "300 26px Jost"].map(function (f) { return document.fonts.load(f); })); } catch (e) {}
-    var heroSrc = heroData || (heroPath ? 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/' + GITHUB_BRANCH + '/' + heroPath.replace(/^\/+/, '') + '?cb=' + Date.now() : '');
+    try { await Promise.all(["italic 500 58px 'Cormorant Garamond'", "500 64px 'Cormorant Garamond'", "300 22px Jost"].map(function (f) { return document.fonts.load(f); })); } catch (e) {}
+    var raw = function (p) { return 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/' + GITHUB_BRANCH + '/' + String(p).replace(/^\/+/, '') + '?cb=' + Date.now(); };
+    var heroSrc = heroData || (heroPath ? raw(heroPath) : '');
+    // the story's own photos, for the Instagram column
+    var more = [];
+    try {
+      var pr = await fetch(raw(filename));
+      if (pr.ok) {
+        var doc = new DOMParser().parseFromString(await pr.text(), 'text/html');
+        more = Array.prototype.map.call(doc.querySelectorAll(kind === 'recipe' ? '.method-section figure img' : '.article-text img, .article-body figure img'), function (e) { return e.getAttribute('src') || ''; })
+          .filter(function (s) { return /\.(jpe?g|png|webp)(\?|$)/i.test(s) && !/logo|sig-|avatar|icon|^https?:/i.test(s); }).slice(0, 2);
+      }
+    } catch (e) {}
     var hero = await pwTileImg(heroSrc);
-    var c = document.createElement('canvas'); c.width = 1080; c.height = 1350;
-    pwDrawStoryTile(c, kind, title, hero);
-    var slug = pwSlug(title), tilePath = 'images/social/' + slug + '-tile.jpg';
-    var dataUrl = c.toDataURL('image/jpeg', 0.86);
-    var body = { message: 'Social wall tile: ' + title, content: dataUrl.split(',')[1], branch: GITHUB_BRANCH };
-    var sha = await getFileSHA(tilePath); if (sha) body.sha = sha;
-    await githubRequest(tilePath, 'PUT', body);
+    var ims = [hero].concat((await Promise.all(more.map(function (s) { return pwTileImg(raw(s)); })))).filter(Boolean);
+    var line = String(intro || '').replace(/\s+/g, ' ').trim();
+    var sent = (line.match(/^(.{20,180}?[.!?])(\s|$)/) || [])[1] || line.slice(0, 160) || title;
+    var slug = pwSlug(title), seed = pwTileHash(slug), pics = {};
+    var looks = ['x', 'instagram', 'pinterest'];
+    for (var k = 0; k < looks.length; k++) {
+      var c = document.createElement('canvas'); c.width = 1200; c.height = 700;
+      pwDrawWall(c, looks[k], { title: title, text: sent, hero: hero, images: ims, seed: seed + k });
+      var path = 'images/social/' + slug + '-' + looks[k] + '.jpg';
+      var body = { message: 'Social wall picture (' + looks[k] + '): ' + title, content: c.toDataURL('image/jpeg', 0.86).split(',')[1], branch: GITHUB_BRANCH };
+      var sha = await getFileSHA(path); if (sha) body.sha = sha;
+      await githubRequest(path, 'PUT', body);
+      pics[looks[k]] = path;
+    }
     var cur = null, list = [], fsha = null;
     try { cur = await githubRequest('data/social-feed.json', 'GET'); list = JSON.parse(decodeURIComponent(escape(atob((cur.content || '').replace(/\s/g, ''))))); fsha = cur.sha; } catch (e) { list = []; }
     if (!Array.isArray(list)) list = [];
     var link = PW_SITE + filename, today = localISODate();
-    var line = String(intro || '').replace(/\s+/g, ' ').trim();
-    var sent = (line.match(/^(.{20,180}?[.!?])(\s|$)/) || [])[1] || line.slice(0, 160) || title;
     list = list.filter(function (p) { return p && p.link !== link; });
     var adds = [
-      { platform: 'instagram', link: link, caption: title + '. ' + sent, image: tilePath, date: today },
-      { platform: 'x', link: link, caption: title, image: tilePath, date: today },
-      { platform: 'pinterest', link: link, caption: title, image: tilePath, date: today }
+      { platform: 'instagram', link: link, caption: title + '. ' + sent, image: pics.instagram, date: today },
+      { platform: 'x', link: link, caption: sent, image: pics.x, date: today },
+      { platform: 'pinterest', link: link, caption: title, image: pics.pinterest, date: today }
     ];
     list = adds.concat(list);
     // keep the wall light: the newest twelve per column
-    var count = {}; list = list.filter(function (p) { var k = p.platform || 'instagram'; count[k] = (count[k] || 0) + 1; return count[k] <= 12; });
+    var count = {}; list = list.filter(function (p) { var q = p.platform || 'instagram'; count[q] = (count[q] || 0) + 1; return count[q] <= 12; });
     var fb = { message: 'Social wall: ' + title, content: btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), branch: GITHUB_BRANCH };
     if (fsha) fb.sha = fsha;
     await githubRequest('data/social-feed.json', 'PUT', fb);
