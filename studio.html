@@ -7115,7 +7115,9 @@ async function openSocialFromManage(kind, item) {
   var lines = kind === 'article'
     ? [pageText('.pull-quote blockquote'), data.article.intro].concat(data.article.sections.map(function (sc) { return sc.content; }))
     : [data.recipe.intro].concat(Array.prototype.map.call(page ? page.querySelectorAll('.recipe-about p, .chef-tip p') : [], function (e) { return e.textContent; }));
-  pwTilesSet(kind, item.title, hero, lines);
+  var photos = page ? Array.prototype.map.call(page.querySelectorAll(kind === 'recipe' ? '.method-section figure img' : '.article-text img, .article-body figure img'), function (e) { return e.getAttribute('src') || ''; })
+    .filter(function (s) { return /\.(jpe?g|png|webp)(\?|$)/i.test(s) && !/logo|sig-|avatar|icon/i.test(s); }) : [];
+  pwTilesSet(kind, item.title, hero, lines, photos);
   generateSocialContent(kind, data);
 }
 
@@ -7124,11 +7126,11 @@ async function openSocialFromManage(kind, item) {
    layouts so the feed never settles into one template: the story's name picks the layouts and the small details
    (where the words sit, sizes, colours), and Shuffle moves a tile on to its next layout. No pills, no spaced capitals.
    Nothing is generated; the lines are picked from the text and can be edited. */
-var PW_TILE = { kind: 'article', title: '', hero: '', q1: '', q2: '', slug: '', shift: [0, 0, 0] };
+var PW_TILE = { kind: 'article', title: '', hero: '', q1: '', q2: '', slug: '', shift: [0, 0, 0], images: [] };
 var PW_TILE_INK = { cream: '#F5F0E8', sand: '#E9DFCF', sage: '#8F9574', moss: '#4a5e38', forest: '#2b3326', ink: '#1f1f1c' };
 // tile 0 carries the story's name, tiles 1 and 2 carry a line from it
 var PW_TILE_POOLS = [['photo', 'split', 'frame', 'crop', 'photoline'], ['notebook', 'photoline', 'card'], ['card', 'crop', 'notebook', 'photoline']];
-var PW_TILE_NAMES = { photo: 'Photo, few words', split: 'Photo and panel', frame: 'Framed photo', crop: 'Close crop', photoline: 'Words on the photo', notebook: 'Notebook page', card: 'Plain card' };
+var PW_TILE_NAMES = { photo: 'Photo, few words', split: 'Photo and panel', frame: 'Framed photo', crop: 'Close crop', collage: 'Photo grid', photoline: 'Words on the photo', notebook: 'Notebook page', card: 'Plain card' };
 function pwTileSentences(lines) {
   var out = [];
   (lines || []).forEach(function (t) {
@@ -7136,14 +7138,15 @@ function pwTileSentences(lines) {
   });
   return out;
 }
-function pwTilesSet(kind, title, hero, lines) {
+function pwTilesSet(kind, title, hero, lines, images) {
   var sents = pwTileSentences(lines);
   var q1 = '', q2 = '';
   for (var i = 0; i < sents.length; i++) { if (sents[i].length >= 40 && sents[i].length <= 160 && !/^\d|http/.test(sents[i])) { q1 = sents[i]; break; } }
   var short = sents.filter(function (x) { return x !== q1 && x.length >= 20 && x.length <= 90 && !/http/.test(x); });
   short.sort(function (a, b) { return a.length - b.length; });
   q2 = short.length ? short[Math.floor(short.length / 3)] : '';
-  PW_TILE = { kind: kind, title: title, hero: hero, q1: q1 || title, q2: q2 || title, slug: (typeof pwSlug === 'function' ? pwSlug(title) : 'story'), shift: [0, 0, 0] };
+  PW_TILE = { kind: kind, title: title, hero: hero, q1: q1 || title, q2: q2 || title, slug: (typeof pwSlug === 'function' ? pwSlug(title) : 'story'), shift: [0, 0, 0],
+    images: [hero].concat(images || []).filter(function (s, k, a) { return s && a.indexOf(s) === k; }).slice(0, 6) };
   var a = document.getElementById('pw-tile-q1'), b = document.getElementById('pw-tile-q2');
   if (a) a.value = PW_TILE.q1; if (b) b.value = PW_TILE.q2;
   var box = document.getElementById('social-tiles'); if (box) box.style.display = 'block';
@@ -7179,8 +7182,8 @@ function pwTileHash(s) { var h = 2166136261; s = String(s || ''); for (var i = 0
 function pwTileRand(seed) {
   return function () { seed = (seed + 0x6D2B79F5) | 0; var t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
-function pwTileStyles(slug, shift) {
-  var out = [0, 1, 2].map(function (i) { var p = PW_TILE_POOLS[i]; return p[(pwTileHash(slug + ':' + i) + ((shift && shift[i]) || 0)) % p.length]; });
+function pwTileStyles(slug, shift, photos) {
+  var out = [0, 1, 2].map(function (i) { var p = (i === 0 && photos >= 3) ? ['collage'].concat(PW_TILE_POOLS[0]) : PW_TILE_POOLS[i]; return p[(pwTileHash(slug + ':' + i) + ((shift && shift[i]) || 0)) % p.length]; });
   if (out[2] === out[1]) { var p2 = PW_TILE_POOLS[2]; out[2] = p2[(p2.indexOf(out[2]) + 1) % p2.length]; }
   return out;
 }
@@ -7273,6 +7276,22 @@ function pwDrawTile(c, o) {
       ctx.globalAlpha = 0.85; ctx.font = '300 28px ' + SANS;
       lines = pwTileWrap(ctx, words, 860, 2); text(lines, 86, H - 160, 38);
     }
+  } else if (o.style === 'collage') {
+    // the story's own photos in a grid: 2 x 3 for six, 2 x 2 for four or five, one wide over two for three
+    var ims = (o.images || []).filter(Boolean), g = 12, n = ims.length >= 6 ? 6 : ims.length >= 4 ? 4 : ims.length;
+    var cbg2 = pick([K.cream, K.sand]), strip = R() < 0.6 ? 150 : 0, gh = H - strip, cells = [];
+    ctx.fillStyle = cbg2; ctx.fillRect(0, 0, W, H);
+    var cw2 = (W - g * 3) / 2;
+    if (n === 6) { var rh = (gh - g * 4) / 3; for (i = 0; i < 6; i++) cells.push([g + (i % 2) * (cw2 + g), g + Math.floor(i / 2) * (rh + g), cw2, rh]); }
+    else if (n === 4) { var rh4 = (gh - g * 3) / 2; for (i = 0; i < 4; i++) cells.push([g + (i % 2) * (cw2 + g), g + Math.floor(i / 2) * (rh4 + g), cw2, rh4]); }
+    else { var top3 = (gh - g * 3) * 0.58; cells.push([g, g, W - g * 2, top3]); cells.push([g, g * 2 + top3, cw2, gh - g * 3 - top3]); cells.push([g * 2 + cw2, g * 2 + top3, cw2, gh - g * 3 - top3]); }
+    for (i = 0; i < cells.length; i++) { var im = ims[i % ims.length]; if (im) pwTileCover(ctx, im, cells[i][0], cells[i][1], cells[i][2], cells[i][3], 1, 0.5, 0.45); }
+    if (strip) {
+      size = 46; ctx.font = 'italic 500 ' + size + 'px ' + SER; ctx.fillStyle = K.ink;
+      lines = pwTileWrap(ctx, words, 760, 2);
+      text(lines, 40, H - strip + (lines.length > 1 ? 62 : 90), size + 4);
+      ctx.globalAlpha = 0.7; ctx.font = '300 22px ' + SANS; ctx.textAlign = 'right'; ctx.fillText('pristinewellness.com.au', W - 40, H - 40);
+    }
   } else if (o.style === 'notebook') {
     if (o.paper) pwTileCover(ctx, o.paper, 0, 0, W, H, 1, 0.5, 0.5); else { ctx.fillStyle = K.cream; ctx.fillRect(0, 0, W, H); }
     ctx.fillStyle = 'rgba(245,240,232,0.35)'; ctx.fillRect(0, 0, W, H);
@@ -7348,11 +7367,13 @@ async function pwDrawTiles() {
     var q1 = (document.getElementById('pw-tile-q1') || {}).value || PW_TILE.q1;
     var q2 = (document.getElementById('pw-tile-q2') || {}).value || PW_TILE.q2;
     var res = await Promise.all([pwTileImg(PW_TILE.hero), pwTileImg('images/sig-mr.svg'), pwTileImg('images/site/paper-texture.jpg')]);
-    var styles = pwTileStyles(PW_TILE.slug, PW_TILE.shift), texts = [PW_TILE.title, q1, q2];
+    var photos = (await Promise.all((PW_TILE.images || []).map(pwTileImg))).filter(Boolean);
+    var styles = pwTileStyles(PW_TILE.slug, PW_TILE.shift, photos.length), texts = [PW_TILE.title, q1, q2];
     for (var i = 0; i < 3; i++) {
       var c = document.getElementById('pw-tile-' + i); if (!c) return;
-      pwDrawTile(c, { style: styles[i], kind: PW_TILE.kind, title: PW_TILE.title, text: texts[i], quote: i > 0, hero: res[0], sig: res[1], paper: res[2],
+      pwDrawTile(c, { style: styles[i], kind: PW_TILE.kind, title: PW_TILE.title, text: texts[i], quote: i > 0, hero: res[0], sig: res[1], paper: res[2], images: photos,
         seed: pwTileHash(PW_TILE.slug + ':' + i) + (PW_TILE.shift[i] || 0) * 7919 });
+      c.dataset.style = styles[i];
       var lb = document.getElementById('pw-tile-name-' + i); if (lb) lb.textContent = PW_TILE_NAMES[styles[i]];
     }
   } finally {
@@ -7363,7 +7384,7 @@ async function pwDrawTiles() {
 function pwTileShuffle(i) { PW_TILE.shift[i] = (PW_TILE.shift[i] || 0) + 1; pwDrawTiles(); }
 function pwTileDownload(i) {
   var c = document.getElementById('pw-tile-' + i); if (!c) return;
-  var style = pwTileStyles(PW_TILE.slug, PW_TILE.shift)[i];
+  var style = (document.getElementById('pw-tile-' + i).dataset.style) || 'tile';
   c.toBlob(function (blob) {
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = PW_TILE.slug + '-' + (i === 0 ? 'story' : 'quote-' + i) + '-' + style + '.png';
     document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
