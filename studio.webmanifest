@@ -1,0 +1,18 @@
+{
+  "id": "/studio.html",
+  "name": "Pristine Studio",
+  "short_name": "Studio",
+  "description": "The Pristine Wellness studio: write, schedule and publish stories and recipes.",
+  "lang": "en-AU",
+  "start_url": "/studio.html",
+  "scope": "/studio",
+  "display": "standalone",
+  "theme_color": "#2b3326",
+  "background_color": "#2b3326",
+  "icons": [
+    { "src": "/images/studio-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/images/studio-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/images/studio-icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/images/studio-icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
