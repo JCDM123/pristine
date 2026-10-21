@@ -2699,7 +2699,8 @@ function renderRecipePreview(recipe, ings, steps, name, category, servings, prep
     '<div class="rp-meta">' + meta + '</div></div>' +
     aboutHTML +
     dietaryHTML +
-    '<p style="font-size:14px;line-height:1.7;margin-bottom:1.2rem;">' + recipe.intro + '</p>' +
+    // the published page shows the intro inside the about box, so only show it again here when it says something different
+    ((recipe.intro && recipe.intro !== d.about) ? '<p style="font-size:14px;line-height:1.7;margin-bottom:1.2rem;">' + recipe.intro + '</p>' : '') +
     '<div class="rp-section-title">Ingredients</div><ul class="rp-ingredient-list">' + ingsHTML + '</ul>' +
     '<div class="rp-section-title">Method</div>' + stepsHTML +
     (recipe.chefNote ? '<div style="margin-top:1.5rem;padding:1rem 1.2rem;background:rgba(201,169,110,0.1);border-left:3px solid var(--gold);"><p style="font-size:13px;"><strong>Chef note:</strong> ' + recipe.chefNote + '</p></div>' : '') +
