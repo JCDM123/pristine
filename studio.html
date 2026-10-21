@@ -6478,7 +6478,7 @@ async function applyCorrections(kind) {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
+        max_tokens: 16000,
         system: 'You are an editor for Pristine Wellness. Apply ONLY the requested corrections. When changing a word or phrase, read the full surrounding sentence and rewrite it so the change flows naturally with what comes before and after , never insert words in isolation. Keep everything not mentioned absolutely identical, word for word. Keep the exact same JSON structure and keys. Australian spelling. NEVER use em dashes or en dashes anywhere. Reply with ONLY the corrected JSON, no markdown fences, no commentary.',
         messages: [{ role: 'user', content: 'Corrections requested: ' + ask + '\n\nContent JSON:\n' + JSON.stringify(content) }]
       })
@@ -6489,6 +6489,7 @@ async function applyCorrections(kind) {
       if (String(msg).toLowerCase().indexOf('rate limit') !== -1) msg = 'The AI hit its per-minute limit. Wait 60 seconds and try again';
       throw new Error(msg);
     }
+    if (apiData.stop_reason === 'max_tokens') throw new Error('the story is too long to correct in one go. Try a shorter request, or use Edit text after publishing to preview');
     var text = apiData.content.filter(function(b){ return b.type === 'text' && b.text; }).map(function(b){ return b.text; }).join('');
     var fixed = JSON.parse(text.replace(/```json|```/g, '').trim());
     // House rule scrub
@@ -8568,13 +8569,14 @@ async function aiFixAllRecipe() {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
+        max_tokens: 16000,
         system: 'You are a senior editor for Pristine Wellness, an ancestral health platform for Australian families. Review this recipe and fix EVERYTHING that needs fixing: grammar, spelling (Australian), flow, sentence structure, consistency between title and ingredients and steps, unclear instructions, awkward phrasing, repetition, and brand voice. Brand voice: warm, grounded, real , like a health-conscious parent talking to another parent. No em dashes, no en dashes, no AI writing tells (no "delve", "unlock", "journey", "fascinating", "crucial", "game-changer"). Fix the intro so it flows naturally. Fix any step that is unclear or out of order. Fix ingredient names for consistency with the steps. Keep the exact same JSON structure and keys. Return ONLY valid JSON, no markdown, no commentary.',
         messages: [{ role: 'user', content: 'Please review and fix everything in this recipe:\n\n' + JSON.stringify(data.recipe) }]
       })
     });
     var apiData = await resp.json();
     if (!resp.ok || apiData.error || !apiData.content) throw new Error('API error');
+    if (apiData.stop_reason === 'max_tokens') throw new Error('the recipe is too long to fix in one go');
     var text = (apiData.content || []).map(function(b){ return b.text || ''; }).join('');
     var fixed = JSON.parse(text.replace(/```json|```/g,'').trim());
     // Em dash scrub
