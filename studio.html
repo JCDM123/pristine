@@ -375,6 +375,7 @@ sup.cite:hover { text-decoration:underline; }
 <nav class="nav">
   <img src="/images/site/logo.svg" alt="Pristine Wellness" class="logo-img" onclick="window.location='index.html'">
   <span class="nav-title">CMS Studio v3.57</span>
+  <span id="pw-ai-spend" onclick="pwSpendDetails()" title="Estimated AI cost this month on this device. Tap for details." style="font-size:11px;letter-spacing:0.5px;color:var(--muted);cursor:pointer;white-space:nowrap;margin-left:auto;margin-right:1rem;"></span>
   <div class="nav-actions">
     <span class="nav-link" onclick="window.open('the-source.html')">The Source</span>
     <span class="nav-link" onclick="window.open('ancestral-kitchen.html')">Ancestral Kitchen</span>
@@ -1542,6 +1543,56 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
 </div><!-- /#studio -->
 <script>
 const STUDIO_PASSWORD = 'pristine2026';
+
+/* ===== AI SPEND: every AI reply says how many tokens it used, so the studio keeps a running estimate of the cost.
+   Prices are US dollars per million tokens (Anthropic bills in US dollars). Kept per device in this browser. */
+var PW_AI_PRICES = { 'claude-sonnet-4-6': { input: 3, output: 15 } };
+function pwSpendLoad() {
+  var month = localISODate().slice(0, 7), s = null;
+  try { s = JSON.parse(localStorage.getItem('pw_ai_spend') || 'null'); } catch (e) {}
+  if (!s || s.month !== month) s = { month: month, usd: 0, calls: 0, last: 0, prev: s && s.month !== month ? { month: s.month, usd: s.usd, calls: s.calls } : (s && s.prev) || null };
+  return s;
+}
+function pwSpendShow() {
+  var el = document.getElementById('pw-ai-spend'); if (!el) return;
+  var s = pwSpendLoad();
+  el.textContent = 'AI this month: US$' + s.usd.toFixed(2);
+}
+function pwTrackUsage(data) {
+  if (!data || !data.usage) return;
+  var p = PW_AI_PRICES[data.model] || PW_AI_PRICES['claude-sonnet-4-6'], u = data.usage;
+  // cache writes cost 1.25x and cache reads 0.1x the input price
+  var usd = ((u.input_tokens || 0) * p.input + (u.cache_creation_input_tokens || 0) * p.input * 1.25 +
+             (u.cache_read_input_tokens || 0) * p.input * 0.1 + (u.output_tokens || 0) * p.output) / 1e6;
+  var s = pwSpendLoad();
+  s.usd += usd; s.calls += 1; s.last = usd;
+  try { localStorage.setItem('pw_ai_spend', JSON.stringify(s)); } catch (e) {}
+  pwSpendShow();
+}
+function pwSpendDetails() {
+  var s = pwSpendLoad();
+  var msg = 'AI spend this month (estimate, this device only)\n\n' +
+    'Total: US$' + s.usd.toFixed(2) + ' across ' + s.calls + ' AI request' + (s.calls === 1 ? '' : 's') + '\n' +
+    'Last request: US$' + (s.last || 0).toFixed(3) + '\n' +
+    (s.prev ? 'Last month (' + s.prev.month + '): US$' + s.prev.usd.toFixed(2) + ' across ' + s.prev.calls + ' requests\n' : '') +
+    '\nFor the exact bill, see console.anthropic.com, Billing.\n\nReset the counter to zero?';
+  if (confirm(msg)) { try { localStorage.removeItem('pw_ai_spend'); } catch (e) {} pwSpendShow(); }
+}
+(function () {
+  // watch every AI request the studio sends through the Pristine API worker
+  var AI = 'https://pristine-api.jc-a7f.workers.dev';
+  var orig = window.fetch;
+  window.fetch = function (url, opts) {
+    var p = orig.apply(this, arguments);
+    try {
+      if (String(url).replace(/\/+$/, '') === AI && opts && String(opts.method || '').toUpperCase() === 'POST') {
+        p.then(function (r) { if (r.ok) r.clone().json().then(pwTrackUsage).catch(function () {}); }).catch(function () {});
+      }
+    } catch (e) {}
+    return p;
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pwSpendShow); else pwSpendShow();
+})();
 
 function checkPassword() {
   const pw = document.getElementById('pw-input').value.trim();
