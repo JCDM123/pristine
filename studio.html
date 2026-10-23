@@ -374,7 +374,7 @@ sup.cite:hover { text-decoration:underline; }
 <div id="studio">
 <nav class="nav">
   <img src="/images/site/logo.svg" alt="Pristine Wellness" class="logo-img" onclick="window.location='index.html'">
-  <span class="nav-title">CMS Studio v3.57</span>
+  <span class="nav-title">CMS Studio v3.59</span>
   <span id="pw-ai-spend" onclick="pwSpendDetails()" title="Estimated AI cost this month on this device. Tap for details." style="font-size:11px;letter-spacing:0.5px;color:var(--muted);cursor:pointer;white-space:nowrap;margin-left:auto;margin-right:1rem;"></span>
   <div class="nav-actions">
     <span class="nav-link" onclick="window.open('the-source.html')">The Source</span>
@@ -836,6 +836,18 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
   </div>
   <input type="file" id="body-img-input" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none" onchange="handleBodyImgFile(this)">
 </div>
+        <details class="pw-voice" style="margin:0 0 0.6rem;border:0.5px solid var(--border);border-radius:6px;padding:10px 14px;background:#fff;" ontoggle="if(this.open)pwLoadVoice()">
+          <summary style="cursor:pointer;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Your voice</summary>
+          <div style="font-size:12px;color:var(--muted);margin:8px 0;line-height:1.6;">Paste two or three paragraphs you wrote yourself, the way you would tell a friend. The writers match how it sounds, not what it says. The more it sounds like you, the less the stories sound like anyone else.</div>
+          <textarea id="a-voice" rows="8" style="width:100%;box-sizing:border-box;font-family:Jost,sans-serif;font-size:13px;padding:8px 10px;border:0.5px solid var(--border);border-radius:4px;"></textarea>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;"><button type="button" class="gen-btn" style="width:auto;padding:7px 16px;font-size:11px;" onclick="pwSaveVoice('a')">Save voice</button><span id="a-voice-status" style="font-size:12px;color:var(--muted);"></span></div>
+        </details>
+        <details class="pw-patterns" style="margin:0 0 1rem;border:0.5px solid var(--border);border-radius:6px;padding:10px 14px;background:#fff;" ontoggle="if(this.open)pwLoadPatterns()">
+          <summary style="cursor:pointer;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Recent patterns to avoid <span id="a-patterns-count"></span></summary>
+          <div style="font-size:12px;color:var(--muted);margin:8px 0;line-height:1.6;">Phrases or ideas you have noticed repeating, one per line. The writers avoid them, and an article ending that uses one is rewritten. The last stories' openings and endings are read automatically.</div>
+          <textarea id="a-patterns" rows="6" style="width:100%;box-sizing:border-box;font-family:Jost,sans-serif;font-size:13px;padding:8px 10px;border:0.5px solid var(--border);border-radius:4px;"></textarea>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;"><button type="button" class="gen-btn" style="width:auto;padding:7px 16px;font-size:11px;" onclick="pwSavePatterns('a')">Save list</button><button type="button" class="gen-btn" style="width:auto;padding:7px 16px;font-size:11px;background:#fff;color:#a33;border:1px solid #e3c4c4;" onclick="pwSavePatterns('a', true)">Clear list</button><span id="a-patterns-status" style="font-size:12px;color:var(--muted);"></span></div>
+        </details>
         <button class="generate-btn" id="a-gen-btn" onclick="generateArticle()">Generate Article</button>
       </div>
       <div class="preview-card">
@@ -1065,6 +1077,18 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
           <p id="r-slug-preview" class="field-hint" style="font-family:monospace;font-size:12px;color:var(--sage);"></p>
         </div>
 
+        <details class="pw-voice" style="margin:0 0 0.6rem;border:0.5px solid var(--border);border-radius:6px;padding:10px 14px;background:#fff;" ontoggle="if(this.open)pwLoadVoice()">
+          <summary style="cursor:pointer;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Your voice</summary>
+          <div style="font-size:12px;color:var(--muted);margin:8px 0;line-height:1.6;">Paste two or three paragraphs you wrote yourself, the way you would tell a friend. The writers match how it sounds, not what it says. The more it sounds like you, the less the stories sound like anyone else.</div>
+          <textarea id="r-voice" rows="8" style="width:100%;box-sizing:border-box;font-family:Jost,sans-serif;font-size:13px;padding:8px 10px;border:0.5px solid var(--border);border-radius:4px;"></textarea>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;"><button type="button" class="gen-btn" style="width:auto;padding:7px 16px;font-size:11px;" onclick="pwSaveVoice('r')">Save voice</button><span id="r-voice-status" style="font-size:12px;color:var(--muted);"></span></div>
+        </details>
+        <details class="pw-patterns" style="margin:0 0 1rem;border:0.5px solid var(--border);border-radius:6px;padding:10px 14px;background:#fff;" ontoggle="if(this.open)pwLoadPatterns()">
+          <summary style="cursor:pointer;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Recent patterns to avoid <span id="r-patterns-count"></span></summary>
+          <div style="font-size:12px;color:var(--muted);margin:8px 0;line-height:1.6;">Phrases or ideas you have noticed repeating, one per line. The writers avoid them, and an article ending that uses one is rewritten. The last stories' openings and endings are read automatically.</div>
+          <textarea id="r-patterns" rows="6" style="width:100%;box-sizing:border-box;font-family:Jost,sans-serif;font-size:13px;padding:8px 10px;border:0.5px solid var(--border);border-radius:4px;"></textarea>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;"><button type="button" class="gen-btn" style="width:auto;padding:7px 16px;font-size:11px;" onclick="pwSavePatterns('r')">Save list</button><button type="button" class="gen-btn" style="width:auto;padding:7px 16px;font-size:11px;background:#fff;color:#a33;border:1px solid #e3c4c4;" onclick="pwSavePatterns('r', true)">Clear list</button><span id="r-patterns-status" style="font-size:12px;color:var(--muted);"></span></div>
+        </details>
         <button class="generate-btn" id="r-gen-btn" onclick="generateRecipe()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           Generate Recipe
@@ -2025,13 +2049,13 @@ async function generateArticle() {
     'NO CASUAL SLANG: avoid wrecked, out cold, bugs, reckon, mop up, good reason, stuff, gonna, mate. Use composed everyday words instead (exhausted, sound asleep, bacteria, and so on). ' +
     'RESEARCH: This brand proves its claims. Reference the data and studies naturally, but always lead with the plain meaning or a human moment first, then bring the study in as backup (here is what they found, here is what it means for you). Keep numbers only where they genuinely land with impact; otherwise express the finding in plain words (e.g. "nearly doubled their melatonin" rather than exact figures). Every claim that needs evidence keeps its citation. ' +
     'FAMILY FACTS: Only use family details given in the brief. Never invent what the family did, bought, tried, or which doctors were involved, and never add details such as birth order that were not given. If the brief has little family detail, write as a family who has done the reading ("we found", "what struck us") rather than making up events. ' +
-    'SENSITIVE TOPICS (feeding, pregnancy, parenting choices, illness): inform without guilt. Acknowledge that not every family can do the ideal, that circumstances differ, and leave the reader feeling capable and encouraged, never judged. End on hope: we believe the body is an amazing creation that has a remarkable ability to heal when it is nourished, rested and kept clear of what harms it. ' +
+    'SENSITIVE TOPICS (feeding, pregnancy, parenting choices, illness): inform without guilt. Acknowledge that not every family can do the ideal, that circumstances differ, and leave the reader feeling capable and encouraged, never judged. Let the hope come through what you show the reader, never through a closing statement about the body. ' +
     'HOLISTIC VOICE: This is a holistic site. Never compare with or defer to mainstream medicine: no "talk to your doctor", "your GP", "healthcare provider", "alongside medical care", "not a replacement for medical treatment", "medically", "Western medicine is cautious" or similar. Where checking with someone genuinely matters (pregnancy, a serious condition, medication), say "a practitioner you trust" once, gently. ' +
     'HEALTH CLAIMS: Say plainly what the research and the family\'s experience show, with a citation. Do not promise that anything cures or treats a named disease, and do not tell readers to stop medical care. ' +
     'FAMILY MOMENTS: Weave in real, specific family detail naturally and sparingly: "In our house...", "my wife noticed...", "the kids reckon it looks like...", "we started this when...". Keep these genuine and understated, not performative. ' +
     'PARAGRAPHS: Short, max 3 to 4 sentences, but each a complete connected thought. ' +
     'CALIBRATION: A scientist should nod, a busy parent should understand it immediately. Never preachy, never salesy. ' +
-    'FORMAT: Occasional emphasis with italic em tags. NO em dashes or en dashes ever, use commas, full stops, colons or rewrite the sentence. No AI tells (no delve, unlock, journey, fascinating, crucial, game-changer, dive in). Australian spelling throughout.';
+    'FORMAT: Occasional emphasis with italic em tags. NO em dashes or en dashes ever, use commas, full stops, colons or rewrite the sentence. No AI tells (no delve, unlock, journey, fascinating, crucial, game-changer, dive in). Australian spelling throughout. ' + PW_CLOSING_RULES + ' ' + PW_AUTHOR_VOICE;
 
   // Format-specific prompts
   var formatPrompts = {
@@ -2045,7 +2069,7 @@ async function generateArticle() {
     },
     'quick-read': {
       structure: 'Write a short focused piece on one single idea. No more than 3 sections, each just 1-2 paragraphs. Get to the point fast. End with one practical thing the reader can do today.',
-      json: '{"title":"string","intro":"string","sections":[{"heading":"string","content":"string"}],"pullQuote":"string","closing":"One thing to do today: ...","seoTitle":"string under 55 characters, without the site name","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
+      json: '{"title":"string","intro":"string","sections":[{"heading":"string","content":"string"}],"pullQuote":"string","closing":"one practical step the reader can take today, in plain words, without a label such as One thing to do today","seoTitle":"string under 55 characters, without the site name","metaDesc":"string","socialExcerpt":"string","relatedTopics":["topic 1","topic 2"],"suggestedTags":["tag1","tag2","tag3"]}'
     },
     'family-story': {
       structure: 'Write a personal narrative article. Start with a real family moment or problem. Weave the science in naturally as you tell the story. First person (we/our). Feel free to use "I noticed", "the kids", "my wife". End with what changed and what you now do differently.',
@@ -2070,6 +2094,10 @@ async function generateArticle() {
   var userPrompt = 'Write a ' + readtime + ' ' + format.replace('-',' ') + ' for Pristine Wellness about: "' + topic + '". Category: ' + category + '.' + notesLine + ' No em dashes or en dashes anywhere.';
 
   try {
+    // What the last stories opened and closed with, and the phrases to avoid
+    setStatus('a', 'active', 'Reading how recent stories opened and closed...');
+    var recentA = await pwRecentWriting('article'), patternsA = await pwLoadPatterns();
+    userPrompt += pwRecentBlock(recentA, patternsA) + pwVoiceBlock(await pwLoadVoice());
     // ===== STEP 1: RESEARCH (only when citations are on) =====
     // Runs web searches separately so the writing step never races the Cloudflare timeout.
     var researchedSources = '';
@@ -2178,9 +2206,19 @@ async function generateArticle() {
     }
         // House rule: no em or en dashes anywhere in published content
     article = JSON.parse(JSON.stringify(article).replace(/\u2014/g, ', ').replace(/\u2013/g, '-').replace(/ ,/g, ',').replace(/,  +/g, ', '));
+    // Ending check: if the closing leans on a recent story's ending, rewrite just the closing once
+    var endNote = '';
+    try {
+      var why = article.closing ? pwEndingCheck(article.closing, recentA, patternsA) : '';
+      if (why) {
+        setStatus('a', 'active', 'The ending was too close to a recent story, writing a different one...');
+        var newEnd = await pwRewriteEnding(writeSystem, article, recentA, patternsA, why);
+        if (newEnd) { article.closing = newEnd; endNote = '. Ending rewritten once because ' + why; }
+      }
+    } catch (e) {}
     generatedArticleData = { article: article, topic: topic, category: category, readtime: readtime, author: author, dateVal: dateVal, tagsRaw: selectedTags.join(', '), format: format, useCitations: useCitations };
     renderArticlePreview(article, category, readtime, author, dateVal, selectedTags.join(', '));
-    setStatus('a', 'done', 'Article ready' + pwReadingLevelNote(article));
+    setStatus('a', 'done', 'Article ready' + pwReadingLevelNote(article) + endNote + pwTellNote('article', article, patternsA));
     // Word count from article content
     var wcText = [article.intro || '', article.closing || ''];
     (article.sections || []).forEach(function(s) { wcText.push(s.heading || '', s.content || ''); });
@@ -2197,6 +2235,194 @@ async function generateArticle() {
   }
   btn.disabled = false;
   btn.innerHTML = 'Generate Article';
+}
+
+/* ===== VARIED ENDINGS: closing rules, recent openings and endings, the patterns list, and an ending check =====
+   The writers see how the last published stories opened and closed, plus a short list of phrases Joseph has
+   noticed repeating (data/writing-patterns.json), so each new piece starts and finishes somewhere new. */
+var PW_CLOSING_RULES = 'CLOSING RULES: ' +
+  'Never end with a general reflection on the body, nature, health, or wisdom. Never end with a rhetorical question, a restatement of the opening, or a summary of the article. ' +
+  'End each article on the most specific detail in the family\'s story, or on a practical next step the brief names. ' +
+  'Choose the ending type that fits this particular story: a plain anecdote, a single concrete fact, one practical instruction, or a quote from a named person. Do not default to the same type each time. ' +
+  'The final sentence must be concrete and understated, the way a person finishes telling a story, not a flourish. ' +
+  'If the brief supplies an ending, follow it and do not add a paragraph after it. ' +
+  'Before writing, read the "recent endings" and "recent patterns" lists supplied below and avoid repeating any idea, phrase, structure or analogy in them.';
+
+var PW_PATTERNS = { list: null, sha: null };
+async function pwLoadPatterns() {
+  if (PW_PATTERNS.list) return PW_PATTERNS.list;
+  try {
+    var d = await githubRequest('data/writing-patterns.json', 'GET');
+    PW_PATTERNS.sha = d.sha;
+    var j = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/[\r\n]/g, '')))));
+    PW_PATTERNS.list = (j.patterns || []).filter(Boolean);
+  } catch (e) { PW_PATTERNS.list = []; }
+  pwShowPatterns();
+  return PW_PATTERNS.list;
+}
+function pwShowPatterns() {
+  ['a', 'r'].forEach(function (k) {
+    var ta = document.getElementById(k + '-patterns'); if (ta && PW_PATTERNS.list) ta.value = PW_PATTERNS.list.join('\n');
+    var n = document.getElementById(k + '-patterns-count'); if (n && PW_PATTERNS.list) n.textContent = PW_PATTERNS.list.length ? '(' + PW_PATTERNS.list.length + ')' : '';
+  });
+}
+async function pwSavePatterns(k, clear) {
+  var ta = document.getElementById(k + '-patterns'), st = document.getElementById(k + '-patterns-status');
+  if (clear && !confirm('Clear the whole recent patterns list?')) return;
+  var list = clear ? [] : String(ta.value || '').split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+  st.textContent = 'Saving...';
+  try {
+    var body = { message: 'Studio: recent writing patterns', content: btoa(unescape(encodeURIComponent(JSON.stringify({ patterns: list }, null, 2) + '\n'))), branch: GITHUB_BRANCH };
+    var sha = await getFileSHA('data/writing-patterns.json'); if (sha) body.sha = sha;
+    await githubRequest('data/writing-patterns.json', 'PUT', body);
+    PW_PATTERNS.list = list; pwShowPatterns();
+    st.textContent = 'Saved. The writers will avoid these from the next story on.';
+  } catch (e) { st.textContent = 'Not saved: ' + e.message; }
+}
+
+// The opening and closing of the last published stories (or recipes), newest first
+var PW_RECENT = {};
+function pwPageText(el) { return el ? el.textContent.replace(/\[\d+\]/g, '').replace(/\s+/g, ' ').trim() : ''; }
+async function pwRecentWriting(kind) {
+  if (PW_RECENT[kind]) return PW_RECENT[kind];
+  var out = { openings: [], endings: [] };
+  try {
+    var idx = await (await fetch('data/search-index.json?cb=' + Date.now())).json();
+    var pages = idx.filter(function (e) { return e && e.url && e.url.indexOf(kind === 'recipe' ? 'recipe-' : 'article-') === 0; }).slice(0, kind === 'recipe' ? 8 : 10);
+    var docs = await Promise.all(pages.map(function (e) {
+      return fetch(e.url + '?cb=' + Date.now()).then(function (r) { return r.ok ? r.text() : ''; }).catch(function () { return ''; });
+    }));
+    docs.forEach(function (html) {
+      if (!html) return;
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      var open, end;
+      if (kind === 'recipe') {
+        open = pwPageText(doc.querySelector('.recipe-about p') || doc.querySelector('.recipe-intro'));
+        var steps = doc.querySelectorAll('.step-text'), tips = doc.querySelectorAll('.chef-tip p');
+        end = [pwPageText(steps[steps.length - 1]), pwPageText(tips[tips.length - 1])].filter(Boolean).join(' / ');
+      } else {
+        open = pwPageText(doc.querySelector('.article-intro'));
+        var paras = Array.prototype.filter.call(doc.querySelectorAll('.article-text p'), function (p) {
+          return !p.closest('.pull-quote, .article-sources, .author-bio, blockquote, figure') && pwPageText(p).length > 40;
+        });
+        end = paras.length ? pwPageText(paras[paras.length - 1]) : '';
+      }
+      if (open) out.openings.push(open.slice(0, 500));
+      if (end) out.endings.push(end.slice(0, 600));
+    });
+  } catch (e) {}
+  PW_RECENT[kind] = out;
+  return out;
+}
+function pwRecentBlock(recent, patterns) {
+  var s = '';
+  if (recent.openings.length) s += '\n\nRECENT OPENINGS (already used on the site, do not reuse their idea, structure or phrasing):\n' + recent.openings.map(function (x, i) { return (i + 1) + '. ' + x; }).join('\n');
+  if (recent.endings.length) s += '\n\nRECENT ENDINGS (already used on the site, end somewhere different):\n' + recent.endings.map(function (x, i) { return (i + 1) + '. ' + x; }).join('\n');
+  if (patterns.length) s += '\n\nRECENT PATTERNS (phrases and ideas that have been repeating, do not use any of them):\n' + patterns.map(function (x) { return '- ' + x; }).join('\n');
+  return s;
+}
+
+// Does a new ending lean too hard on a recent one? Shared three-word phrases, shared imagery, or a listed pattern.
+var PW_ANALOGY_WORDS = ['body', 'remarkable', 'amazing', 'creation', 'heal', 'nourished', 'wisdom', 'nature', 'ancestors', 'journey', 'foundation', 'balance', 'capacity', 'harms', 'quietly', 'path', 'worth'];
+function pwWords(s) { return String(s || '').toLowerCase().replace(/<[^>]+>/g, ' ').replace(/[\u2019']/g, "'").match(/[a-z']+/g) || []; }
+function pwEndingCheck(closing, recent, patterns) {
+  var STOP = { the: 1, of: 1, and: 1, to: 1, a: 1, in: 1, is: 1, it: 1, that: 1, for: 1, on: 1, with: 1, as: 1, are: 1, this: 1, we: 1, our: 1, you: 1, your: 1, be: 1, at: 1, by: 1, an: 1, or: 1, from: 1, was: 1, not: 1, has: 1, have: 1, can: 1, but: 1, "it's": 1, its: 1 };
+  var w = pwWords(closing), low = ' ' + w.join(' ') + ' ';
+  var hit = patterns.filter(function (p) { var q = pwWords(p).join(' '); return q && low.indexOf(' ' + q + ' ') !== -1; });
+  if (hit.length) return 'it uses a phrase on the recent patterns list ("' + hit[0] + '")';
+  var tri = {};
+  for (var i = 0; i + 2 < w.length; i++) { var g = w.slice(i, i + 3); if (g.some(function (x) { return !STOP[x]; })) tri[g.join(' ')] = 1; }
+  var mine = PW_ANALOGY_WORDS.filter(function (a) { return w.indexOf(a) !== -1; });
+  for (var e = 0; e < recent.endings.length; e++) {
+    var ew = pwWords(recent.endings[e]), shared = 0;
+    for (var j = 0; j + 2 < ew.length; j++) if (tri[ew.slice(j, j + 3).join(' ')]) shared++;
+    var images = mine.filter(function (a) { return ew.indexOf(a) !== -1; });
+    if (shared >= 3) return 'it shares several phrases with a recent ending';
+    if (images.length >= 3) return 'it uses the same imagery as a recent ending (' + images.slice(0, 3).join(', ') + ')';
+  }
+  return '';
+}
+// Rewrite only the closing paragraph, once, with a different ending type
+async function pwRewriteEnding(system, piece, recent, patterns, why) {
+  var brief = 'Title: ' + (piece.title || '') + '\nOpening: ' + (piece.intro || '') +
+    '\nLast section: ' + String(((piece.sections || []).slice(-1)[0] || {}).content || '').slice(0, 1500) +
+    '\nCurrent closing paragraph: ' + (piece.closing || '') +
+    '\n\nThis closing is too close to recent articles: ' + why + '. Write a new closing paragraph using a different ending type (a plain anecdote, a single concrete fact, one practical instruction, or a quote from a named person) built only from details already in the article. Two to four sentences.' +
+    pwRecentBlock(recent, patterns) + '\n\nOutput ONLY valid JSON: {"closing":"string"}';
+  var resp = await fetch('https://pristine-api.jc-a7f.workers.dev', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system: system, messages: [{ role: 'user', content: brief }] })
+  });
+  var d = await resp.json();
+  if (!resp.ok || !d.content) throw new Error('rewrite failed');
+  var text = d.content.filter(function (b) { return b.type === 'text' && b.text; }).map(function (b) { return b.text; }).join('');
+  var j = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+  return String(j.closing || '').replace(/\u2014/g, ', ').replace(/\u2013/g, '-').replace(/ ,/g, ',');
+}
+
+/* ===== AUTHOR VOICE: rules against the stock rhythms of machine writing, Joseph's own writing as the style to match,
+   and a check after drafting that flags anything that still reads like a template ===== */
+var PW_AUTHOR_VOICE = 'AUTHOR VOICE (as important as the facts): Write as one particular person who lived this, not as a content writer. ' +
+  'Let the shape follow this story: sections can be uneven in length, the story can wander for a paragraph and come back, and not every piece needs a practical section near the end. ' +
+  'OPENINGS: start in the middle of something specific from the brief. Never open with "Most of us", a "Picture this" or "You are..." scene, or a moment followed by "that sent us into the research" or "this is what we found". ' +
+  'HEADINGS: plain and specific to this story, the way a person labels their own notes. Never use formulas such as "What X Actually Is/Does/Shows", "Why It Matters", "The Science Behind...", "What This Means for Your Family", "The Bottom Line" or "Where to Start". ' +
+  'RHYTHM: no "not X, but Y" or "it is not just X, it is Y" constructions, no lists of three adjectives or three short clauses, no pairs of sentences that mirror each other, no closing summary lines. ' +
+  'No signposting or throat clearing: never "We want to be honest about", "It is worth noting", "It is important to", "Let us", "Here is the thing", "The good news is". Make a point and move on. ' +
+  'STOCK WORDS to leave out: quietly, genuinely, simply, remarkable, remarkably, beautifully, honest, honestly, truly, profound, incredible, powerful, navigate, landscape, empower, nourish (as a verb about life), journey, resonate. ' +
+  'TEXTURE: a real author leaves fingerprints. Where the brief allows, use an exact number, a named place, a brand-free description of an actual object in the house, a small admission or something that did not work the first time. Never invent any of these: only use what the brief gives. ' +
+  'Vary paragraph length more than feels tidy. A sentence can start with And or But. One aside in brackets is fine.';
+
+var PW_VOICE = { text: null };
+async function pwLoadVoice() {
+  if (PW_VOICE.text !== null) return PW_VOICE.text;
+  try {
+    var d = await githubRequest('data/writing-voice.json', 'GET');
+    PW_VOICE.text = (JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/[\r\n]/g, ''))))).sample || '');
+  } catch (e) { PW_VOICE.text = ''; }
+  ['a', 'r'].forEach(function (k) { var ta = document.getElementById(k + '-voice'); if (ta) ta.value = PW_VOICE.text; });
+  return PW_VOICE.text;
+}
+async function pwSaveVoice(k) {
+  var ta = document.getElementById(k + '-voice'), st = document.getElementById(k + '-voice-status');
+  var text = String(ta.value || '').trim();
+  st.textContent = 'Saving...';
+  try {
+    var body = { message: 'Studio: author voice sample', content: btoa(unescape(encodeURIComponent(JSON.stringify({ sample: text }, null, 2) + '\n'))), branch: GITHUB_BRANCH };
+    var sha = await getFileSHA('data/writing-voice.json'); if (sha) body.sha = sha;
+    await githubRequest('data/writing-voice.json', 'PUT', body);
+    PW_VOICE.text = text;
+    ['a', 'r'].forEach(function (x) { var t2 = document.getElementById(x + '-voice'); if (t2) t2.value = text; });
+    st.textContent = 'Saved. The writers will match this voice from the next piece on.';
+  } catch (e) { st.textContent = 'Not saved: ' + e.message; }
+}
+function pwVoiceBlock(sample) {
+  return sample ? '\n\nTHE AUTHOR\'S OWN WRITING (match this voice: its sentence length, its plainness, the way it explains, how it sounds when read aloud; do not copy its facts or phrases):\n"""' + sample.slice(0, 4000) + '"""' : '';
+}
+
+// After drafting: anything that still reads like a template, as a list and as a ready-to-apply correction
+var PW_TELL_WORDS = ['quietly', 'genuinely', 'simply', 'remarkable', 'remarkably', 'beautifully', 'honestly', 'truly', 'profound', 'incredible', 'navigate', 'landscape', 'empower', 'journey', 'resonate'];
+var PW_TELL_PHRASES = ['it turns out', 'most of us', 'the good news is', 'it is worth noting', 'it is important to', 'we want to be honest', 'here is the thing', 'sent us into the research', 'what we found was', 'keep coming back to', 'without a second thought', 'at pristine wellness, we', 'one thing to do today'];
+function pwTellCheck(piece, patterns) {
+  var parts = [piece.intro || '', piece.about || '', piece.closing || '', piece.chefNote || '', piece.servingSuggestion || '']
+    .concat((piece.sections || []).map(function (s) { return (s.heading || '') + '. ' + (s.content || ''); }))
+    .concat((piece.steps || []).map(function (s) { return typeof s === 'string' ? s : (s && (s.text || s.step)) || ''; }));
+  var low = ' ' + pwWords(parts.join(' ')).join(' ') + ' ', found = [];
+  PW_TELL_WORDS.forEach(function (w) { var n = low.split(' ' + w + ' ').length - 1; if (n) found.push('"' + w + '"' + (n > 1 ? ' x' + n : '')); });
+  PW_TELL_PHRASES.concat(patterns || []).forEach(function (p) { var q = pwWords(p).join(' '); if (q && low.indexOf(' ' + q + ' ') !== -1) found.push('"' + p + '"'); });
+  (piece.sections || []).forEach(function (s) {
+    var h = String(s.heading || '');
+    if (/\bactually\b/i.test(h) || /^(why it matters|the bottom line|the science behind|what this means|where to start)/i.test(h)) found.push('the heading "' + h + '"');
+  });
+  var not = (parts.join(' ').match(/\bnot (just |only )?[^.,;]{1,40}, but\b/gi) || []).length;
+  if (not) found.push(not + ' "not X, but Y" sentence' + (not > 1 ? 's' : ''));
+  return found;
+}
+function pwTellNote(kind, piece, patterns) {
+  var found = pwTellCheck(piece, patterns);
+  if (!found.length) return '';
+  var box = document.getElementById(kind + '-corrections');
+  if (box && !box.value.trim()) box.value = 'Make it read less like a template. Rewrite only the sentences that use: ' + found.join(', ') + '. Keep every fact, quote and family detail, and keep the length about the same.';
+  return '. Worth smoothing: ' + found.slice(0, 6).join(', ') + (found.length > 6 ? ' and ' + (found.length - 6) + ' more' : '') + ' (the fix is ready in Corrections, press Apply)';
 }
 
 // Rough reading level of a generated article (Flesch-Kincaid grade), shown when it is ready
@@ -2611,6 +2837,7 @@ async function generateRecipe() {
     'HOLISTIC VOICE: This is a holistic site. Never compare with or defer to mainstream medicine: no "talk to your doctor", "your GP", "healthcare provider", "alongside medical care", "not a replacement for medical treatment", "medically", "Western medicine is cautious" or similar. Where checking with someone genuinely matters (pregnancy, a serious condition, medication), say "a practitioner you trust" once, gently. ' +
     'Weave in real, specific family moments naturally and sparingly where relevant, kept genuine and understated. ' +
     'NO em dashes or en dashes ever, use commas, full stops or colons. No AI tells (no delve, unlock, journey, fascinating, crucial, game-changer). Australian spelling throughout. ' +
+    PW_CLOSING_RULES.replace('End each article', 'End the intro, the last method step and the serving suggestion') + ' ' + PW_AUTHOR_VOICE + ' ' +
     'Generate a complete recipe with ALL ingredients (with quantities) and ALL method steps written out in full. ' +
     'TIMES: estimate prepTime (chopping, mixing, assembling) and cookTime (time on the heat or in the oven) by adding up the method you wrote. Do not count soaking, fermenting, marinating, cooling, resting or setting; state those in the steps instead. If a Prep or Cook time is given below, write the method to match it. ' +
     'Output ONLY valid JSON: ' +
@@ -2636,6 +2863,9 @@ async function generateRecipe() {
     ' Generate ALL ingredients with quantities and ALL method steps in full. No em dashes or en dashes.';
 
   try {
+    // How the last recipes opened and closed, and the phrases to avoid
+    var patternsR = await pwLoadPatterns();
+    userPrompt += pwRecentBlock(await pwRecentWriting('recipe'), patternsR) + pwVoiceBlock(await pwLoadVoice());
     var response = await fetch('https://pristine-api.jc-a7f.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
@@ -2689,7 +2919,7 @@ async function generateRecipe() {
     // Update the about textarea with AI-generated intro
   if (recipe.intro) { var aboutEl = document.getElementById('r-about'); if (aboutEl) aboutEl.value = recipe.intro; }
   renderRecipePreview(recipe, recipe.ingredients || [], recipe.steps || [], name, category, servings, prep, cook);
-    setStatus('r', 'done', 'Recipe ready');
+    setStatus('r', 'done', 'Recipe ready' + pwTellNote('recipe', recipe, patternsR));
     document.getElementById('r-dl-btn').style.display = 'inline-block';
     document.getElementById('r-pub-btn').style.display = 'inline-block';
     document.getElementById('r-preview-btn').style.display = 'inline-block';
