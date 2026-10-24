@@ -374,7 +374,7 @@ sup.cite:hover { text-decoration:underline; }
 <div id="studio">
 <nav class="nav">
   <img src="/images/site/logo.svg" alt="Pristine Wellness" class="logo-img" onclick="window.location='index.html'">
-  <span class="nav-title">CMS Studio v3.59</span>
+  <span class="nav-title">CMS Studio v3.60</span>
   <span id="pw-ai-spend" onclick="pwSpendDetails()" title="Estimated AI cost this month on this device. Tap for details." style="font-size:11px;letter-spacing:0.5px;color:var(--muted);cursor:pointer;white-space:nowrap;margin-left:auto;margin-right:1rem;"></span>
   <div class="nav-actions">
     <span class="nav-link" onclick="window.open('the-source.html')">The Source</span>
@@ -1448,7 +1448,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
         <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;">
           <div class="field">
             <label>Your email address *</label>
-            <input type="email" id="reminder-email" placeholder="joseph@pristinewellness.com.au">
+            <input type="email" id="reminder-email" placeholder="you@example.com">
           </div>
           <div class="field">
             <label>Reminder day</label>
@@ -2238,7 +2238,7 @@ async function generateArticle() {
 }
 
 /* ===== VARIED ENDINGS: closing rules, recent openings and endings, the patterns list, and an ending check =====
-   The writers see how the last published stories opened and closed, plus a short list of phrases Joseph has
+   The writers see how the last published stories opened and closed, plus a short list of phrases the owner has
    noticed repeating (data/writing-patterns.json), so each new piece starts and finishes somewhere new. */
 var PW_CLOSING_RULES = 'CLOSING RULES: ' +
   'Never end with a general reflection on the body, nature, health, or wisdom. Never end with a rhetorical question, a restatement of the opening, or a summary of the article. ' +
@@ -2360,9 +2360,10 @@ async function pwRewriteEnding(system, piece, recent, patterns, why) {
   return String(j.closing || '').replace(/\u2014/g, ', ').replace(/\u2013/g, '-').replace(/ ,/g, ',');
 }
 
-/* ===== AUTHOR VOICE: rules against the stock rhythms of machine writing, Joseph's own writing as the style to match,
+/* ===== AUTHOR VOICE: rules against the stock rhythms of machine writing, the author's own writing as the style to match,
    and a check after drafting that flags anything that still reads like a template ===== */
 var PW_AUTHOR_VOICE = 'AUTHOR VOICE (as important as the facts): Write as one particular person who lived this, not as a content writer. ' +
+  'NAMES: never name the author anywhere in the piece. The author is always "I" (or "we" for the family), never a first name or surname. ' +
   'Let the shape follow this story: sections can be uneven in length, the story can wander for a paragraph and come back, and not every piece needs a practical section near the end. ' +
   'OPENINGS: start in the middle of something specific from the brief. Never open with "Most of us", a "Picture this" or "You are..." scene, or a moment followed by "that sent us into the research" or "this is what we found". ' +
   'HEADINGS: plain and specific to this story, the way a person labels their own notes. Never use formulas such as "What X Actually Is/Does/Shows", "Why It Matters", "The Science Behind...", "What This Means for Your Family", "The Bottom Line" or "Where to Start". ' +
