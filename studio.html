@@ -107,7 +107,7 @@ img{max-width:100%;display:block;}
 .ap-meta{font-size:12px;opacity:0.7;display:flex;gap:16px;}
 .ap-body p{font-size:14px;line-height:1.8;color:var(--text);margin-bottom:1.2rem;}
 .ap-body h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#1a1a1a;margin:1.8rem 0 0.8rem;}
-.ap-pull{border-left:3px solid var(--gold);padding:1rem 1.5rem;margin:1.5rem 0;background:rgba(201,169,110,0.07);}
+.ap-pull{border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:1rem 1.5rem;margin:1.5rem 0;text-align:center;}
 .ap-pull p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:#1a1a1a;margin:0;}
 .ap-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.5rem;}
 .ap-tag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border);color:var(--muted);}
@@ -248,7 +248,7 @@ sup.cite:hover { text-decoration:underline; }
 .pipeline-remove:hover { color:#c44; }
 
 /* ===== EXTRAS PANEL (SEO / SOCIAL / RELATED) ===== */
-.recipe-about { margin-bottom:1.5rem; padding:1rem 1.4rem; border-left:3px solid var(--sage); background:rgba(143,149,116,0.06); font-style:italic; font-size:15px; line-height:1.8; color:var(--muted); border-radius:0 4px 4px 0; }
+.recipe-about { margin-bottom:1.5rem; padding:1rem 1.4rem; border:1px solid rgba(143,149,116,0.35); background:rgba(143,149,116,0.06); font-style:italic; font-size:15px; line-height:1.8; color:var(--muted); border-radius:3px; }
 .recipe-dietary { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.5rem; }
 .dietary-tag { font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 12px; background:rgba(143,149,116,0.12); border:1px solid rgba(143,149,116,0.3); border-radius:20px; color:var(--sage); }
 .ap-extras { margin-top:2rem; padding:1.5rem; background:rgba(143,149,116,0.07); border-radius:6px; border:1px solid rgba(143,149,116,0.2); }
@@ -374,7 +374,7 @@ sup.cite:hover { text-decoration:underline; }
 <div id="studio">
 <nav class="nav">
   <img src="/images/site/logo.svg" alt="Pristine Wellness" class="logo-img" onclick="window.location='index.html'">
-  <span class="nav-title">CMS Studio v3.60</span>
+  <span class="nav-title">CMS Studio v3.61</span>
   <span id="pw-ai-spend" onclick="pwSpendDetails()" title="Estimated AI cost this month on this device. Tap for details." style="font-size:11px;letter-spacing:0.5px;color:var(--muted);cursor:pointer;white-space:nowrap;margin-left:auto;margin-right:1rem;"></span>
   <div class="nav-actions">
     <span class="nav-link" onclick="window.open('the-source.html')">The Source</span>
@@ -1148,7 +1148,7 @@ e.g. Two day old kale, soaked for four hours in MEA structured water."></textare
         </div>
       </div>
 
-      <div style="margin:1.5rem 0;padding:1.2rem 1.4rem;background:rgba(143,149,116,0.1);border-left:2px solid var(--sage);border-radius:2px;">
+      <div style="margin:1.5rem 0;padding:1.2rem 1.4rem;background:rgba(143,149,116,0.1);border:1px solid rgba(143,149,116,0.35);border-radius:3px;">
         <p style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--sage);margin-bottom:0.5rem;">Recommended image sizes</p>
         <p style="font-size:13px;color:var(--muted);line-height:1.7;">
           Article / Recipe hero: <strong>1200 x 630px</strong>, JPG, under 200kb<br>
@@ -2960,7 +2960,7 @@ function renderRecipePreview(recipe, ings, steps, name, category, servings, prep
     d.dietary.map(function(t){ return '<span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;background:rgba(143,149,116,0.12);border:1px solid rgba(143,149,116,0.3);border-radius:20px;color:var(--sage);">' + t + '</span>'; }).join('') +
     '</div>' : '';
   var aboutHTML = (d.about) ?
-    '<div style="font-size:14px;color:var(--muted);line-height:1.8;font-style:italic;margin-bottom:1.5rem;padding:1rem 1.2rem;border-left:3px solid var(--sage);">' + escHtml(d.about) + '</div>' : '';
+    '<div style="font-size:14px;color:var(--muted);line-height:1.8;font-style:italic;margin-bottom:1.5rem;padding:1rem 1.2rem;border:1px solid rgba(143,149,116,0.35);border-radius:3px;">' + escHtml(d.about) + '</div>' : '';
   var extrasHTML = '';
   if (recipe.seoTitle || recipe.socialExcerpt || (recipe.relatedTopics && recipe.relatedTopics.length)) {
     extrasHTML = '<div class="ap-extras">';
@@ -2986,8 +2986,8 @@ function renderRecipePreview(recipe, ings, steps, name, category, servings, prep
     ((recipe.intro && recipe.intro !== d.about) ? '<p style="font-size:14px;line-height:1.7;margin-bottom:1.2rem;">' + recipe.intro + '</p>' : '') +
     '<div class="rp-section-title">Ingredients</div><ul class="rp-ingredient-list">' + ingsHTML + '</ul>' +
     '<div class="rp-section-title">Method</div>' + stepsHTML +
-    (recipe.chefNote ? '<div style="margin-top:1.5rem;padding:1rem 1.2rem;background:rgba(201,169,110,0.1);border-left:3px solid var(--gold);"><p style="font-size:13px;"><strong>Chef note:</strong> ' + recipe.chefNote + '</p></div>' : '') +
-    (recipe.servingSuggestion ? '<div style="margin-top:1rem;padding:0.8rem 1.2rem;background:rgba(143,149,116,0.07);border-left:3px solid var(--sage);"><p style="font-size:13px;"><strong>Serve with:</strong> ' + recipe.servingSuggestion + '</p></div>' : '') +
+    (recipe.chefNote ? '<div style="margin-top:1.5rem;padding:1rem 1.2rem;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.5);border-radius:3px;"><p style="font-size:13px;"><strong>Chef note:</strong> ' + recipe.chefNote + '</p></div>' : '') +
+    (recipe.servingSuggestion ? '<div style="margin-top:1rem;padding:0.8rem 1.2rem;background:rgba(143,149,116,0.07);border:1px solid rgba(143,149,116,0.35);border-radius:3px;"><p style="font-size:13px;"><strong>Serve with:</strong> ' + recipe.servingSuggestion + '</p></div>' : '') +
     extrasHTML;
 }
 
@@ -7878,7 +7878,7 @@ function renderSocialContent(social) {
       '<div id="' + briefId + '-copy" style="display:none;">' + escHtml(item.copy || item.pin_title + '\n' + item.pin_desc) + '</div>' +
       '<details style="margin-top:0.8rem;">' +
         '<summary style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;list-style:none;">&#9998; Design Brief</summary>' +
-        '<div style="margin-top:0.6rem;font-size:12px;color:#555;line-height:1.7;border-left:2px solid ' + col + ';padding-left:0.8rem;">' + escHtml(brief) + '</div>' +
+        '<div style="margin-top:0.6rem;font-size:12px;color:#555;line-height:1.7;border:1px solid ' + col + ';border-radius:3px;padding:0.4rem 0.8rem;">' + escHtml(brief) + '</div>' +
         '<button onclick="copyText(\'' + briefId + '-brief\')" style="margin-top:6px;font-size:10px;padding:3px 8px;background:none;border:0.5px solid var(--border);border-radius:3px;cursor:pointer;color:var(--muted);">Copy brief</button>' +
         '<div id="' + briefId + '-brief" style="display:none;">' + escHtml(brief) + '</div>' +
       '</details>' +
