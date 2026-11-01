@@ -549,8 +549,8 @@ body{
 .ing-name{font-size:14px;color:#555;font-weight:300;}
 .method-section{min-width:0;}
 .recipe-intro{font-size:16px;color:#555;line-height:1.95;font-weight:300;margin-bottom:1.8rem;}
-.chef-tip{margin:2rem 0;padding:1.8rem 2rem;background:#f5f8f2;border-radius:12px;border-left:3px solid var(--sage);}
-.chef-tip-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sage);font-weight:500;display:block;margin-bottom:8px;}
+.chef-tip{position:relative;margin:2.6rem 0 2rem;padding:1.9rem 2rem 1.6rem;background:#fff;border:1px solid rgba(143,149,116,0.5);border-radius:3px;}
+.chef-tip-label{position:absolute;top:-0.75em;left:1.5rem;background:#fff;padding:0 0.7rem;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sage);font-weight:500;display:block;margin:0;}
 .chef-tip p{font-size:15px;color:#555;line-height:1.75;font-weight:300;}
 .method-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:36px;font-weight:400;color:#111;margin-bottom:2rem;}
 .method-step{display:grid;grid-template-columns:48px 1fr;gap:1.5rem;padding:2rem 0;border-bottom:0.5px solid var(--border-light);align-items:start;}
@@ -973,6 +973,15 @@ html body .share-bar .pw-share-gap{flex:0 0 100% !important;height:0 !important;
   html body .nav.scrolled .logo-img{width:44px !important;height:44px !important;margin-bottom:0 !important;}
 }
 </style>
+<style id="pw-double-line">
+/* Buttons and tags with a fine second line inside, like a printed label */
+html body .share-btn{box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 4px #e6e3d8;border-color:#ccc8b8;}
+html body .share-btn:hover{box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 4px rgba(143,149,116,0.55);}
+html body .share-btn.pw-listen.on,html body .share-btn.pw-listen:hover{box-shadow:inset 0 0 0 3px #8F9574,inset 0 0 0 4px rgba(255,255,255,0.7);}
+html body .share-bar .pw-recipe-action,html body .share-bar .pw-recipe-action:hover{box-shadow:inset 0 0 0 3px #8F9574,inset 0 0 0 4px rgba(255,255,255,0.7) !important;}
+html body .share-bar .pw-recipe-action:hover{box-shadow:inset 0 0 0 3px #7a8163,inset 0 0 0 4px rgba(255,255,255,0.7) !important;}
+html body .dietary-tag{background:#fff;border-color:var(--sage);}
+</style>
 </head>
 <body>
 <div class="site-wrap">
@@ -1080,7 +1089,7 @@ html body .share-bar .pw-share-gap{flex:0 0 100% !important;height:0 !important;
       <span class="chef-tip-label">Chef's note</span>
       <p>If your family is new to fermented grains, start with just one tablespoon of apple cider vinegar and build up over a few days. You can prep four individual jars on Sunday night and refrigerate after the overnight soak and rinse, then add toppings fresh each morning. Oats keep well in the fridge for up to three days once drained.</p>
     </div>
-    <div class="chef-tip" style="border-left-color:var(--sage);">
+    <div class="chef-tip">
       <span class="chef-tip-label">Serve with</span>
       <p>Serve alongside a glass of raw whole milk or a simple green smoothie for a complete wholefood school morning breakfast. A soft boiled egg on the side adds extra protein for bigger appetites.</p>
     </div>
