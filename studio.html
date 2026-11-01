@@ -3719,7 +3719,7 @@ async function buildRecipeHTML() {
   var recipeServingsN = parseInt(d.servings) || 4;
 
   var chefTip = recipe.chefNote ? '    <div class="chef-tip">\n      <span class="chef-tip-label">Chef\'s note</span>\n      <p>' + escHtml(recipe.chefNote) + '</p>\n    </div>\n' : '';
-  var servingSugg = recipe.servingSuggestion ? '    <div class="chef-tip" style="border-left-color:var(--sage);">\n      <span class="chef-tip-label">Serve with</span>\n      <p>' + escHtml(recipe.servingSuggestion) + '</p>\n    </div>\n' : '';
+  var servingSugg = recipe.servingSuggestion ? '    <div class="chef-tip">\n      <span class="chef-tip-label">Serve with</span>\n      <p>' + escHtml(recipe.servingSuggestion) + '</p>\n    </div>\n' : '';
   var aboutBlurb = d.about ? '    <div class="recipe-about">\n      <p>' + escHtml(d.about) + '</p>\n    </div>\n' : '';
   var dietaryHTML = (d.dietary && d.dietary.length) ? '    <div class="recipe-dietary">\n' + d.dietary.map(function(t){ return '      <span class="dietary-tag">' + t + '</span>'; }).join('\n') + '\n    </div>\n' : '';
 
