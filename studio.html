@@ -374,7 +374,7 @@ sup.cite:hover { text-decoration:underline; }
 <div id="studio">
 <nav class="nav">
   <img src="/images/site/logo.svg" alt="Pristine Wellness" class="logo-img" onclick="window.location='index.html'">
-  <span class="nav-title">CMS Studio v3.61</span>
+  <span class="nav-title">CMS Studio v3.62</span>
   <span id="pw-ai-spend" onclick="pwSpendDetails()" title="Estimated AI cost this month on this device. Tap for details." style="font-size:11px;letter-spacing:0.5px;color:var(--muted);cursor:pointer;white-space:nowrap;margin-left:auto;margin-right:1rem;"></span>
   <div class="nav-actions">
     <span class="nav-link" onclick="window.open('the-source.html')">The Source</span>
@@ -9483,6 +9483,31 @@ async function seUploadPhoto(file, maxW, maxH) {
   await githubRequest(path, 'PUT', { message: 'Upload image: ' + path, content: c.base64, branch: GITHUB_BRANCH });
   return path;
 }
+// Paste a copied picture (for example "Copy image" in Krea) or drop an image file, without the file picker
+function sePasteFile(cb) {
+  var box = document.createElement('div');
+  box.id = 'se-paste-box';
+  box.setAttribute('tabindex', '0');
+  box.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(20,20,20,0.55);display:flex;align-items:center;justify-content:center;';
+  box.innerHTML = '<div style="background:#fff;border-radius:10px;padding:2rem 2.2rem;max-width:420px;width:90%;text-align:center;font-family:Jost,sans-serif;">' +
+    '<div style="border:1.5px dashed #8F9574;border-radius:8px;padding:2.2rem 1rem;color:#555;font-size:15px;line-height:1.6;">Paste the photo now<br><span style="font-size:13px;color:#888;">Ctrl+V, or Cmd+V on a Mac. You can also drop an image file here.</span></div>' +
+    '<button id="se-paste-cancel" style="margin-top:1rem;background:none;border:0.5px solid #ccc;border-radius:4px;padding:6px 14px;font-size:12px;cursor:pointer;">Cancel</button></div>';
+  function close() { document.removeEventListener('paste', onPaste, true); if (box.parentNode) box.parentNode.removeChild(box); }
+  function take(file) { if (!file || !/^image\//.test(file.type)) return false; close(); cb(file); return true; }
+  function onPaste(e) {
+    var items = (e.clipboardData && e.clipboardData.items) || [];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].kind === 'file' && /^image\//.test(items[i].type)) { e.preventDefault(); take(items[i].getAsFile()); return; }
+    }
+    seSetStatus('No picture was on the clipboard. In Krea, right-click the photo, choose Copy image, then paste again.', true);
+  }
+  box.addEventListener('dragover', function(e) { e.preventDefault(); });
+  box.addEventListener('drop', function(e) { e.preventDefault(); var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (!take(f)) seSetStatus('That was not an image file.', true); });
+  document.addEventListener('paste', onPaste, true);
+  document.body.appendChild(box);
+  box.querySelector('#se-paste-cancel').onclick = close;
+  box.focus();
+}
 function sePickFile(cb) {
   var inp = document.createElement('input');
   inp.type = 'file'; inp.accept = 'image/jpeg,image/png,image/webp,.heic,.heif';
@@ -9613,14 +9638,14 @@ function seRenderPhotos() {
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">' + escHtml(SE.title) + '</p>';
   h += '<h3 style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:0.6rem;">Main photo</h3>';
   h += '<div style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:0.4rem;">' + seThumb(P.heroNew || P.hero) + '<div>' +
-    seBtn('Pick from Library', 'seChooseHero(\'library\')') + seBtn('Upload new', 'seChooseHero(\'upload\')', '#7a8163') +
+    seBtn('Pick from Library', 'seChooseHero(\'library\')') + seBtn('Upload new', 'seChooseHero(\'upload\')', '#7a8163') + seBtn('Paste photo', 'seChooseHero(\'paste\')', '#5f6b4e') +
     '<div style="font-size:12px;color:var(--muted);margin-top:4px;">Used at the top of the story, on its card, in "Keep Reading" boxes and when shared.' + (P.heroNew ? ' <b style="color:var(--sage);">New photo chosen.</b>' : '') + '</div></div></div>';
   h += '<h3 style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin:1.6rem 0 0.6rem;">Photos in the story</h3>';
   if (!P.body.length) h += '<div style="font-size:13px;color:var(--muted);margin-bottom:0.6rem;">None yet.</div>';
   P.body.forEach(function(b, i) {
     h += '<div style="display:flex;gap:1rem;align-items:flex-start;padding:0.7rem 0;border-bottom:0.5px solid var(--border);' + (b.remove ? 'opacity:0.4;' : '') + '">' + seThumb(b.src) + '<div style="flex:1;">' +
       '<input type="text" value="' + escHtml(b.caption).replace(/"/g, '&quot;') + '" placeholder="Caption (optional)" oninput="SE.photo.body[' + i + '].caption=this.value;SE.photo.body[' + i + '].changed=true" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:13px;margin-bottom:6px;">' +
-      seBtn('Replace from Library', 'seChooseBody(' + i + ',\'library\')') + seBtn('Upload replacement', 'seChooseBody(' + i + ',\'upload\')', '#7a8163') +
+      seBtn('Replace from Library', 'seChooseBody(' + i + ',\'library\')') + seBtn('Upload replacement', 'seChooseBody(' + i + ',\'upload\')', '#7a8163') + seBtn('Paste replacement', 'seChooseBody(' + i + ',\'paste\')', '#5f6b4e') +
       seBtn(b.remove ? 'Keep' : 'Remove', 'SE.photo.body[' + i + '].remove=!SE.photo.body[' + i + '].remove;seRenderPhotos()', '#b35a4a') + '</div></div>';
   });
   h += '<h3 style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin:1.6rem 0 0.6rem;">Add a photo</h3>';
@@ -9631,7 +9656,7 @@ function seRenderPhotos() {
       '<input type="text" value="' + escHtml(a.caption).replace(/"/g, '&quot;') + '" placeholder="Caption (optional)" oninput="SE.photo.add[' + i + '].caption=this.value" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:4px;font-size:13px;margin-bottom:6px;">' +
       seBtn('Remove', 'SE.photo.add.splice(' + i + ',1);seRenderPhotos()', '#b35a4a') + '</div></div>';
   });
-  if (P.spots.length) h += '<div style="margin-top:0.6rem;">' + seBtn('+ Add from Library', 'seAddPhoto(\'library\')') + seBtn('+ Upload and add', 'seAddPhoto(\'upload\')', '#7a8163') + '</div>';
+  if (P.spots.length) h += '<div style="margin-top:0.6rem;">' + seBtn('+ Add from Library', 'seAddPhoto(\'library\')') + seBtn('+ Upload and add', 'seAddPhoto(\'upload\')', '#7a8163') + seBtn('+ Paste and add', 'seAddPhoto(\'paste\')', '#5f6b4e') + '</div>';
   else h += '<div style="font-size:13px;color:var(--muted);">This story has no sections to add photos to.</div>';
   document.getElementById('se-body').innerHTML = h;
   var foot = document.querySelector('#se-modal [data-se-save]');
@@ -9648,7 +9673,7 @@ function seGetPhoto(mode, maxW, maxH, done) {
     openImgPicker(function(p) { done(String(p).replace(/^\/+/, '')); });
     return;
   }
-  sePickFile(async function(file) {
+  (mode === 'paste' ? sePasteFile : sePickFile)(async function(file) {
     seSetStatus('Uploading photo...');
     try { var p = await seUploadPhoto(file, maxW, maxH); seSetStatus('Photo uploaded. Press Save photos when ready.'); done(p); }
     catch (e) { seSetStatus('Photo not uploaded: ' + e.message, true); }
